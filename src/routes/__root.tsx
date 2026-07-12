@@ -77,14 +77,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Usman Jatoi" },
+      {
+        name: "description",
+        content:
+          "Official site of Usman Jatoi — educator, entrepreneur and strategist. Courses, blog posts, services and resources.",
+      },
+      { name: "author", content: "Usman Jatoi" },
+      { property: "og:title", content: "Usman Jatoi" },
+      {
+        property: "og:description",
+        content: "Official site of Usman Jatoi — courses, blog, services and resources.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
