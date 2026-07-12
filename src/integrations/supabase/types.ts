@@ -14,16 +14,267 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wp_import_state: {
+        Row: {
+          content_kind: string
+          imported_items: number
+          last_error: string | null
+          last_page: number
+          status: string
+          total_items: number | null
+          total_pages: number | null
+          updated_at: string
+        }
+        Insert: {
+          content_kind: string
+          imported_items?: number
+          last_error?: string | null
+          last_page?: number
+          status?: string
+          total_items?: number | null
+          total_pages?: number | null
+          updated_at?: string
+        }
+        Update: {
+          content_kind?: string
+          imported_items?: number
+          last_error?: string | null
+          last_page?: number
+          status?: string
+          total_items?: number | null
+          total_pages?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wp_media: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string
+          description: string | null
+          filesize: number | null
+          height: number | null
+          id: number
+          imported_at: string | null
+          media_date: string | null
+          mime_type: string | null
+          raw: Json
+          slug: string | null
+          source_url: string
+          storage_path: string | null
+          storage_url: string | null
+          title: string | null
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          description?: string | null
+          filesize?: number | null
+          height?: number | null
+          id: number
+          imported_at?: string | null
+          media_date?: string | null
+          mime_type?: string | null
+          raw?: Json
+          slug?: string | null
+          source_url: string
+          storage_path?: string | null
+          storage_url?: string | null
+          title?: string | null
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          description?: string | null
+          filesize?: number | null
+          height?: number | null
+          id?: number
+          imported_at?: string | null
+          media_date?: string | null
+          mime_type?: string | null
+          raw?: Json
+          slug?: string | null
+          source_url?: string
+          storage_path?: string | null
+          storage_url?: string | null
+          title?: string | null
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
+      wp_post_terms: {
+        Row: {
+          post_id: number
+          taxonomy: string
+          term_id: number
+        }
+        Insert: {
+          post_id: number
+          taxonomy: string
+          term_id: number
+        }
+        Update: {
+          post_id?: number
+          taxonomy?: string
+          term_id?: number
+        }
+        Relationships: []
+      }
+      wp_posts: {
+        Row: {
+          author_id: number | null
+          content: string | null
+          created_at: string
+          excerpt: string | null
+          featured_media_id: number | null
+          id: number
+          imported_at: string
+          menu_order: number | null
+          meta: Json
+          parent_id: number | null
+          path: string | null
+          permalink: string | null
+          post_date: string | null
+          post_modified: string | null
+          post_type: string
+          raw: Json
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_id?: number | null
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_media_id?: number | null
+          id: number
+          imported_at?: string
+          menu_order?: number | null
+          meta?: Json
+          parent_id?: number | null
+          path?: string | null
+          permalink?: string | null
+          post_date?: string | null
+          post_modified?: string | null
+          post_type: string
+          raw?: Json
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: number | null
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_media_id?: number | null
+          id?: number
+          imported_at?: string
+          menu_order?: number | null
+          meta?: Json
+          parent_id?: number | null
+          path?: string | null
+          permalink?: string | null
+          post_date?: string | null
+          post_modified?: string | null
+          post_type?: string
+          raw?: Json
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wp_terms: {
+        Row: {
+          count: number | null
+          created_at: string
+          description: string | null
+          id: number
+          name: string | null
+          parent_id: number | null
+          raw: Json
+          slug: string
+          taxonomy: string
+        }
+        Insert: {
+          count?: number | null
+          created_at?: string
+          description?: string | null
+          id: number
+          name?: string | null
+          parent_id?: number | null
+          raw?: Json
+          slug: string
+          taxonomy: string
+        }
+        Update: {
+          count?: number | null
+          created_at?: string
+          description?: string | null
+          id?: number
+          name?: string | null
+          parent_id?: number | null
+          raw?: Json
+          slug?: string
+          taxonomy?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +401,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
