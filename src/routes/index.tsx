@@ -189,7 +189,7 @@ function Home() {
 
 
       `}</style>
-      <style>{homeStyles}</style>
+
 
       <div
         className="usman-native-home"
