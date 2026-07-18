@@ -42,6 +42,7 @@ import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
@@ -214,6 +215,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AboutMeSocialMediaRoute = AboutMeSocialMediaRouteImport.update({
+  id: '/about-me/social-media',
+  path: '/about-me/social-media',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   id: '/import',
   path: '/import',
@@ -247,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
+  '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
@@ -283,6 +290,7 @@ export interface FileRoutesByTo {
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
+  '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
@@ -321,6 +329,7 @@ export interface FileRoutesById {
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
+  '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
@@ -359,6 +368,7 @@ export interface FileRouteTypes {
     | '/white-label-partnership'
     | '/admin'
     | '/import'
+    | '/about-me/social-media'
     | '/blog/$slug'
     | '/category/$slug'
     | '/my-lifestyle/fitness-health'
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/white-label-partnership'
     | '/admin'
     | '/import'
+    | '/about-me/social-media'
     | '/blog/$slug'
     | '/category/$slug'
     | '/my-lifestyle/fitness-health'
@@ -432,6 +443,7 @@ export interface FileRouteTypes {
     | '/white-label-partnership'
     | '/_authenticated/admin'
     | '/_authenticated/import'
+    | '/about-me/social-media'
     | '/blog/$slug'
     | '/category/$slug'
     | '/my-lifestyle/fitness-health'
@@ -468,6 +480,7 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
+  AboutMeSocialMediaRoute: typeof AboutMeSocialMediaRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/about-me/social-media': {
+      id: '/about-me/social-media'
+      path: '/about-me/social-media'
+      fullPath: '/about-me/social-media'
+      preLoaderRoute: typeof AboutMeSocialMediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/import': {
       id: '/_authenticated/import'
       path: '/import'
@@ -776,6 +796,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
+  AboutMeSocialMediaRoute: AboutMeSocialMediaRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
