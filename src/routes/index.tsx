@@ -135,70 +135,138 @@ function Home() {
     window.addEventListener("resize", onScroll);
 
     // ==================== Tabs (Creative Work / Website Designs / etc.) ====================
-    const tabWidgets = document.querySelectorAll<HTMLElement>(".elementor-widget-n-tabs");
-    tabWidgets.forEach((widget) => {
-      const buttons = widget.querySelectorAll<HTMLElement>(".e-n-tab-title");
-      const panels = widget.querySelectorAll<HTMLElement>('[role="tabpanel"]');
-      buttons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const idx = btn.getAttribute("data-tab-index");
-          buttons.forEach((b) => {
-            b.setAttribute("aria-selected", "false");
-            b.setAttribute("tabindex", "-1");
-          });
-          btn.setAttribute("aria-selected", "true");
-          btn.setAttribute("tabindex", "0");
-          panels.forEach((panel) => {
-            if (panel.getAttribute("data-tab-index") === idx) {
-              panel.classList.add("e-active");
-            } else {
-              panel.classList.remove("e-active");
-            }
-          });
-        });
-      });
-    });
-
-    // ==================== Fix carousels: reset transforms, remove duplicates, wire arrows ====================
-    const carousels = document.querySelectorAll<HTMLElement>(".elementor-widget-image-carousel");
-    carousels.forEach((carousel) => {
+    const normalizeCarousel = (carousel: HTMLElement) => {
       const wrapper = carousel.querySelector<HTMLElement>(".swiper-wrapper");
       const swiperEl = carousel.querySelector<HTMLElement>(".elementor-image-carousel-wrapper");
       if (!wrapper || !swiperEl) return;
 
-      // Remove all duplicate slides — they were only there for Swiper's infinite loop
-      wrapper.querySelectorAll(".swiper-slide-duplicate").forEach((d) => d.remove());
-      // Reset inline transforms and per-slide inert/aria-hidden
+      wrapper.querySelectorAll<HTMLElement>(".swiper-slide").forEach((slide) => {
+        if (slide.classList.contains("swiper-slide-duplicate")) slide.remove();
+      });
+
       wrapper.style.transform = "none";
       wrapper.style.transition = "none";
       wrapper.style.display = "flex";
-      wrapper.style.gap = "28px";
+      wrapper.style.gap = "20px";
       wrapper.style.overflow = "visible";
       wrapper.querySelectorAll<HTMLElement>(".swiper-slide").forEach((slide) => {
         slide.removeAttribute("aria-hidden");
         slide.removeAttribute("inert");
         slide.style.marginRight = "0";
         slide.style.flex = "0 0 auto";
+        slide.style.scrollSnapAlign = "start";
       });
-      // Convert the outer swiper wrapper into a horizontal scroll container
+
       swiperEl.style.overflowX = "auto";
       swiperEl.style.overflowY = "hidden";
       swiperEl.style.scrollSnapType = "x mandatory";
       swiperEl.style.scrollBehavior = "smooth";
-      wrapper.querySelectorAll<HTMLElement>(".swiper-slide").forEach((slide) => {
-        slide.style.scrollSnapAlign = "start";
+    };
+
+    const activateTab = (btn: HTMLElement) => {
+      const widget = btn.closest<HTMLElement>(".elementor-widget-n-tabs");
+      if (!widget) return;
+      const idx = btn.getAttribute("data-tab-index");
+      const controls = btn.getAttribute("aria-controls");
+      const buttons = widget.querySelectorAll<HTMLElement>(".e-n-tab-title");
+      const panels = widget.querySelectorAll<HTMLElement>('[role="tabpanel"]');
+
+      buttons.forEach((b) => {
+        const active = b === btn;
+        b.setAttribute("aria-selected", active ? "true" : "false");
+        b.setAttribute("tabindex", active ? "0" : "-1");
       });
 
-      // Wire prev/next arrows
-      const prev = carousel.querySelector<HTMLElement>(".elementor-swiper-button-prev");
-      const next = carousel.querySelector<HTMLElement>(".elementor-swiper-button-next");
-      const step = () => {
-        const first = wrapper.querySelector<HTMLElement>(".swiper-slide");
-        return (first?.offsetWidth || 320) + 28;
-      };
-      prev?.addEventListener("click", () => swiperEl.scrollBy({ left: -step(), behavior: "smooth" }));
-      next?.addEventListener("click", () => swiperEl.scrollBy({ left: step(), behavior: "smooth" }));
+      panels.forEach((panel) => {
+        const active =
+          panel.getAttribute("data-tab-index") === idx || (controls ? panel.id === controls : false);
+        panel.classList.toggle("e-active", active);
+        panel.toggleAttribute("hidden", !active);
+        if (active) {
+          panel.querySelectorAll<HTMLElement>(".elementor-widget-image-carousel").forEach(normalizeCarousel);
+        }
+      });
+    };
+
+    const tabWidgets = document.querySelectorAll<HTMLElement>(".elementor-widget-n-tabs");
+    tabWidgets.forEach((widget) => {
+      const activeButton =
+        widget.querySelector<HTMLElement>('.e-n-tab-title[aria-selected="true"]') ||
+        widget.querySelector<HTMLElement>(".e-n-tab-title");
+      if (activeButton) activateTab(activeButton);
     });
+
+    const onTabClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const btn = target?.closest<HTMLElement>(".e-n-tab-title");
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      activateTab(btn);
+    };
+
+    const onTabKeydown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const btn = target?.closest<HTMLElement>(".e-n-tab-title");
+      if (!btn) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activateTab(btn);
+        return;
+      }
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      const buttons = Array.from(
+        btn.closest<HTMLElement>(".elementor-widget-n-tabs")?.querySelectorAll<HTMLElement>(".e-n-tab-title") || [],
+      );
+      const current = buttons.indexOf(btn);
+      if (current < 0) return;
+      event.preventDefault();
+      const nextIndex =
+        event.key === "ArrowRight"
+          ? (current + 1) % buttons.length
+          : (current - 1 + buttons.length) % buttons.length;
+      buttons[nextIndex]?.focus();
+      if (buttons[nextIndex]) activateTab(buttons[nextIndex]);
+    };
+
+    document.addEventListener("click", onTabClick, true);
+    document.addEventListener("keydown", onTabKeydown, true);
+
+    // ==================== Fix carousels: reset transforms, remove duplicates, wire arrows ====================
+    const carousels = document.querySelectorAll<HTMLElement>(".elementor-widget-image-carousel");
+    carousels.forEach(normalizeCarousel);
+
+    const moveCarousel = (arrow: HTMLElement) => {
+      const carousel = arrow.closest<HTMLElement>(".elementor-widget-image-carousel");
+      const swiperEl = carousel?.querySelector<HTMLElement>(".elementor-image-carousel-wrapper");
+      const first = carousel?.querySelector<HTMLElement>(".swiper-slide");
+      if (!carousel || !swiperEl) return;
+      normalizeCarousel(carousel);
+      const step = (first?.offsetWidth || swiperEl.clientWidth / 3 || 320) + 20;
+      const direction = arrow.classList.contains("elementor-swiper-button-prev") ? -1 : 1;
+      swiperEl.scrollBy({ left: direction * step, behavior: "smooth" });
+    };
+
+    const onCarouselClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const arrow = target?.closest<HTMLElement>(".elementor-swiper-button");
+      if (!arrow) return;
+      event.preventDefault();
+      event.stopPropagation();
+      moveCarousel(arrow);
+    };
+
+    const onCarouselKeydown = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = event.target as HTMLElement | null;
+      const arrow = target?.closest<HTMLElement>(".elementor-swiper-button");
+      if (!arrow) return;
+      event.preventDefault();
+      moveCarousel(arrow);
+    };
+
+    document.addEventListener("click", onCarouselClick, true);
+    document.addEventListener("keydown", onCarouselKeydown, true);
 
     // ==================== Promotional Ad YouTube embed ====================
     const promoHolder = document.querySelector<HTMLElement>(
@@ -226,6 +294,10 @@ function Home() {
       document.documentElement.lang = prevLang;
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      document.removeEventListener("click", onTabClick, true);
+      document.removeEventListener("keydown", onTabKeydown, true);
+      document.removeEventListener("click", onCarouselClick, true);
+      document.removeEventListener("keydown", onCarouselKeydown, true);
       if (raf) cancelAnimationFrame(raf);
       root.style.removeProperty("--scroll-theme");
     };
