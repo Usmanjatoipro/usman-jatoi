@@ -107,7 +107,7 @@ function Home() {
           background-origin: border-box;
           background-clip: content-box, border-box;
           background-image:
-            linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)),
+            linear-gradient(#ffffff, #ffffff),
             linear-gradient(45deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4) !important;
           animation: usmanRainbowBorder 6s linear infinite;
           padding: 14px 34px !important;
@@ -120,6 +120,10 @@ function Home() {
           gap: 8px;
           text-decoration: none;
         }
+        .usman-native-home .elementor-button *,
+        .usman-native-home .wp-block-button__link *,
+        .usman-native-home .btn * { color: #111 !important; fill: #111 !important; }
+
         /* Dark-section variant: keep readable on dark backgrounds */
         .usman-native-home [data-elementor-type="section"][style*="background"] .elementor-button,
         .usman-native-home .elementor-section[style*="background-color: rgb(0"] .elementor-button {
