@@ -64,7 +64,9 @@ function ImportPage() {
     supabase.auth.getUser().then(({ data, error }) => {
       if (!active) return;
       if (error || !data.user) {
-        window.location.href = `/auth?next=${encodeURIComponent(window.location.pathname)}`;
+        window.setTimeout(() => {
+          window.location.href = `/auth?next=${encodeURIComponent(window.location.pathname)}`;
+        }, 250);
         return;
       }
       setAuthReady(true);
