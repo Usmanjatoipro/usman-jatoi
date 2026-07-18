@@ -442,6 +442,22 @@ function Home() {
         .usman-native-home .elementor-image-carousel-wrapper::-webkit-scrollbar { display: none; }
         .usman-native-home .swiper-slide { min-width: 280px; }
         .usman-native-home .swiper-slide-image { width: 100%; height: auto; display: block; }
+        /* Show at least 3 slides at a time on desktop */
+        @media (min-width: 1025px) {
+          .usman-native-home .swiper-slide {
+            flex: 0 0 calc((100% - 40px) / 3) !important;
+            min-width: calc((100% - 40px) / 3) !important;
+            max-width: calc((100% - 40px) / 3) !important;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .usman-native-home .swiper-slide {
+            flex: 0 0 calc((100% - 20px) / 2) !important;
+            min-width: calc((100% - 20px) / 2) !important;
+            max-width: calc((100% - 20px) / 2) !important;
+          }
+        }
+        .usman-native-home .swiper-wrapper { gap: 20px; }
 
         /* ============ Skills & Expertise — use native icon rendering ============ */
         /* (Icon fonts eicons + elementskit are hosted locally in /public/fonts,
