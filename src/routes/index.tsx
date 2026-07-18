@@ -32,10 +32,14 @@ function stripScripts(html: string) {
 const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
 // Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
 // all styles apply on first paint — no FOUC waiting for a body class from JS.
-const homeStyles = localizeUsmanAssets(homeStylesRaw).replace(
-  /\.elementor-kit-14\b/g,
-  ".usman-native-home",
-);
+const homeStyles = localizeUsmanAssets(homeStylesRaw)
+  .replace(/\.elementor-kit-14\b/g, ".usman-native-home")
+  // Neutralize Elementor's lazy-load guard that strips background-image from
+  // 4th+ .e-parent containers until JS marks them .e-lazyloaded. We stripped
+  // all scripts, so this guard would permanently hide gradient borders on our
+  // rainbow-border buttons in later sections. Point the selector at a class
+  // that never exists so the rule never matches.
+  .replace(/:not\(\.e-lazyloaded\):not\(\.e-no-lazyload\)/g, ".__lovable-never-match");
 
 export const Route = createFileRoute("/")({
   component: Home,
