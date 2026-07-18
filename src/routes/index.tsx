@@ -30,7 +30,12 @@ function stripScripts(html: string) {
 }
 
 const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
-const homeStyles = localizeUsmanAssets(homeStylesRaw);
+// Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
+// all styles apply on first paint — no FOUC waiting for a body class from JS.
+const homeStyles = localizeUsmanAssets(homeStylesRaw).replace(
+  /\.elementor-kit-14\b/g,
+  ".usman-native-home",
+);
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -69,30 +74,26 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   useEffect(() => {
-    const prevClass = document.body.className;
-    const prevMode = document.body.getAttribute("data-elementor-device-mode");
+    const prevLang = document.documentElement.lang;
     document.documentElement.lang = "en-US";
-    document.body.className = BODY_CLASS;
-    document.body.setAttribute(
-      "data-elementor-device-mode",
-      window.innerWidth <= 767 ? "mobile" : window.innerWidth <= 1024 ? "tablet" : "desktop",
-    );
     return () => {
-      document.body.className = prevClass;
-      if (prevMode) document.body.setAttribute("data-elementor-device-mode", prevMode);
-      else document.body.removeAttribute("data-elementor-device-mode");
+      document.documentElement.lang = prevLang;
     };
   }, []);
 
   return (
     <>
+      {/* Elementor kit styles first (re-scoped to .usman-native-home) */}
+      <style>{homeStyles}</style>
+      {/* Our overrides last so they win the cascade */}
       <style>{`
-        html, body, #root { margin: 0; padding: 0; min-height: 100%; background: #fff; }
-        body { overflow-x: hidden; }
-        .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; }
+        html, body, #root { margin: 0; padding: 0; min-height: 100%; background: #000; }
+        body { overflow-x: hidden; background: #000 !important; color: #fff; }
+        .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: #000; }
         /* Reveal Elementor sections that were script-gated on the original site */
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
+
 
         /* Animated gradient-border button — WHITE fill, gradient border only */
         .usman-native-home .elementor-button,
@@ -188,7 +189,7 @@ function Home() {
 
 
       `}</style>
-      <style>{homeStyles}</style>
+
 
       <div
         className="usman-native-home"
