@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import PortfolioTabs from "@/components/PortfolioTabs";
+import SayHello from "@/components/SayHello";
 import homeBodyRaw from "../data/homeBody.html?raw";
 import homeLinks from "../data/homeLinks.json";
 import homeStylesRaw from "../data/homeStyles.css?raw";
@@ -31,11 +32,12 @@ function stripScripts(html: string) {
 }
 
 const homeBodyProcessed = stripScripts(localizeUsmanAssets(homeBodyRaw));
-const [homeBodyBefore, homeBodyAfter] = (() => {
-  const m = "<!--PORTFOLIO_TABS-->";
-  const i = homeBodyProcessed.indexOf(m);
-  return i === -1 ? [homeBodyProcessed, ""] : [homeBodyProcessed.slice(0, i), homeBodyProcessed.slice(i + m.length)];
-})();
+function splitOn(html: string, marker: string): [string, string] {
+  const i = html.indexOf(marker);
+  return i === -1 ? [html, ""] : [html.slice(0, i), html.slice(i + marker.length)];
+}
+const [homeBodyBeforePortfolio, homeBodyAfter] = splitOn(homeBodyProcessed, "<!--PORTFOLIO_TABS-->");
+const [homeBodyBefore, homeBodyBetween] = splitOn(homeBodyBeforePortfolio, "<!--SAY_HELLO-->");
 // Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
 // all styles apply on first paint — no FOUC waiting for a body class from JS.
 const homeStyles = localizeUsmanAssets(homeStylesRaw)
@@ -539,6 +541,11 @@ function Home() {
         <div
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: homeBodyBefore }}
+        />
+        <SayHello />
+        <div
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: homeBodyBetween }}
         />
         <PortfolioTabs />
         <div
