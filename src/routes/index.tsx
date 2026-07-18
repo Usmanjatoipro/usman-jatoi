@@ -30,7 +30,12 @@ function stripScripts(html: string) {
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
 }
 
-const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
+const homeBodyProcessed = stripScripts(localizeUsmanAssets(homeBodyRaw));
+const [homeBodyBefore, homeBodyAfter] = (() => {
+  const m = "<!--PORTFOLIO_TABS-->";
+  const i = homeBodyProcessed.indexOf(m);
+  return i === -1 ? [homeBodyProcessed, ""] : [homeBodyProcessed.slice(0, i), homeBodyProcessed.slice(i + m.length)];
+})();
 // Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
 // all styles apply on first paint — no FOUC waiting for a body class from JS.
 const homeStyles = localizeUsmanAssets(homeStylesRaw)
