@@ -319,17 +319,28 @@ function Home() {
           background: #ffffff !important;
           background-image: none !important;
         }
-        .usman-native-home .elementor-element-3359bcc h1,
-        .usman-native-home .elementor-element-3359bcc h2,
-        .usman-native-home .elementor-element-3359bcc h3,
-        .usman-native-home .elementor-element-3359bcc h4,
-        .usman-native-home .elementor-element-3359bcc h5,
-        .usman-native-home .elementor-element-3359bcc h6,
-        .usman-native-home .elementor-element-3359bcc p,
-        .usman-native-home .elementor-element-3359bcc span,
-        .usman-native-home .elementor-element-3359bcc li,
-        .usman-native-home .elementor-element-3359bcc div,
-        .usman-native-home .elementor-element-3359bcc a {
+        /* Numeric cards: dark text on their light card bg */
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .card-content-v3,
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .card-content-v3 * {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .metric-label,
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .metric-description {
+          color: #555 !important;
+          -webkit-text-fill-color: #555 !important;
+        }
+        /* Section heading + intro paragraph on white bg */
+        .usman-native-home .elementor-element-3359bcc .impact-header-v3 h2,
+        .usman-native-home .elementor-element-3359bcc .impact-header-v3 p,
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-widget-heading .elementor-heading-title,
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-widget-text-editor p {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        /* Feature card (with photo) keeps its dark overlay + white text */
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3.feature-card-v3 .card-content-v3,
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3.feature-card-v3 .card-content-v3 * {
           color: #ffffff !important;
           -webkit-text-fill-color: #ffffff !important;
         }
