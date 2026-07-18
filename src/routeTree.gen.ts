@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as ContactUsRouteImport } from './routes/contact-us'
 import { Route as ContactMeRouteImport } from './routes/contact-me'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessesRouteImport } from './routes/businesses'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -33,9 +35,19 @@ const LogRoute = LogRouteImport.update({
   path: '/log',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactUsRoute = ContactUsRouteImport.update({
+  id: '/contact-us',
+  path: '/contact-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactMeRoute = ContactMeRouteImport.update({
   id: '/contact-me',
   path: '/contact-me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CareersRoute = CareersRouteImport.update({
@@ -94,7 +106,9 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
   '/contact-me': typeof ContactMeRoute
+  '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -108,7 +122,9 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
   '/contact-me': typeof ContactMeRoute
+  '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -124,7 +140,9 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
   '/contact-me': typeof ContactMeRoute
+  '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -140,7 +158,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/contact'
     | '/contact-me'
+    | '/contact-us'
     | '/log'
     | '/media-kit'
     | '/admin'
@@ -154,7 +174,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/contact'
     | '/contact-me'
+    | '/contact-us'
     | '/log'
     | '/media-kit'
     | '/admin'
@@ -169,7 +191,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/contact'
     | '/contact-me'
+    | '/contact-us'
     | '/log'
     | '/media-kit'
     | '/_authenticated/admin'
@@ -185,7 +209,9 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   BusinessesRoute: typeof BusinessesRoute
   CareersRoute: typeof CareersRoute
+  ContactRoute: typeof ContactRoute
   ContactMeRoute: typeof ContactMeRoute
+  ContactUsRoute: typeof ContactUsRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
   CategorySlugRoute: typeof CategorySlugRoute
@@ -207,11 +233,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact-us': {
+      id: '/contact-us'
+      path: '/contact-us'
+      fullPath: '/contact-us'
+      preLoaderRoute: typeof ContactUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact-me': {
       id: '/contact-me'
       path: '/contact-me'
       fullPath: '/contact-me'
       preLoaderRoute: typeof ContactMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/careers': {
@@ -317,7 +357,9 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   BusinessesRoute: BusinessesRoute,
   CareersRoute: CareersRoute,
+  ContactRoute: ContactRoute,
   ContactMeRoute: ContactMeRoute,
+  ContactUsRoute: ContactUsRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
   CategorySlugRoute: CategorySlugRoute,
