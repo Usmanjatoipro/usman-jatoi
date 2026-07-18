@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import PortfolioTabs from "@/components/PortfolioTabs";
-import SayHello from "@/components/SayHello";
 import homeBodyRaw from "../data/homeBody.html?raw";
 import homeLinks from "../data/homeLinks.json";
 import homeStylesRaw from "../data/homeStyles.css?raw";
@@ -31,13 +29,7 @@ function stripScripts(html: string) {
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
 }
 
-const homeBodyProcessed = stripScripts(localizeUsmanAssets(homeBodyRaw));
-function splitOn(html: string, marker: string): [string, string] {
-  const i = html.indexOf(marker);
-  return i === -1 ? [html, ""] : [html.slice(0, i), html.slice(i + marker.length)];
-}
-const [homeBodyBeforePortfolio, homeBodyAfter] = splitOn(homeBodyProcessed, "<!--PORTFOLIO_TABS-->");
-const [homeBodyBefore, homeBodyBetween] = splitOn(homeBodyBeforePortfolio, "<!--SAY_HELLO-->");
+const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
 // Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
 // all styles apply on first paint — no FOUC waiting for a body class from JS.
 const homeStyles = localizeUsmanAssets(homeStylesRaw)
@@ -218,26 +210,6 @@ function Home() {
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
 
-        /* ============ Elementor container gutters (missing from extracted CSS) ============ */
-        /* Constrain every top-level section itself, not just its inner wrapper.
-           This makes children naturally flow inside the 1280 box. */
-        .usman-native-home { padding-inline: clamp(20px, 5vw, 60px); box-sizing: border-box; overflow-x: hidden; }
-        .usman-native-home .elementor { max-width: var(--container-max-width, 1280px); margin-inline: auto; }
-        .usman-native-home .e-con { box-sizing: border-box; }
-        /* Reset any inner wrapper — it now sits inside a padded parent, no extra padding needed */
-        .usman-native-home .e-con-inner {
-          max-width: 100% !important;
-          width: 100% !important;
-          margin-inline: auto !important;
-          padding-inline: 0 !important;
-          box-sizing: border-box !important;
-        }
-
-
-
-
-
-
 
         /* Animated gradient-border button — WHITE fill, gradient border only */
         .usman-native-home .elementor-button,
@@ -339,28 +311,17 @@ function Home() {
           background: #ffffff !important;
           background-image: none !important;
         }
-        /* Numeric cards: dark text on their light card bg */
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .card-content-v3,
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .card-content-v3 * {
-          color: #111 !important;
-          -webkit-text-fill-color: #111 !important;
-        }
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .metric-label,
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3 .metric-description {
-          color: #555 !important;
-          -webkit-text-fill-color: #555 !important;
-        }
-        /* Section heading + intro paragraph on white bg */
-        .usman-native-home .elementor-element-3359bcc .impact-header-v3 h2,
-        .usman-native-home .elementor-element-3359bcc .impact-header-v3 p,
-        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-widget-heading .elementor-heading-title,
-        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-widget-text-editor p {
-          color: #111 !important;
-          -webkit-text-fill-color: #111 !important;
-        }
-        /* Feature card (with photo) keeps its dark overlay + white text */
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3.large-card .card-content-v3,
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3.large-card .card-content-v3 * {
+        .usman-native-home .elementor-element-3359bcc h1,
+        .usman-native-home .elementor-element-3359bcc h2,
+        .usman-native-home .elementor-element-3359bcc h3,
+        .usman-native-home .elementor-element-3359bcc h4,
+        .usman-native-home .elementor-element-3359bcc h5,
+        .usman-native-home .elementor-element-3359bcc h6,
+        .usman-native-home .elementor-element-3359bcc p,
+        .usman-native-home .elementor-element-3359bcc span,
+        .usman-native-home .elementor-element-3359bcc li,
+        .usman-native-home .elementor-element-3359bcc div,
+        .usman-native-home .elementor-element-3359bcc a {
           color: #ffffff !important;
           -webkit-text-fill-color: #ffffff !important;
         }
@@ -372,28 +333,17 @@ function Home() {
         .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-widget-heading .elementor-heading-title {
           color: #111 !important;
         }
-        /* Cards inside stay dark — force white text on titles/paragraphs.
-           Exclude anything inside .elementor-button so the gradient pill keeps dark label. */
+        /* Cards inside stay dark — force white text so titles/links are visible */
         .usman-native-home .elementor-element-d15c148 .e-con.e-child .elementor-heading-title,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h1,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h2,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h3,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h4,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child p,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child span,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child li,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child a:not(.elementor-button) {
           color: #ffffff !important;
-        }
-        /* Gradient-border pill buttons in this section: dark text + dark icon on white fill */
-        .usman-native-home .elementor-element-d15c148 .elementor-button,
-        .usman-native-home .elementor-element-d15c148 .elementor-button *,
-        .usman-native-home .elementor-element-d15c148 .elementor-button .elementor-button-text {
-          color: #111 !important;
-          -webkit-text-fill-color: #111 !important;
-        }
-        .usman-native-home .elementor-element-d15c148 .elementor-button .elementor-button-icon svg,
-        .usman-native-home .elementor-element-d15c148 .elementor-button .elementor-button-icon svg * {
-          fill: #111 !important;
         }
 
         /* Marquee roles strip — always white bg with dark text */
@@ -460,110 +410,13 @@ function Home() {
         }
       `}</style>
 
-      <style>{`
-        /* ============ Portfolio Tabs + Grid ============ */
-        .pf-tabs {
-          max-width: 1240px;
-          margin: 0 auto;
-          padding: 40px 20px 80px;
-          color: #0a0a0e;
-          font-family: inherit;
-          contain: layout paint;
-        }
-        .pf-tabs__nav {
-          display: flex; flex-wrap: wrap; justify-content: center;
-          gap: 10px; margin-bottom: 18px;
-        }
-        .pf-tabs__tab {
-          appearance: none; border: 0; cursor: pointer;
-          padding: 11px 20px; border-radius: 999px;
-          background: #fff; color: #0a0a0e;
-          font: 600 14px/1 inherit; letter-spacing: 0.01em;
-          box-shadow: inset 0 0 0 1px rgba(10,10,14,0.10);
-          transition: transform .2s ease, box-shadow .2s ease, background .3s ease, color .3s ease;
-        }
-        .pf-tabs__tab:hover { box-shadow: inset 0 0 0 1px rgba(10,10,14,0.28); }
-        .pf-tabs__tab.is-active {
-          color: #fff;
-          background: linear-gradient(120deg, #ff6a3d, #f74a8b 40%, #7873f5 70%, #22c1c3);
-          background-size: 200% 200%;
-          animation: pfGrad 6s linear infinite;
-          box-shadow: 0 10px 24px -12px rgba(120,115,245,0.55);
-        }
-        @keyframes pfGrad { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        .pf-tabs__blurb {
-          text-align: center; max-width: 640px; margin: 0 auto 32px;
-          color: rgba(10,10,14,0.66); font-size: 15px; line-height: 1.5;
-          animation: pfFadeUp 400ms ease-out both;
-        }
-        @keyframes pfFadeUp { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
-
-        .pf-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: 22px;
-          animation: pfFadeUp 400ms ease-out both;
-        }
-        .pf-card {
-          margin: 0;
-          border-radius: 18px;
-          overflow: hidden;
-          background: #fff;
-          box-shadow: 0 1px 0 rgba(10,10,14,0.05), 0 12px 28px -18px rgba(10,10,14,0.25);
-          transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease;
-          display: flex; flex-direction: column;
-        }
-        .pf-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 1px 0 rgba(10,10,14,0.05), 0 24px 44px -20px rgba(10,10,14,0.35);
-        }
-        .pf-card__media {
-          aspect-ratio: 4 / 3;
-          overflow: hidden;
-          background: #f4f4f7;
-        }
-        .pf-card__media img {
-          width: 100%; height: 100%; object-fit: cover; display: block;
-          transition: transform .6s cubic-bezier(.22,1,.36,1);
-        }
-        .pf-card:hover .pf-card__media img { transform: scale(1.05); }
-        .pf-card__body {
-          padding: 14px 16px 18px;
-        }
-        .pf-card__body strong {
-          display: block; font-size: 15px; font-weight: 700;
-          color: #0a0a0e; margin-bottom: 4px;
-        }
-        .pf-card__body span {
-          display: block; font-size: 13px; line-height: 1.45;
-          color: rgba(10,10,14,0.62);
-        }
-
-        @media (max-width: 640px) {
-          .pf-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
-          .pf-tabs__tab { padding: 9px 14px; font-size: 13px; }
-        }
-      `}</style>
 
 
-
-
-      <div className="usman-native-home">
-        <div
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: homeBodyBefore }}
-        />
-        <SayHello />
-        <div
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: homeBodyBetween }}
-        />
-        <PortfolioTabs />
-        <div
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: homeBodyAfter }}
-        />
-      </div>
+      <div
+        className="usman-native-home"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: homeBody }}
+      />
     </>
   );
 }
