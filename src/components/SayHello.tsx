@@ -26,16 +26,23 @@ export default function SayHello() {
       ref={ref}
       aria-label="Say hello"
       data-visible={visible}
-      className="say-hello"
+      className="sh-section"
     >
-      <div className="say-hello__inner">
-        <div className="say-hello__row">
-          <span className="say-hello__word say-hello__word--say">SAY</span>
-          <div className="say-hello__media">
-            <div className="say-hello__reveal">
+      <div className="sh-inner">
+        <p className="sh-eyebrow">
+          <span className="sh-eyebrow__dot" aria-hidden="true" />
+          Nice to meet you
+        </p>
+
+        <div className="sh-row">
+          <span className="sh-word sh-word--say">Say</span>
+
+          <div className="sh-media" aria-hidden="true">
+            <div className="sh-media__ring" />
+            <div className="sh-media__reveal">
               <img
                 src={meAsset.url}
-                alt="Usman Jatoi waving hello"
+                alt=""
                 width={540}
                 height={540}
                 loading="lazy"
@@ -43,92 +50,119 @@ export default function SayHello() {
               />
             </div>
           </div>
-          <span className="say-hello__word say-hello__word--hello">Hello</span>
+
+          <span className="sh-word sh-word--hello">Hello</span>
         </div>
-        <p className="say-hello__tagline">
+
+        <p className="sh-tagline">
           Let&rsquo;s create something that fits &mdash; and scales.
         </p>
       </div>
 
       <style>{`
-        .say-hello {
+        .sh-section {
           position: relative;
+          isolation: isolate;
+          contain: layout paint;
           width: 100%;
-          padding: clamp(48px, 9vw, 140px) clamp(20px, 5vw, 80px);
-          background: #fff;
+          padding: clamp(64px, 10vw, 140px) clamp(20px, 5vw, 60px);
+          background: #ffffff;
           color: #0a0a0a;
           overflow: hidden;
         }
-        .say-hello__inner {
-          max-width: 1400px;
+        .sh-inner {
+          max-width: 1200px;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: clamp(24px, 4vw, 48px);
+          gap: clamp(28px, 4vw, 48px);
+          text-align: center;
         }
-        .say-hello__row {
+        .sh-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          margin: 0;
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #6b6b6b;
+          opacity: 0;
+          transform: translateY(12px);
+          transition: opacity .7s ease, transform .7s ease;
+        }
+        .sh-eyebrow__dot {
+          width: 8px; height: 8px; border-radius: 999px;
+          background: linear-gradient(135deg, #ff5f6d, #7a5cff);
+        }
+        [data-visible="true"] .sh-eyebrow {
+          opacity: 1; transform: translateY(0);
+        }
+        .sh-row {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: clamp(12px, 3vw, 40px);
-          flex-wrap: wrap;
+          gap: clamp(16px, 3vw, 40px);
+          flex-wrap: nowrap;
           width: 100%;
         }
-        .say-hello__word {
+        .sh-word {
           font-family: inherit;
           font-weight: 800;
-          font-size: clamp(64px, 14vw, 220px);
+          font-size: clamp(56px, 12vw, 180px);
           line-height: 0.9;
           letter-spacing: -0.04em;
-          background: linear-gradient(135deg, #0a0a0a 0%, #444 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          white-space: nowrap;
           opacity: 0;
-          transform: translateX(-40px);
           transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1);
+          will-change: opacity, transform;
         }
-        .say-hello__word--hello {
-          transform: translateX(40px);
-          background: linear-gradient(135deg, #ff5f6d, #ffc371, #47d4ff, #7a5cff);
+        .sh-word--say {
+          color: #0a0a0a;
+          transform: translateX(-32px);
+        }
+        .sh-word--hello {
+          background: linear-gradient(135deg, #ff5f6d 0%, #ffc371 35%, #47d4ff 70%, #7a5cff 100%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          transition-delay: .15s;
+          transform: translateX(32px);
+          transition-delay: .12s;
         }
-        [data-visible="true"] .say-hello__word {
+        [data-visible="true"] .sh-word {
           opacity: 1;
           transform: translateX(0);
         }
-        .say-hello__media {
+        .sh-media {
           position: relative;
-          width: clamp(140px, 22vw, 320px);
+          flex: 0 0 auto;
+          width: clamp(120px, 18vw, 240px);
           aspect-ratio: 1 / 1;
           border-radius: 999px;
           overflow: hidden;
-          box-shadow: 0 30px 80px -30px rgba(0,0,0,.35);
+          box-shadow: 0 24px 60px -28px rgba(10,10,10,.35);
         }
-        .say-hello__media::before {
-          content: "";
-          position: absolute; inset: -3px;
+        .sh-media__ring {
+          position: absolute; inset: -2px;
           border-radius: inherit;
-          padding: 3px;
+          padding: 2px;
           background: conic-gradient(from 0deg, #ff5f6d, #ffc371, #47d4ff, #7a5cff, #ff5f6d);
           -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           -webkit-mask-composite: xor;
                   mask-composite: exclude;
-          animation: sh-spin 8s linear infinite;
-          z-index: 2;
+          animation: sh-spin 10s linear infinite;
           pointer-events: none;
+          z-index: 2;
         }
         @keyframes sh-spin { to { transform: rotate(360deg); } }
-        .say-hello__reveal {
+        .sh-media__reveal {
           position: absolute; inset: 0;
           overflow: hidden;
           border-radius: inherit;
         }
-        .say-hello__reveal::after {
+        .sh-media__reveal::after {
           content: "";
           position: absolute; inset: 0;
           background: #0a0a0a;
@@ -136,41 +170,45 @@ export default function SayHello() {
           transition: transform 1.1s cubic-bezier(.77,0,.18,1) .2s;
           z-index: 1;
         }
-        [data-visible="true"] .say-hello__reveal::after {
+        [data-visible="true"] .sh-media__reveal::after {
           transform: translateY(-101%);
         }
-        .say-hello__reveal img {
+        .sh-media__reveal img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transform: scale(1.15);
-          transition: transform 1.6s cubic-bezier(.2,.7,.2,1) .4s;
+          transform: scale(1.12);
+          transition: transform 1.6s cubic-bezier(.2,.7,.2,1) .35s;
           display: block;
         }
-        [data-visible="true"] .say-hello__reveal img {
+        [data-visible="true"] .sh-media__reveal img {
           transform: scale(1);
         }
-        .say-hello__tagline {
-          font-size: clamp(16px, 1.6vw, 22px);
-          color: #444;
-          text-align: center;
-          max-width: 640px;
+        .sh-tagline {
+          font-size: clamp(15px, 1.4vw, 20px);
+          line-height: 1.5;
+          color: #555;
+          max-width: 560px;
           margin: 0;
           opacity: 0;
-          transform: translateY(20px);
-          transition: opacity .8s ease .5s, transform .8s ease .5s;
+          transform: translateY(16px);
+          transition: opacity .8s ease .4s, transform .8s ease .4s;
         }
-        [data-visible="true"] .say-hello__tagline {
+        [data-visible="true"] .sh-tagline {
           opacity: 1; transform: translateY(0);
         }
         @media (max-width: 640px) {
-          .say-hello__row { gap: 8px; }
-          .say-hello__media { width: 44vw; }
+          .sh-row { gap: 10px; }
+          .sh-media { width: 22vw; min-width: 96px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .say-hello__word, .say-hello__tagline, .say-hello__reveal img { transition: none; }
-          .say-hello__reveal::after { display: none; }
-          .say-hello__media::before { animation: none; }
+          .sh-word, .sh-tagline, .sh-eyebrow, .sh-media__reveal img {
+            transition: none;
+            opacity: 1;
+            transform: none;
+          }
+          .sh-media__reveal::after { display: none; }
+          .sh-media__ring { animation: none; }
         }
       `}</style>
     </section>
