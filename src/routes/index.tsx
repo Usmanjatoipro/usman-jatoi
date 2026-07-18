@@ -9,8 +9,6 @@ const TITLE = "Usman Jatoi — Top 0.1% Full-Stack Digital Expert & Entrepreneur
 const DESC =
   "Official site of Usman Jatoi — Top 0.1% Full-Stack Digital Expert & Entrepreneur. Courses, services, blog, tools and resources.";
 const SITE_URL = "https://usman-connects-us.lovable.app";
-const BODY_CLASS =
-  "home wp-singular page-template page-template-elementor_header_footer page page-id-86 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor theme-hello-elementor hello-elementor-default elementor-default elementor-template-full-width elementor-kit-14 elementor-page elementor-page-86";
 
 function localizeUsmanAssets(value: string) {
   return value
@@ -21,8 +19,6 @@ function localizeUsmanAssets(value: string) {
     .replace(/https:\/\/usmanjatoi\.com\//g, "/");
 }
 
-// Strip all <script> tags — we render as pure static markup.
-// Also strip inline event handlers that might reference removed globals.
 function stripScripts(html: string) {
   return html
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
@@ -30,15 +26,8 @@ function stripScripts(html: string) {
 }
 
 const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
-// Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
-// all styles apply on first paint — no FOUC waiting for a body class from JS.
 const homeStyles = localizeUsmanAssets(homeStylesRaw)
   .replace(/\.elementor-kit-14\b/g, ".usman-native-home")
-  // Neutralize Elementor's lazy-load guard that strips background-image from
-  // 4th+ .e-parent containers until JS marks them .e-lazyloaded. We stripped
-  // all scripts, so this guard would permanently hide gradient borders on our
-  // rainbow-border buttons in later sections. Point the selector at a class
-  // that never exists so the rule never matches.
   .replace(/:not\(\.e-lazyloaded\):not\(\.e-no-lazyload\)/g, ".__lovable-never-match");
 
 export const Route = createFileRoute("/")({
@@ -80,10 +69,49 @@ function Home() {
   useEffect(() => {
     const prevLang = document.documentElement.lang;
     document.documentElement.lang = "en-US";
-
-    // Smooth hero -> white theme transition tied to scroll.
-    // We interpolate a CSS var (--scroll-theme: 0..1) over the first viewport.
     const root = document.documentElement;
+
+    // ==================== SAY / image / Hello scroll animation ====================
+    const sayEl = document.querySelector<HTMLElement>(".elementor-element-7df0725");
+    const imgEl = document.querySelector<HTMLElement>(".elementor-element-6fe2dfe");
+    const helloEl = document.querySelector<HTMLElement>(".elementor-element-fdfdb77");
+    const sayHelloContainer = document.querySelector<HTMLElement>(".elementor-element-968a77b");
+
+    // Reset the inline styles set by Elementor's now-stripped JS
+    if (sayEl) sayEl.style.transform = "translateX(0)";
+    if (helloEl) helloEl.style.transform = "translateX(0)";
+    if (imgEl) {
+      imgEl.style.opacity = "0";
+      imgEl.style.transform = "rotateZ(0deg) scale(0.6)";
+      imgEl.style.transition = "none";
+    }
+
+    const animateSayHello = () => {
+      if (!sayHelloContainer || !sayEl || !helloEl || !imgEl) return;
+      const rect = sayHelloContainer.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // progress: 0 when container's top is at bottom of viewport, 1 when its bottom passes the top
+      const total = rect.height + vh;
+      const traveled = vh - rect.top;
+      const p = Math.min(1, Math.max(0, traveled / total));
+
+      // Phase A (0.30 → 0.50): SAY & Hello split apart, image fades IN & scales up
+      // Phase B (0.50 → 0.70): hold
+      // Phase C (0.70 → 0.90): image fades OUT
+      const splitP = Math.min(1, Math.max(0, (p - 0.3) / 0.2));
+      const fadeInP = splitP;
+      const fadeOutP = Math.min(1, Math.max(0, (p - 0.7) / 0.2));
+      const opacity = Math.max(0, fadeInP - fadeOutP);
+      const scale = 0.6 + splitP * 0.4;
+      const rot = splitP * 10;
+
+      sayEl.style.transform = `translateX(${splitP * 80}px)`;
+      helloEl.style.transform = `translateX(${splitP * -35}px)`;
+      imgEl.style.opacity = String(opacity);
+      imgEl.style.transform = `rotateZ(${rot}deg) scale(${scale})`;
+    };
+
+    // ==================== Global scroll bar + theme progress ====================
     let raf = 0;
     const update = () => {
       raf = 0;
@@ -92,11 +120,11 @@ function Home() {
       const raw = Math.min(1, Math.max(0, y / h));
       const eased = raw * raw * (3 - 2 * raw);
       root.style.setProperty("--scroll-theme", eased.toFixed(4));
-      // Full-page scroll progress for the top gradient bar (0..1)
       const doc = document.documentElement;
       const max = Math.max(1, (doc.scrollHeight || 0) - window.innerHeight);
       const progress = Math.min(1, Math.max(0, y / max));
       root.style.setProperty("--scroll-progress", progress.toFixed(4));
+      animateSayHello();
     };
     const onScroll = () => {
       if (raf) return;
@@ -105,6 +133,94 @@ function Home() {
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+
+    // ==================== Tabs (Creative Work / Website Designs / etc.) ====================
+    const tabWidgets = document.querySelectorAll<HTMLElement>(".elementor-widget-n-tabs");
+    tabWidgets.forEach((widget) => {
+      const buttons = widget.querySelectorAll<HTMLElement>(".e-n-tab-title");
+      const panels = widget.querySelectorAll<HTMLElement>('[role="tabpanel"]');
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const idx = btn.getAttribute("data-tab-index");
+          buttons.forEach((b) => {
+            b.setAttribute("aria-selected", "false");
+            b.setAttribute("tabindex", "-1");
+          });
+          btn.setAttribute("aria-selected", "true");
+          btn.setAttribute("tabindex", "0");
+          panels.forEach((panel) => {
+            if (panel.getAttribute("data-tab-index") === idx) {
+              panel.classList.add("e-active");
+            } else {
+              panel.classList.remove("e-active");
+            }
+          });
+        });
+      });
+    });
+
+    // ==================== Fix carousels: reset transforms, remove duplicates, wire arrows ====================
+    const carousels = document.querySelectorAll<HTMLElement>(".elementor-widget-image-carousel");
+    carousels.forEach((carousel) => {
+      const wrapper = carousel.querySelector<HTMLElement>(".swiper-wrapper");
+      const swiperEl = carousel.querySelector<HTMLElement>(".elementor-image-carousel-wrapper");
+      if (!wrapper || !swiperEl) return;
+
+      // Remove all duplicate slides — they were only there for Swiper's infinite loop
+      wrapper.querySelectorAll(".swiper-slide-duplicate").forEach((d) => d.remove());
+      // Reset inline transforms and per-slide inert/aria-hidden
+      wrapper.style.transform = "none";
+      wrapper.style.transition = "none";
+      wrapper.style.display = "flex";
+      wrapper.style.gap = "28px";
+      wrapper.style.overflow = "visible";
+      wrapper.querySelectorAll<HTMLElement>(".swiper-slide").forEach((slide) => {
+        slide.removeAttribute("aria-hidden");
+        slide.removeAttribute("inert");
+        slide.style.marginRight = "0";
+        slide.style.flex = "0 0 auto";
+      });
+      // Convert the outer swiper wrapper into a horizontal scroll container
+      swiperEl.style.overflowX = "auto";
+      swiperEl.style.overflowY = "hidden";
+      swiperEl.style.scrollSnapType = "x mandatory";
+      swiperEl.style.scrollBehavior = "smooth";
+      wrapper.querySelectorAll<HTMLElement>(".swiper-slide").forEach((slide) => {
+        slide.style.scrollSnapAlign = "start";
+      });
+
+      // Wire prev/next arrows
+      const prev = carousel.querySelector<HTMLElement>(".elementor-swiper-button-prev");
+      const next = carousel.querySelector<HTMLElement>(".elementor-swiper-button-next");
+      const step = () => {
+        const first = wrapper.querySelector<HTMLElement>(".swiper-slide");
+        return (first?.offsetWidth || 320) + 28;
+      };
+      prev?.addEventListener("click", () => swiperEl.scrollBy({ left: -step(), behavior: "smooth" }));
+      next?.addEventListener("click", () => swiperEl.scrollBy({ left: step(), behavior: "smooth" }));
+    });
+
+    // ==================== Promotional Ad YouTube embed ====================
+    const promoHolder = document.querySelector<HTMLElement>(
+      ".elementor-element-407d27a .elementor-video",
+    );
+    if (promoHolder && !promoHolder.querySelector("iframe")) {
+      const iframe = document.createElement("iframe");
+      iframe.src =
+        "https://www.youtube.com/embed/-3JGm2TNPds?autoplay=1&mute=1&loop=1&playlist=-3JGm2TNPds&controls=1&modestbranding=1&rel=0";
+      iframe.title = "Website Designing Services Ad – Usman Jatoi";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.setAttribute("allowfullscreen", "true");
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.aspectRatio = "16 / 9";
+      iframe.style.border = "0";
+      iframe.style.display = "block";
+      promoHolder.style.aspectRatio = "16 / 9";
+      promoHolder.style.width = "100%";
+      promoHolder.appendChild(iframe);
+    }
 
     return () => {
       document.documentElement.lang = prevLang;
@@ -117,14 +233,11 @@ function Home() {
 
   return (
     <>
-      {/* Top gradient scroll progress bar */}
       <div className="usman-scroll-progress" aria-hidden="true">
         <div className="usman-scroll-progress__fill" />
       </div>
 
-      {/* Elementor kit styles first (re-scoped to .usman-native-home) */}
       <style>{homeStyles}</style>
-      {/* Our overrides last so they win the cascade */}
       <style>{`
         html, body, #root { margin: 0; padding: 0; min-height: 100%; }
         :root { --scroll-theme: 0; --scroll-progress: 0; }
@@ -148,7 +261,7 @@ function Home() {
           transition: width 120ms linear;
         }
 
-        /* ============ Header: dark theme first, converts to white on scroll ============ */
+        /* ============ Header ============ */
         .usman-native-home header.elementor-location-header,
         .usman-native-home header.elementor-location-header .elementor-sticky--active,
         .usman-native-home header.elementor-location-header .elementor-sticky--effects {
@@ -163,7 +276,6 @@ function Home() {
           border: 0 !important;
           transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1);
         }
-        /* Kill any bottom gradient/border/divider Elementor might draw under the header */
         .usman-native-home header.elementor-location-header::before,
         .usman-native-home header.elementor-location-header::after,
         .usman-native-home header.elementor-location-header > *::before,
@@ -175,7 +287,6 @@ function Home() {
         .usman-native-home header.elementor-location-header .elementor-shape-bottom,
         .usman-native-home header.elementor-location-header .elementor-shape-top { display: none !important; }
 
-        /* Reserve space so content isn't hidden under the fixed header */
         .usman-native-home { padding-top: 84px; }
         .usman-native-home header.elementor-location-header a,
         .usman-native-home header.elementor-location-header .elementor-nav-menu a,
@@ -193,7 +304,6 @@ function Home() {
           transition: fill 500ms cubic-bezier(0.22, 1, 0.36, 1), stroke 500ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Interpolate hero dark -> soft white based on scroll progress (eased) */
         html, body {
           background:
             radial-gradient(1200px 600px at 50% -10%,
@@ -206,12 +316,20 @@ function Home() {
         }
         body { overflow-x: hidden; }
         .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: transparent; }
-        /* Reveal Elementor sections that were script-gated on the original site */
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
 
+        /* ============ SAY / image / Hello ============ */
+        .usman-native-home .elementor-element-6fe2dfe {
+          transition: opacity 200ms linear, transform 200ms linear !important;
+          will-change: opacity, transform;
+        }
+        .usman-native-home .elementor-element-7df0725,
+        .usman-native-home .elementor-element-fdfdb77 {
+          transition: transform 200ms linear !important;
+        }
 
-        /* Animated gradient-border button — WHITE fill, gradient border only */
+        /* ============ Rainbow-border buttons ============ */
         .usman-native-home .elementor-button,
         .usman-native-home a.elementor-button-link,
         .usman-native-home button.elementor-button,
@@ -243,22 +361,19 @@ function Home() {
         .usman-native-home .elementor-button *,
         .usman-native-home .wp-block-button__link *,
         .usman-native-home .btn * { color: #111 !important; fill: #111 !important; text-shadow: none !important; }
-
         .usman-native-home .elementor-button:hover,
         .usman-native-home .wp-block-button__link:hover,
         .usman-native-home .btn:hover {
           box-shadow: 0 10px 30px -10px rgba(120, 115, 245, 0.55) !important;
           transform: translateY(-1px);
         }
-        .usman-native-home .elementor-button .elementor-button-text { position: relative; z-index: 1; color: #111 !important; }
-
         @keyframes usmanRainbowBorder {
           0%   { background-position: 0% 0%, 0% 50%; }
           50%  { background-position: 0% 0%, 100% 50%; }
           100% { background-position: 0% 0%, 0% 50%; }
         }
 
-        /* Newsletter/form submit — keep as plain text label, no gradient pill */
+        /* Newsletter/form submit */
         .usman-native-home .elementor-widget-form .elementor-button,
         .usman-native-home form button[type="submit"] {
           background: transparent !important;
@@ -277,14 +392,8 @@ function Home() {
           color: #fff !important;
           fill: #fff !important;
         }
-        .usman-native-home .elementor-widget-form .elementor-button:hover,
-        .usman-native-home form button[type="submit"]:hover {
-          box-shadow: none !important;
-          transform: none !important;
-          opacity: 0.85;
-        }
 
-        /* "Your Digital Partner" pill — keep it as a plain label, not a button */
+        /* "Your Digital Partner" pill */
         .usman-native-home .elementor-element-a7b656e .elementor-button {
           background: transparent !important;
           background-image: none !important;
@@ -292,61 +401,131 @@ function Home() {
           animation: none !important;
           color: #fff !important;
           padding: 8px 22px !important;
-          box-shadow: none !important;
         }
         .usman-native-home .elementor-element-a7b656e .elementor-button * {
           color: #fff !important;
           fill: #fff !important;
         }
-        .usman-native-home .elementor-element-a7b656e .elementor-button:hover {
-          box-shadow: none !important;
-          transform: none !important;
+
+        /* ============ Tabs — visible active state ============ */
+        .usman-native-home .e-n-tabs-content > [role="tabpanel"] { display: none; }
+        .usman-native-home .e-n-tabs-content > [role="tabpanel"].e-active { display: block; }
+        .usman-native-home .e-n-tab-title { cursor: pointer; }
+        .usman-native-home .e-n-tab-title[aria-selected="true"] {
+          font-weight: 700;
+          border-bottom: 2px solid currentColor;
         }
 
-
-
-        /* "My Impact in Numbers" section — white background */
-        .usman-native-home .elementor-element-3359bcc,
-        .usman-native-home .elementor-element-3359bcc .impact-section-v3 {
-          background: #ffffff !important;
-          background-image: none !important;
+        /* ============ Carousel arrows visible & clickable ============ */
+        .usman-native-home .elementor-swiper-button {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          width: 44px; height: 44px; border-radius: 999px;
+          background: rgba(0,0,0,0.65); color: #fff;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; z-index: 10;
+          font-size: 20px;
         }
-        .usman-native-home .elementor-element-3359bcc h1,
-        .usman-native-home .elementor-element-3359bcc h2,
-        .usman-native-home .elementor-element-3359bcc h3,
-        .usman-native-home .elementor-element-3359bcc h4,
-        .usman-native-home .elementor-element-3359bcc h5,
-        .usman-native-home .elementor-element-3359bcc h6,
-        .usman-native-home .elementor-element-3359bcc p,
-        .usman-native-home .elementor-element-3359bcc span,
-        .usman-native-home .elementor-element-3359bcc li,
-        .usman-native-home .elementor-element-3359bcc div,
-        .usman-native-home .elementor-element-3359bcc a {
+        .usman-native-home .elementor-swiper-button:hover { background: #000; }
+        .usman-native-home .elementor-swiper-button-prev { left: 10px; }
+        .usman-native-home .elementor-swiper-button-next { right: 10px; }
+        .usman-native-home .elementor-swiper-button i { color: #fff; font-style: normal; }
+        .usman-native-home .elementor-swiper-button i::before {
+          content: "";
+          display: inline-block;
+          width: 12px; height: 12px;
+          border-top: 3px solid #fff;
+          border-right: 3px solid #fff;
+        }
+        .usman-native-home .elementor-swiper-button-prev i::before { transform: rotate(-135deg); margin-left: 4px; }
+        .usman-native-home .elementor-swiper-button-next i::before { transform: rotate(45deg); margin-right: 4px; }
+        .usman-native-home .elementor-image-carousel-wrapper { position: relative; }
+        .usman-native-home .elementor-image-carousel-wrapper::-webkit-scrollbar { display: none; }
+        .usman-native-home .swiper-slide { min-width: 280px; }
+        .usman-native-home .swiper-slide-image { width: 100%; height: auto; display: block; }
+
+        /* ============ Skills & Expertise icon fallbacks (no external font) ============ */
+        .usman-native-home .elementor-widget-icon .elementor-icon {
+          width: 72px; height: 72px;
+          display: inline-flex; align-items: center; justify-content: center;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #ff6ec4, #7873f5, #1fd1f9);
+          color: #fff !important;
+          text-decoration: none !important;
+          box-shadow: 0 8px 22px -10px rgba(120,115,245,0.55);
+        }
+        .usman-native-home .elementor-widget-icon .elementor-icon i {
+          font-style: normal; font-size: 32px; line-height: 1; color: #fff;
+        }
+        /* Replace missing custom-font glyphs with emoji */
+        .usman-native-home i.icon.icon-management::before { content: "👥"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-magic-wand::before { content: "✨"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-design::before { content: "🎨"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-code::before { content: "💻"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-seo::before { content: "📈"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-ai::before { content: "🤖"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-social::before { content: "📱"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-business::before { content: "🏢"; font-family: initial !important; }
+        .usman-native-home i.icon.icon-lead::before { content: "🎯"; font-family: initial !important; }
+        .usman-native-home i.icon[class*="icon-"]::before { font-family: initial !important; }
+        /* Elementor's own eicon fallbacks in case font failed */
+        .usman-native-home i.eicon-user-preferences::before {
+          font-family: eicons, initial;
+          content: "\\e8b8";
+        }
+
+        /* ============ My Impact — restore proper colors (dark on white) ============ */
+        /* Section wrapper background stays with body theme */
+        .usman-native-home .elementor-element-3359bcc {
+          background: transparent !important;
+        }
+        /* Outer heading "My Impact / in Numbers" and intro paragraph — dark on scrolled-white bg */
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-element-92ce4e6 h1,
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-element-92ce4e6 h2,
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-element-92ce4e6 h3,
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-element-92ce4e6 p,
+        .usman-native-home .elementor-element-3359bcc > .e-con-inner > .elementor-element-92ce4e6 span {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        /* Small cards inside impact grid — dark text */
+        .usman-native-home .impact-section-v3 .impact-small-card-grid-v3 .metric-value,
+        .usman-native-home .impact-section-v3 .impact-small-card-grid-v3 .metric-title,
+        .usman-native-home .impact-section-v3 .impact-small-card-grid-v3 .metric-description,
+        .usman-native-home .impact-section-v3 .impact-small-card-grid-v3 .card-icon-wrapper i {
+          color: #1D1D1F !important;
+          -webkit-text-fill-color: #1D1D1F !important;
+        }
+        /* Large card (with image bg) — keep white */
+        .usman-native-home .impact-section-v3 .large-card .metric-value,
+        .usman-native-home .impact-section-v3 .large-card .metric-title,
+        .usman-native-home .impact-section-v3 .large-card .metric-description {
           color: #ffffff !important;
           -webkit-text-fill-color: #ffffff !important;
         }
 
-        /* "The Good Stuff" section — white outer bg, section title dark */
+        /* ============ The Good Stuff — dark text on white ============ */
         .usman-native-home .elementor-element-d15c148 {
           background: #ffffff !important;
         }
-        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-widget-heading .elementor-heading-title {
+        .usman-native-home .elementor-element-d15c148 h1,
+        .usman-native-home .elementor-element-d15c148 h2,
+        .usman-native-home .elementor-element-d15c148 h3,
+        .usman-native-home .elementor-element-d15c148 h4,
+        .usman-native-home .elementor-element-d15c148 p,
+        .usman-native-home .elementor-element-d15c148 span,
+        .usman-native-home .elementor-element-d15c148 a:not(.elementor-button) {
           color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
         }
-        /* Cards inside stay dark — force white text so titles/links are visible */
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child .elementor-heading-title,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child h1,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child h2,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child h3,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child h4,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child p,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child span,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child li,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child a:not(.elementor-button) {
-          color: #ffffff !important;
+        /* Buttons inside good-stuff cards — button text black (already black via .elementor-button rule) */
+        .usman-native-home .elementor-element-d15c148 .elementor-button,
+        .usman-native-home .elementor-element-d15c148 .elementor-button * {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+          fill: #111 !important;
         }
 
-        /* Marquee roles strip — always white bg with dark text */
+        /* Marquee roles strip */
         .usman-native-home .elementor-element-2b94d37,
         .usman-native-home .elementor-element-2b94d37 > .e-con-inner,
         .usman-native-home .elementor-element-c1e9d04,
@@ -362,8 +541,7 @@ function Home() {
           -webkit-text-fill-color: #111 !important;
         }
 
-        /* ============ Recreated "Let's Talk" pill (theme-aware) ============ */
-        /* Hide the raster LetTalk images (both white and dark variants) */
+        /* ============ Header "Let's Talk" pill ============ */
         .usman-native-home header.elementor-location-header a[href*="/contact-me/"] img {
           display: none !important;
         }
@@ -389,28 +567,18 @@ function Home() {
           font-weight: 700;
           letter-spacing: 0.02em;
           text-decoration: none !important;
-          transition: background-image 500ms cubic-bezier(0.22, 1, 0.36, 1),
-                      transform 0.25s ease, box-shadow 0.25s ease;
         }
         .usman-native-home header.elementor-location-header a[href*="/contact-me/"]::before {
           content: "Let's Talk";
           color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
           font-size: 15px;
-          transition: color 500ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .usman-native-home header.elementor-location-header a[href*="/contact-me/"]::after {
           content: "✦";
           margin-left: 10px;
           color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
-          transition: color 500ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .usman-native-home header.elementor-location-header a[href*="/contact-me/"]:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 10px 24px -12px rgba(120, 115, 245, 0.6);
         }
       `}</style>
-
-
 
       <div
         className="usman-native-home"
