@@ -443,35 +443,10 @@ function Home() {
         .usman-native-home .swiper-slide { min-width: 280px; }
         .usman-native-home .swiper-slide-image { width: 100%; height: auto; display: block; }
 
-        /* ============ Skills & Expertise icon fallbacks (no external font) ============ */
-        .usman-native-home .elementor-widget-icon .elementor-icon {
-          width: 72px; height: 72px;
-          display: inline-flex; align-items: center; justify-content: center;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #ff6ec4, #7873f5, #1fd1f9);
-          color: #fff !important;
-          text-decoration: none !important;
-          box-shadow: 0 8px 22px -10px rgba(120,115,245,0.55);
-        }
-        .usman-native-home .elementor-widget-icon .elementor-icon i {
-          font-style: normal; font-size: 32px; line-height: 1; color: #fff;
-        }
-        /* Replace missing custom-font glyphs with emoji */
-        .usman-native-home i.icon.icon-management::before { content: "👥"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-magic-wand::before { content: "✨"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-design::before { content: "🎨"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-code::before { content: "💻"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-seo::before { content: "📈"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-ai::before { content: "🤖"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-social::before { content: "📱"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-business::before { content: "🏢"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-lead::before { content: "🎯"; font-family: initial !important; }
-        .usman-native-home i.icon[class*="icon-"]::before { font-family: initial !important; }
-        /* Elementor's own eicon fallbacks in case font failed */
-        .usman-native-home i.eicon-user-preferences::before {
-          font-family: eicons, initial;
-          content: "\\e8b8";
-        }
+        /* ============ Skills & Expertise — use native icon rendering ============ */
+        /* (Icon fonts eicons + elementskit are hosted locally in /public/fonts,
+           so icons render natively without gradient-circle fallbacks.) */
+
 
         /* ============ My Impact — restore proper colors (dark on white) ============ */
         /* Section wrapper background stays with body theme */
