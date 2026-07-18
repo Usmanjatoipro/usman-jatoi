@@ -264,10 +264,14 @@ function Home() {
         }
 
         /* Marquee roles strip — always white bg with dark text */
+        .usman-native-home .elementor-element-2b94d37,
+        .usman-native-home .elementor-element-2b94d37 > .e-con-inner,
+        .usman-native-home .elementor-element-c1e9d04,
         .usman-native-home .marquee-container {
           background: #ffffff !important;
-          padding: 2rem 0 !important;
+          background-image: none !important;
         }
+        .usman-native-home .elementor-element-2b94d37 { padding: 2rem 0 !important; }
         .usman-native-home .marquee-container,
         .usman-native-home .marquee,
         .usman-native-home .marquee span {
