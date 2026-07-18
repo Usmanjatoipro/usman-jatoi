@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-partnership'
+import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as PressReleaseRouteImport } from './routes/press-release'
+import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
@@ -32,9 +34,19 @@ const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
   path: '/white-label-partnership',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestimonialsRoute = TestimonialsRouteImport.update({
+  id: '/testimonials',
+  path: '/testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PressReleaseRoute = PressReleaseRouteImport.update({
   id: '/press-release',
   path: '/press-release',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyTestimonialsRoute = MyTestimonialsRouteImport.update({
+  id: '/my-testimonials',
+  path: '/my-testimonials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaKitRoute = MediaKitRouteImport.update({
@@ -123,7 +135,9 @@ export interface FileRoutesByFullPath {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
+  '/testimonials': typeof TestimonialsRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
@@ -141,7 +155,9 @@ export interface FileRoutesByTo {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
+  '/testimonials': typeof TestimonialsRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
@@ -161,7 +177,9 @@ export interface FileRoutesById {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
+  '/testimonials': typeof TestimonialsRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
@@ -181,7 +199,9 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/my-testimonials'
     | '/press-release'
+    | '/testimonials'
     | '/white-label-partnership'
     | '/admin'
     | '/import'
@@ -199,7 +219,9 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/my-testimonials'
     | '/press-release'
+    | '/testimonials'
     | '/white-label-partnership'
     | '/admin'
     | '/import'
@@ -218,7 +240,9 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/my-testimonials'
     | '/press-release'
+    | '/testimonials'
     | '/white-label-partnership'
     | '/_authenticated/admin'
     | '/_authenticated/import'
@@ -238,7 +262,9 @@ export interface RootRouteChildren {
   ContactUsRoute: typeof ContactUsRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
+  MyTestimonialsRoute: typeof MyTestimonialsRoute
   PressReleaseRoute: typeof PressReleaseRoute
+  TestimonialsRoute: typeof TestimonialsRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
   CategorySlugRoute: typeof CategorySlugRoute
 }
@@ -252,11 +278,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhiteLabelPartnershipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/testimonials': {
+      id: '/testimonials'
+      path: '/testimonials'
+      fullPath: '/testimonials'
+      preLoaderRoute: typeof TestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/press-release': {
       id: '/press-release'
       path: '/press-release'
       fullPath: '/press-release'
       preLoaderRoute: typeof PressReleaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-testimonials': {
+      id: '/my-testimonials'
+      path: '/my-testimonials'
+      fullPath: '/my-testimonials'
+      preLoaderRoute: typeof MyTestimonialsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media-kit': {
@@ -402,7 +442,9 @@ const rootRouteChildren: RootRouteChildren = {
   ContactUsRoute: ContactUsRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
+  MyTestimonialsRoute: MyTestimonialsRoute,
   PressReleaseRoute: PressReleaseRoute,
+  TestimonialsRoute: TestimonialsRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
   CategorySlugRoute: CategorySlugRoute,
 }
