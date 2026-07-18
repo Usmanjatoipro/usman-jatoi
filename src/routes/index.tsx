@@ -133,9 +133,10 @@ function Home() {
         .usman-scroll-progress {
           position: fixed; top: 0; left: 0; right: 0;
           height: 4px;
-          background: #000;
+          background: color-mix(in oklab, #ffffff calc(var(--scroll-theme) * 100%), #000000);
           z-index: 100000;
           pointer-events: none;
+          transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .usman-scroll-progress__fill {
           height: 100%;
@@ -158,11 +159,21 @@ function Home() {
           background-color: color-mix(in oklab, rgba(255,255,255,0.92) calc(var(--scroll-theme) * 100%), rgba(10,10,14,0.85)) !important;
           backdrop-filter: saturate(140%) blur(14px);
           -webkit-backdrop-filter: saturate(140%) blur(14px);
-          box-shadow: 0 1px 0 color-mix(in oklab, rgba(0,0,0,0.08) calc(var(--scroll-theme) * 100%), transparent),
-                      0 12px 30px -18px color-mix(in oklab, rgba(0,0,0,0.35) calc(var(--scroll-theme) * 100%), transparent);
-          transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
-                      box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+          box-shadow: none !important;
+          border: 0 !important;
+          transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1);
         }
+        /* Kill any bottom gradient/border/divider Elementor might draw under the header */
+        .usman-native-home header.elementor-location-header::before,
+        .usman-native-home header.elementor-location-header::after,
+        .usman-native-home header.elementor-location-header > *::before,
+        .usman-native-home header.elementor-location-header > *::after {
+          background-image: none !important;
+          border: 0 !important;
+        }
+        .usman-native-home header.elementor-location-header .elementor-shape,
+        .usman-native-home header.elementor-location-header .elementor-shape-bottom,
+        .usman-native-home header.elementor-location-header .elementor-shape-top { display: none !important; }
         /* Reserve space so content isn't hidden under the fixed header */
         .usman-native-home { padding-top: 84px; }
         .usman-native-home header.elementor-location-header a,
