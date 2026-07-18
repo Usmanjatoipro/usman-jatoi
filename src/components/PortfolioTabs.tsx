@@ -158,14 +158,13 @@ export default function PortfolioTabs() {
         </button>
 
         <div className="pf-carousel__viewport" ref={trackRef}>
-          <div
-            className="pf-carousel__track"
-            style={{ transform: `translate3d(calc(50% - ${slideIdx * 320 + 160}px), 0, 0)` }}
-          >
+          <div className="pf-carousel__track">
             {active.slides.map((s, i) => {
               const offset = i - slideIdx;
               const abs = Math.abs(offset);
               const isActive = offset === 0;
+              const translateX = offset * 220; // px between cards
+              const scale = isActive ? 1 : Math.max(0.72, 1 - abs * 0.12);
               return (
                 <figure
                   key={s.src}
@@ -173,9 +172,10 @@ export default function PortfolioTabs() {
                   aria-hidden={!isActive}
                   onClick={() => setSlideIdx(i)}
                   style={{
-                    opacity: abs > 3 ? 0 : 1 - abs * 0.18,
-                    transform: `scale(${isActive ? 1 : 0.82}) rotateY(${offset * -6}deg)`,
+                    opacity: abs > 3 ? 0 : 1 - abs * 0.22,
+                    transform: `translate(-50%, 0) translateX(${translateX}px) scale(${scale}) rotateY(${offset * -8}deg)`,
                     zIndex: 100 - abs,
+                    pointerEvents: abs > 3 ? "none" : "auto",
                   }}
                 >
                   <img
