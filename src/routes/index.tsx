@@ -90,9 +90,13 @@ function Home() {
       const y = window.scrollY || window.pageYOffset || 0;
       const h = Math.max(window.innerHeight * 1.1, 1);
       const raw = Math.min(1, Math.max(0, y / h));
-      // Smoothstep easing for a premium, non-linear feel
       const eased = raw * raw * (3 - 2 * raw);
       root.style.setProperty("--scroll-theme", eased.toFixed(4));
+      // Full-page scroll progress for the top gradient bar (0..1)
+      const doc = document.documentElement;
+      const max = Math.max(1, (doc.scrollHeight || 0) - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, y / max));
+      root.style.setProperty("--scroll-progress", progress.toFixed(4));
     };
     const onScroll = () => {
       if (raf) return;
