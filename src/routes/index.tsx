@@ -117,12 +117,64 @@ function Home() {
 
   return (
     <>
+      {/* Top gradient scroll progress bar */}
+      <div className="usman-scroll-progress" aria-hidden="true">
+        <div className="usman-scroll-progress__fill" />
+      </div>
+
       {/* Elementor kit styles first (re-scoped to .usman-native-home) */}
       <style>{homeStyles}</style>
       {/* Our overrides last so they win the cascade */}
       <style>{`
         html, body, #root { margin: 0; padding: 0; min-height: 100%; }
-        :root { --scroll-theme: 0; }
+        :root { --scroll-theme: 0; --scroll-progress: 0; }
+
+        /* ============ Top gradient scroll progress bar ============ */
+        .usman-scroll-progress {
+          position: fixed; top: 0; left: 0; right: 0;
+          height: 4px;
+          background: #000;
+          z-index: 100000;
+          pointer-events: none;
+        }
+        .usman-scroll-progress__fill {
+          height: 100%;
+          width: calc(var(--scroll-progress) * 100%);
+          background: linear-gradient(90deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4);
+          background-size: 300% 100%;
+          animation: usmanRainbowBorder 6s linear infinite;
+          box-shadow: 0 0 12px rgba(120, 115, 245, 0.55);
+          transition: width 120ms linear;
+        }
+
+        /* ============ Header: dark theme first, converts to white on scroll ============ */
+        .usman-native-home header.elementor-location-header,
+        .usman-native-home header.elementor-location-header .elementor-sticky--active,
+        .usman-native-home header.elementor-location-header .elementor-sticky--effects {
+          background-color: color-mix(in oklab, rgba(255,255,255,0.92) calc(var(--scroll-theme) * 100%), rgba(10,10,14,0.85)) !important;
+          backdrop-filter: saturate(140%) blur(14px);
+          -webkit-backdrop-filter: saturate(140%) blur(14px);
+          box-shadow: 0 1px 0 color-mix(in oklab, rgba(0,0,0,0.08) calc(var(--scroll-theme) * 100%), transparent),
+                      0 12px 30px -18px color-mix(in oklab, rgba(0,0,0,0.35) calc(var(--scroll-theme) * 100%), transparent);
+          transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
+                      box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .usman-native-home header.elementor-location-header a,
+        .usman-native-home header.elementor-location-header .elementor-nav-menu a,
+        .usman-native-home header.elementor-location-header .elementor-item,
+        .usman-native-home header.elementor-location-header .elementor-heading-title,
+        .usman-native-home header.elementor-location-header p,
+        .usman-native-home header.elementor-location-header span {
+          color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
+          transition: color 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .usman-native-home header.elementor-location-header svg,
+        .usman-native-home header.elementor-location-header svg * {
+          fill: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff);
+          stroke: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff);
+          transition: fill 500ms cubic-bezier(0.22, 1, 0.36, 1), stroke 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
         /* Interpolate hero dark -> soft white based on scroll progress (eased) */
         html, body {
           background:
