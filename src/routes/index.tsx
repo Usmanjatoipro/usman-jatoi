@@ -219,27 +219,22 @@ function Home() {
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
 
         /* ============ Elementor container gutters (missing from extracted CSS) ============ */
-        /* Parent (section) boxed containers: full-bleed background, centered inner content */
-        .usman-native-home .e-con.e-parent {
-          width: 100% !important;
-          box-sizing: border-box;
-        }
-        /* The inner wrapper that actually holds section content */
-        .usman-native-home .e-con.e-parent > .e-con-inner {
-          max-width: var(--container-max-width, 1280px);
+        .usman-native-home .e-con { box-sizing: border-box; }
+        .usman-native-home .e-con.e-parent { width: 100% !important; }
+        /* Every .e-con-inner: centered, capped, padded */
+        .usman-native-home .e-con-inner,
+        .usman-native-home .e-con .e-con-inner {
+          max-width: var(--container-max-width, 1280px) !important;
           margin-inline: auto !important;
-          width: 100%;
-          padding-inline: clamp(20px, 5vw, 60px);
-          box-sizing: border-box;
+          width: 100% !important;
+          padding-inline: clamp(20px, 5vw, 60px) !important;
+          box-sizing: border-box !important;
         }
-        /* Boxed parents without an .e-con-inner: pad the container itself */
-        .usman-native-home .e-con.e-parent.e-con-boxed:not(:has(> .e-con-inner)) {
-          padding-inline: clamp(20px, 5vw, 60px);
+        /* Parents without an inner wrapper still need a gutter */
+        .usman-native-home .e-con.e-parent:not(:has(> .e-con-inner)) {
+          padding-inline: clamp(20px, 5vw, 60px) !important;
         }
-        /* Child containers still get a small gutter so they don't kiss the edge */
-        .usman-native-home .e-con.e-child {
-          box-sizing: border-box;
-        }
+
 
 
 
