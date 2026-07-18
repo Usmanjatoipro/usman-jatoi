@@ -151,6 +151,10 @@ function Home() {
         .usman-native-home header.elementor-location-header,
         .usman-native-home header.elementor-location-header .elementor-sticky--active,
         .usman-native-home header.elementor-location-header .elementor-sticky--effects {
+          position: fixed !important;
+          top: 4px; left: 0; right: 0;
+          width: 100% !important;
+          z-index: 99999 !important;
           background-color: color-mix(in oklab, rgba(255,255,255,0.92) calc(var(--scroll-theme) * 100%), rgba(10,10,14,0.85)) !important;
           backdrop-filter: saturate(140%) blur(14px);
           -webkit-backdrop-filter: saturate(140%) blur(14px);
@@ -159,6 +163,8 @@ function Home() {
           transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
                       box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
         }
+        /* Reserve space so content isn't hidden under the fixed header */
+        .usman-native-home { padding-top: 84px; }
         .usman-native-home header.elementor-location-header a,
         .usman-native-home header.elementor-location-header .elementor-nav-menu a,
         .usman-native-home header.elementor-location-header .elementor-item,
