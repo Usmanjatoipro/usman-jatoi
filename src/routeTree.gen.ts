@@ -29,6 +29,7 @@ import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
 import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
@@ -136,6 +137,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
+  id: '/my-lifestyle/',
+  path: '/my-lifestyle/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
   id: '/my-lifestyle/hobbies',
   path: '/my-lifestyle/hobbies',
@@ -200,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/my-lifestyle/': typeof MyLifestyleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/my-lifestyle': typeof MyLifestyleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/my-lifestyle/': typeof MyLifestyleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/my-lifestyle/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -316,6 +326,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/my-lifestyle'
   id:
     | '__root__'
     | '/'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/my-lifestyle/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -372,6 +384,7 @@ export interface RootRouteChildren {
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
+  MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-lifestyle/': {
+      id: '/my-lifestyle/'
+      path: '/my-lifestyle'
+      fullPath: '/my-lifestyle/'
+      preLoaderRoute: typeof MyLifestyleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my-lifestyle/hobbies': {
       id: '/my-lifestyle/hobbies'
       path: '/my-lifestyle/hobbies'
@@ -616,6 +636,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
+  MyLifestyleIndexRoute: MyLifestyleIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
