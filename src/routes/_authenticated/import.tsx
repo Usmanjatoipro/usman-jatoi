@@ -217,6 +217,92 @@ function ImportPage() {
           </Card>
         )}
 
+        {mediaStatus && (
+          <Card className="border-primary/40">
+            <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+              <div>
+                <CardTitle className="text-base">Media sync (from XML export)</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Downloads all 609 attachments from usmanjatoi.com and stores them in Lovable Cloud Storage.
+                </p>
+              </div>
+              <Badge
+                variant={
+                  mediaStatus.status === "done"
+                    ? "default"
+                    : mediaStatus.status === "error"
+                      ? "destructive"
+                      : mediaStatus.status === "running"
+                        ? "secondary"
+                        : "outline"
+                }
+              >
+                {mediaStatus.status}
+              </Badge>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>
+                  {mediaStatus.imported.toLocaleString()} /{" "}
+                  {mediaStatus.total.toLocaleString()} files uploaded
+                </span>
+                <span className="text-muted-foreground">
+                  cursor {mediaStatus.cursor} / {mediaStatus.total}
+                </span>
+              </div>
+              <Progress
+                value={
+                  mediaStatus.total
+                    ? Math.round((mediaStatus.imported / mediaStatus.total) * 100)
+                    : 0
+                }
+              />
+              {mediaStatus.last_error && (
+                <p className="text-xs text-destructive break-words">
+                  {mediaStatus.last_error}
+                </p>
+              )}
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  size="sm"
+                  onClick={() => runMediaOne()}
+                  disabled={mediaAuto}
+                >
+                  Sync next batch
+                </Button>
+                {mediaAuto ? (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => (mediaStopRef.current = true)}
+                  >
+                    Stop
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={runMediaAll}
+                    disabled={mediaStatus.status === "done"}
+                  >
+                    Auto-sync until done
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onResetMedia}
+                  disabled={mediaAuto}
+                >
+                  Reset cursor
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+
+
         {state.map((s) => {
           const pct = s.total_items
             ? Math.min(100, Math.round((s.imported_items / s.total_items) * 100))
