@@ -13,6 +13,7 @@ import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as PressReleaseRouteImport } from './routes/press-release'
 import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
+import { Route as MyAwardsRouteImport } from './routes/my-awards'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
@@ -21,6 +22,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessesRouteImport } from './routes/businesses'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -47,6 +49,11 @@ const PressReleaseRoute = PressReleaseRouteImport.update({
 const MyTestimonialsRoute = MyTestimonialsRouteImport.update({
   id: '/my-testimonials',
   path: '/my-testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyAwardsRoute = MyAwardsRouteImport.update({
+  id: '/my-awards',
+  path: '/my-awards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaKitRoute = MediaKitRouteImport.update({
@@ -89,6 +96,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AwardsRoute = AwardsRouteImport.update({
+  id: '/awards',
+  path: '/awards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -127,6 +139,7 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/awards': typeof AwardsRoute
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
@@ -135,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/my-awards': typeof MyAwardsRoute
   '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
   '/testimonials': typeof TestimonialsRoute
@@ -147,6 +161,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/awards': typeof AwardsRoute
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
@@ -155,6 +170,7 @@ export interface FileRoutesByTo {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/my-awards': typeof MyAwardsRoute
   '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
   '/testimonials': typeof TestimonialsRoute
@@ -169,6 +185,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/awards': typeof AwardsRoute
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
@@ -177,6 +194,7 @@ export interface FileRoutesById {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/my-awards': typeof MyAwardsRoute
   '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
   '/testimonials': typeof TestimonialsRoute
@@ -191,6 +209,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/awards'
     | '/blog'
     | '/businesses'
     | '/careers'
@@ -199,6 +218,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/my-awards'
     | '/my-testimonials'
     | '/press-release'
     | '/testimonials'
@@ -211,6 +231,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/awards'
     | '/blog'
     | '/businesses'
     | '/careers'
@@ -219,6 +240,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/my-awards'
     | '/my-testimonials'
     | '/press-release'
     | '/testimonials'
@@ -232,6 +254,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/awards'
     | '/blog'
     | '/businesses'
     | '/careers'
@@ -240,6 +263,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/my-awards'
     | '/my-testimonials'
     | '/press-release'
     | '/testimonials'
@@ -254,6 +278,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  AwardsRoute: typeof AwardsRoute
   BlogRoute: typeof BlogRouteWithChildren
   BusinessesRoute: typeof BusinessesRoute
   CareersRoute: typeof CareersRoute
@@ -262,6 +287,7 @@ export interface RootRouteChildren {
   ContactUsRoute: typeof ContactUsRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
+  MyAwardsRoute: typeof MyAwardsRoute
   MyTestimonialsRoute: typeof MyTestimonialsRoute
   PressReleaseRoute: typeof PressReleaseRoute
   TestimonialsRoute: typeof TestimonialsRoute
@@ -297,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/my-testimonials'
       fullPath: '/my-testimonials'
       preLoaderRoute: typeof MyTestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-awards': {
+      id: '/my-awards'
+      path: '/my-awards'
+      fullPath: '/my-awards'
+      preLoaderRoute: typeof MyAwardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media-kit': {
@@ -353,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/awards': {
+      id: '/awards'
+      path: '/awards'
+      fullPath: '/awards'
+      preLoaderRoute: typeof AwardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -434,6 +474,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  AwardsRoute: AwardsRoute,
   BlogRoute: BlogRouteWithChildren,
   BusinessesRoute: BusinessesRoute,
   CareersRoute: CareersRoute,
@@ -442,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactUsRoute: ContactUsRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
+  MyAwardsRoute: MyAwardsRoute,
   MyTestimonialsRoute: MyTestimonialsRoute,
   PressReleaseRoute: PressReleaseRoute,
   TestimonialsRoute: TestimonialsRoute,
