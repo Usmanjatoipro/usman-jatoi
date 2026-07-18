@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 type Slide = { src: string; alt: string; title: string; description: string };
 type Tab = { key: string; label: string; blurb: string; slides: Slide[] };
@@ -93,36 +93,12 @@ const TABS: Tab[] = [
   },
 ];
 
-const AUTOPLAY_MS = 4200;
-
 export default function PortfolioTabs() {
   const [activeIdx, setActiveIdx] = useState(0);
-  const [slideIdx, setSlideIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-
   const active = TABS[activeIdx];
-  const total = active.slides.length;
-
-  // Reset slide index on tab change
-  useEffect(() => setSlideIdx(0), [activeIdx]);
-
-  // Autoplay
-  useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => setSlideIdx((i) => (i + 1) % total), AUTOPLAY_MS);
-    return () => clearInterval(t);
-  }, [paused, total, activeIdx]);
-
-  const go = (dir: 1 | -1) => setSlideIdx((i) => (i + dir + total) % total);
 
   return (
-    <section
-      className="pf-tabs"
-      aria-label="Portfolio tabs"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
+    <section className="pf-tabs" aria-label="Portfolio tabs">
       <div className="pf-tabs__nav" role="tablist" aria-label="Portfolio categories">
         {TABS.map((t, i) => (
           <button
@@ -133,87 +109,24 @@ export default function PortfolioTabs() {
             className={`pf-tabs__tab${i === activeIdx ? " is-active" : ""}`}
             onClick={() => setActiveIdx(i)}
           >
-            <span>{t.label}</span>
+            {t.label}
           </button>
         ))}
       </div>
 
-      <p className="pf-tabs__blurb" key={active.key}>
-        {active.blurb}
-      </p>
+      <p className="pf-tabs__blurb" key={active.key}>{active.blurb}</p>
 
-      <div
-        className="pf-carousel"
-        role="region"
-        aria-roledescription="carousel"
-        aria-label={`${active.label} carousel`}
-      >
-        <button
-          type="button"
-          className="pf-carousel__btn pf-carousel__btn--prev"
-          onClick={() => go(-1)}
-          aria-label="Previous slide"
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        </button>
-
-        <div className="pf-carousel__viewport" ref={trackRef}>
-          <div className="pf-carousel__track">
-            {active.slides.map((s, i) => {
-              const offset = i - slideIdx;
-              const abs = Math.abs(offset);
-              const isActive = offset === 0;
-              const translateX = offset * 220; // px between cards
-              const scale = isActive ? 1 : Math.max(0.72, 1 - abs * 0.12);
-              return (
-                <figure
-                  key={s.src}
-                  className={`pf-slide${isActive ? " is-active" : ""}`}
-                  aria-hidden={!isActive}
-                  onClick={() => setSlideIdx(i)}
-                  style={{
-                    opacity: abs > 3 ? 0 : 1 - abs * 0.22,
-                    transform: `translate(-50%, 0) translateX(${translateX}px) scale(${scale}) rotateY(${offset * -8}deg)`,
-                    zIndex: 100 - abs,
-                    pointerEvents: abs > 3 ? "none" : "auto",
-                  }}
-                >
-                  <img
-                    src={s.src}
-                    alt={s.alt}
-                    loading={abs > 2 ? "lazy" : "eager"}
-                    decoding="async"
-                  />
-                  <figcaption className="pf-slide__caption">
-                    <strong>{s.title}</strong>
-                    <span>{s.description}</span>
-                  </figcaption>
-                </figure>
-              );
-            })}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="pf-carousel__btn pf-carousel__btn--next"
-          onClick={() => go(1)}
-          aria-label="Next slide"
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        </button>
-      </div>
-
-      <div className="pf-carousel__dots" role="tablist" aria-label="Slides">
-        {active.slides.map((_, i) => (
-          <button
-            key={i}
-            role="tab"
-            aria-selected={i === slideIdx}
-            aria-label={`Go to slide ${i + 1}`}
-            className={`pf-dot${i === slideIdx ? " is-active" : ""}`}
-            onClick={() => setSlideIdx(i)}
-          />
+      <div className="pf-grid" key={active.key + "-grid"}>
+        {active.slides.map((s) => (
+          <figure key={s.src} className="pf-card">
+            <div className="pf-card__media">
+              <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />
+            </div>
+            <figcaption className="pf-card__body">
+              <strong>{s.title}</strong>
+              <span>{s.description}</span>
+            </figcaption>
+          </figure>
         ))}
       </div>
     </section>
