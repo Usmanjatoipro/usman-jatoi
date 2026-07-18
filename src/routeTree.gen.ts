@@ -30,6 +30,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
+import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -140,6 +141,11 @@ const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
   path: '/my-lifestyle/hobbies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyLifestyleGamingLifeRoute = MyLifestyleGamingLifeRouteImport.update({
+  id: '/my-lifestyle/gaming-life',
+  path: '/my-lifestyle/gaming-life',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MyLifestyleFitnessHealthRoute =
   MyLifestyleFitnessHealthRouteImport.update({
     id: '/my-lifestyle/fitness-health',
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
+  '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRoutesByTo {
@@ -219,6 +226,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
+  '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRoutesById {
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
+  '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRouteTypes {
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/$slug'
     | '/my-lifestyle/fitness-health'
+    | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -304,6 +314,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/$slug'
     | '/my-lifestyle/fitness-health'
+    | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
   id:
     | '__root__'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/$slug'
     | '/my-lifestyle/fitness-health'
+    | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
   fileRoutesById: FileRoutesById
 }
@@ -358,6 +370,7 @@ export interface RootRouteChildren {
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
+  MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
 }
 
@@ -510,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyLifestyleHobbiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-lifestyle/gaming-life': {
+      id: '/my-lifestyle/gaming-life'
+      path: '/my-lifestyle/gaming-life'
+      fullPath: '/my-lifestyle/gaming-life'
+      preLoaderRoute: typeof MyLifestyleGamingLifeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my-lifestyle/fitness-health': {
       id: '/my-lifestyle/fitness-health'
       path: '/my-lifestyle/fitness-health'
@@ -594,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
+  MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
 }
 export const routeTree = rootRouteImport
