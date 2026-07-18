@@ -262,7 +262,20 @@ function Home() {
         .usman-native-home .elementor-element-d15c148 li {
           color: #111 !important;
         }
+
+        /* Marquee roles strip — always white bg with dark text */
+        .usman-native-home .marquee-container {
+          background: #ffffff !important;
+          padding: 2rem 0 !important;
+        }
+        .usman-native-home .marquee-container,
+        .usman-native-home .marquee,
+        .usman-native-home .marquee span {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
       `}</style>
+
 
 
       <div
