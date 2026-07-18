@@ -32,6 +32,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
 import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/skills-expertise.technical-skills'
 import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
+import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
 import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
@@ -156,6 +157,12 @@ const SkillsExpertiseSeoMarketingRoute =
     path: '/skills-expertise/seo-marketing',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SkillsExpertiseCreativeSkillsRoute =
+  SkillsExpertiseCreativeSkillsRouteImport.update({
+    id: '/skills-expertise/creative-skills',
+    path: '/skills-expertise/creative-skills',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
   id: '/my-lifestyle/hobbies',
   path: '/my-lifestyle/hobbies',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/my-lifestyle': typeof MyLifestyleIndexRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
     | '/my-lifestyle/'
@@ -348,6 +359,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
     | '/my-lifestyle'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
     | '/my-lifestyle/'
@@ -410,6 +423,7 @@ export interface RootRouteChildren {
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
+  SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
   SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
@@ -578,6 +592,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkillsExpertiseSeoMarketingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skills-expertise/creative-skills': {
+      id: '/skills-expertise/creative-skills'
+      path: '/skills-expertise/creative-skills'
+      fullPath: '/skills-expertise/creative-skills'
+      preLoaderRoute: typeof SkillsExpertiseCreativeSkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my-lifestyle/hobbies': {
       id: '/my-lifestyle/hobbies'
       path: '/my-lifestyle/hobbies'
@@ -678,6 +699,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
+  SkillsExpertiseCreativeSkillsRoute: SkillsExpertiseCreativeSkillsRoute,
   SkillsExpertiseSeoMarketingRoute: SkillsExpertiseSeoMarketingRoute,
   SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
