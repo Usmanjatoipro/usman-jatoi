@@ -188,8 +188,44 @@ function Home() {
       });
     };
 
+    // Eagerly preload every panel's carousels + images so tab switches are instant
+    const preloadPanel = (panel: HTMLElement) => {
+      const wasHidden = panel.hasAttribute("hidden");
+      // Temporarily reveal offscreen so layouts (widths) compute correctly
+      if (wasHidden) {
+        panel.style.position = "absolute";
+        panel.style.visibility = "hidden";
+        panel.style.pointerEvents = "none";
+        panel.style.left = "-99999px";
+        panel.style.top = "0";
+        panel.style.display = "block";
+        panel.removeAttribute("hidden");
+      }
+      panel.querySelectorAll<HTMLElement>(".elementor-widget-image-carousel").forEach(normalizeCarousel);
+      panel.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+        const ds = img.getAttribute("data-src");
+        if (ds && !img.src) img.src = ds;
+        const dss = img.getAttribute("data-srcset");
+        if (dss && !img.srcset) img.srcset = dss;
+        img.loading = "eager";
+        img.decoding = "async";
+        img.classList.remove("lazyload", "lazyloading");
+        img.classList.add("lazyloaded");
+      });
+      if (wasHidden) {
+        panel.style.position = "";
+        panel.style.visibility = "";
+        panel.style.pointerEvents = "";
+        panel.style.left = "";
+        panel.style.top = "";
+        panel.style.display = "";
+        panel.setAttribute("hidden", "");
+      }
+    };
+
     const tabWidgets = document.querySelectorAll<HTMLElement>(".elementor-widget-n-tabs");
     tabWidgets.forEach((widget) => {
+      widget.querySelectorAll<HTMLElement>('[role="tabpanel"]').forEach(preloadPanel);
       const activeButton =
         widget.querySelector<HTMLElement>('.e-n-tab-title[aria-selected="true"]') ||
         widget.querySelector<HTMLElement>(".e-n-tab-title");
