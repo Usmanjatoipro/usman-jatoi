@@ -104,8 +104,10 @@ function Home() {
           position: relative;
           border: 1px solid transparent !important;
           border-radius: 120px !important;
-          background-origin: border-box;
-          background-clip: content-box, border-box;
+          background-color: transparent !important;
+          background-origin: border-box !important;
+          background-clip: content-box, border-box !important;
+
           background-image:
             linear-gradient(#ffffff, #ffffff),
             linear-gradient(45deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4) !important;
