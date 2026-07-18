@@ -351,6 +351,53 @@ function Home() {
           color: #111 !important;
           -webkit-text-fill-color: #111 !important;
         }
+
+        /* ============ Recreated "Let's Talk" pill (theme-aware) ============ */
+        /* Hide the raster LetTalk images (both white and dark variants) */
+        .usman-native-home header.elementor-location-header a[href*="/contact-me/"] img {
+          display: none !important;
+        }
+        .usman-native-home header.elementor-location-header a[href*="/contact-me/"] {
+          position: relative;
+          display: inline-flex !important;
+          align-items: center;
+          justify-content: center;
+          min-width: 150px;
+          padding: 12px 26px !important;
+          border-radius: 999px !important;
+          border: 2px solid transparent !important;
+          background-origin: border-box !important;
+          background-clip: padding-box, border-box !important;
+          background-image:
+            linear-gradient(
+              color-mix(in oklab, #ffffff calc(var(--scroll-theme) * 100%), #0a0a0e),
+              color-mix(in oklab, #ffffff calc(var(--scroll-theme) * 100%), #0a0a0e)
+            ),
+            linear-gradient(45deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4) !important;
+          background-size: auto, 300% 300% !important;
+          animation: usmanRainbowBorder 6s linear infinite;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          text-decoration: none !important;
+          transition: background-image 500ms cubic-bezier(0.22, 1, 0.36, 1),
+                      transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .usman-native-home header.elementor-location-header a[href*="/contact-me/"]::before {
+          content: "Let's Talk";
+          color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
+          font-size: 15px;
+          transition: color 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .usman-native-home header.elementor-location-header a[href*="/contact-me/"]::after {
+          content: "✦";
+          margin-left: 10px;
+          color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
+          transition: color 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .usman-native-home header.elementor-location-header a[href*="/contact-me/"]:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 10px 24px -12px rgba(120, 115, 245, 0.6);
+        }
       `}</style>
 
 
