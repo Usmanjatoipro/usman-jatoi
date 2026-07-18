@@ -321,20 +321,24 @@ function Home() {
           color: #111 !important;
         }
 
-        /* "The Good Stuff" section — white background */
+        /* "The Good Stuff" section — white outer bg, section title dark */
         .usman-native-home .elementor-element-d15c148 {
           background: #ffffff !important;
         }
-        .usman-native-home .elementor-element-d15c148,
-        .usman-native-home .elementor-element-d15c148 h1,
-        .usman-native-home .elementor-element-d15c148 h2,
-        .usman-native-home .elementor-element-d15c148 h3,
-        .usman-native-home .elementor-element-d15c148 h4,
-        .usman-native-home .elementor-element-d15c148 p,
-        .usman-native-home .elementor-element-d15c148 a,
-        .usman-native-home .elementor-element-d15c148 span,
-        .usman-native-home .elementor-element-d15c148 li {
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-widget-heading .elementor-heading-title {
           color: #111 !important;
+        }
+        /* Cards inside stay dark — force white text so titles/links are visible */
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child .elementor-heading-title,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child h1,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child h2,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child h3,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child h4,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child p,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child span,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child li,
+        .usman-native-home .elementor-element-d15c148 .e-con.e-child a:not(.elementor-button) {
+          color: #ffffff !important;
         }
 
         /* Marquee roles strip — always white bg with dark text */
