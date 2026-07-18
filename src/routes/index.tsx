@@ -22,16 +22,21 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <iframe
-      src="/site-mirror.html"
-      title="Usman Jatoi"
-      style={{
-        position: "fixed",
-        inset: 0,
-        width: "100vw",
-        height: "100vh",
-        border: 0,
-      }}
-    />
+    <>
+      <style>{`html,body,#root{margin:0;padding:0;height:100%;overflow:hidden;background:#000}`}</style>
+      <iframe
+        src="/site-mirror.html"
+        title="Usman Jatoi — Top 0.1% Full-Stack Digital Expert & Entrepreneur"
+        style={{
+          position: "fixed",
+          inset: 0,
+          width: "100vw",
+          height: "100dvh",
+          border: 0,
+          display: "block",
+          background: "#000",
+        }}
+      />
+    </>
   );
 }
