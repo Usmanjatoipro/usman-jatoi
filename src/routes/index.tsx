@@ -66,10 +66,121 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const router = useRouter();
   useEffect(() => {
     const prevLang = document.documentElement.lang;
     document.documentElement.lang = "en-US";
     const root = document.documentElement;
+
+    // ==================== Link normalization + SPA nav interceptor ====================
+    // Map footer/header links from the imported WordPress markup to real app routes.
+    const ROUTE_ALIASES: Record<string, string> = {
+      "/services/": "/services",
+      "/blog/": "/blog",
+      "/businesses/": "/businesses",
+      "/sitemap_index.xml": "/sitemap.xml",
+    };
+    // Paths that don't have their own page yet — send to closest match.
+    const ROUTE_FALLBACKS: Record<string, string> = {
+      "/about-me/my-journey/professional-experience/pearl-lemon":
+        "/about-me/my-journey",
+    };
+    const KNOWN_ROUTES = new Set<string>([
+      "/",
+      "/about-me",
+      "/about-me/my-journey",
+      "/about-me/personal-life",
+      "/about-me/social-media",
+      "/about-me/vision-values",
+      "/awards",
+      "/blog",
+      "/businesses",
+      "/careers",
+      "/case-studies",
+      "/certifications",
+      "/contact",
+      "/contact-me",
+      "/contact-us",
+      "/courses",
+      "/legal",
+      "/legal/our-terms",
+      "/legal/privacy-policy",
+      "/log",
+      "/media-kit",
+      "/my-awards",
+      "/my-certifications",
+      "/my-lifestyle",
+      "/my-lifestyle/fitness-health",
+      "/my-lifestyle/gaming-life",
+      "/my-lifestyle/hobbies",
+      "/my-testimonials",
+      "/portfolio",
+      "/portfolio/brands-businesses",
+      "/portfolio/creative-projects",
+      "/portfolio/gaming-life",
+      "/portfolio/websites",
+      "/press-release",
+      "/services",
+      "/services/ai",
+      "/services/bulk-publishing",
+      "/services/creative",
+      "/services/marketing",
+      "/services/web",
+      "/shop",
+      "/skills-expertise",
+      "/skills-expertise/ai-research-and-innovation",
+      "/skills-expertise/creative-skills",
+      "/skills-expertise/seo-marketing",
+      "/skills-expertise/technical-skills",
+      "/testimonials",
+      "/trust",
+      "/white-label-partnership",
+    ]);
+
+    const normalizeHref = (raw: string): string | null => {
+      if (!raw) return null;
+      if (raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tel:"))
+        return null;
+      let path = raw;
+      // Convert absolute usmanjatoi.com URLs (should already be relative but be safe)
+      path = path.replace(/^https?:\/\/usmanjatoi\.com/i, "");
+      if (!path.startsWith("/")) return null;
+      // strip trailing slash except root
+      if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+      if (ROUTE_ALIASES[raw]) path = ROUTE_ALIASES[raw];
+      if (ROUTE_FALLBACKS[path]) path = ROUTE_FALLBACKS[path];
+      return path;
+    };
+
+    // Rewrite hrefs inside the imported header/footer markup so browsers see clean routes.
+    document.querySelectorAll<HTMLAnchorElement>(".usman-native-home a[href]").forEach((a) => {
+      const raw = a.getAttribute("href") || "";
+      const fixed = normalizeHref(raw);
+      if (fixed && fixed !== raw) a.setAttribute("href", fixed);
+    });
+
+    // Intercept clicks so internal navigation stays SPA and unknown routes still resolve.
+    const onLinkClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+        return;
+      const target = (e.target as HTMLElement | null)?.closest("a") as HTMLAnchorElement | null;
+      if (!target) return;
+      const href = target.getAttribute("href") || "";
+      const fixed = normalizeHref(href);
+      if (!fixed) return;
+      // external target
+      if (target.target && target.target !== "_self") return;
+      e.preventDefault();
+      if (KNOWN_ROUTES.has(fixed) || /^\/(blog|services|category)\//.test(fixed)) {
+        router.navigate({ to: fixed }).catch(() => {
+          window.location.href = fixed;
+        });
+      } else {
+        window.location.href = fixed;
+      }
+    };
+    document.addEventListener("click", onLinkClick);
+
 
     // ==================== SAY / image / Hello scroll animation ====================
     const sayEl = document.querySelector<HTMLElement>(".elementor-element-7df0725");
