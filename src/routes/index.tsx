@@ -219,31 +219,28 @@ function Home() {
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
 
         /* ============ Elementor container gutters (missing from extracted CSS) ============ */
-        /* Boxed containers: constrain the container itself, keep it centered */
-        .usman-native-home .e-con.e-con-boxed,
-        .usman-native-home .elementor-section.elementor-section-boxed > .elementor-container {
-          max-width: var(--container-max-width, 1280px);
-          margin-inline: auto;
-          width: 100%;
-        }
-        /* Full-width containers: keep background edge-to-edge, constrain inner content */
-        .usman-native-home .e-con > .e-con-inner {
-          max-width: var(--container-max-width, 1280px);
-          margin-inline: auto;
-          width: 100%;
-          padding-inline: clamp(16px, 4vw, 40px);
+        /* Parent (section) boxed containers: full-bleed background, centered inner content */
+        .usman-native-home .e-con.e-parent {
+          width: 100% !important;
           box-sizing: border-box;
         }
-        /* Any container without an .e-con-inner still needs side padding */
-        .usman-native-home .e-con.e-con-full,
-        .usman-native-home .e-con.e-flex {
-          padding-inline: clamp(0px, 2vw, 24px);
-        }
-        /* Constrain root-level content when no e-con wrapper is present */
-        .usman-native-home > div > .elementor,
-        .usman-native-home > div > .elementor > .elementor-section-wrap {
+        /* The inner wrapper that actually holds section content */
+        .usman-native-home .e-con.e-parent > .e-con-inner {
+          max-width: var(--container-max-width, 1280px);
+          margin-inline: auto !important;
           width: 100%;
+          padding-inline: clamp(20px, 5vw, 60px);
+          box-sizing: border-box;
         }
+        /* Boxed parents without an .e-con-inner: pad the container itself */
+        .usman-native-home .e-con.e-parent.e-con-boxed:not(:has(> .e-con-inner)) {
+          padding-inline: clamp(20px, 5vw, 60px);
+        }
+        /* Child containers still get a small gutter so they don't kiss the edge */
+        .usman-native-home .e-con.e-child {
+          box-sizing: border-box;
+        }
+
 
 
 
