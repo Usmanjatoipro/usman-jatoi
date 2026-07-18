@@ -30,6 +30,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
+import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/skills-expertise.technical-skills'
 import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
 import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
@@ -143,6 +144,12 @@ const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
   path: '/my-lifestyle/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SkillsExpertiseTechnicalSkillsRoute =
+  SkillsExpertiseTechnicalSkillsRouteImport.update({
+    id: '/skills-expertise/technical-skills',
+    path: '/skills-expertise/technical-skills',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SkillsExpertiseSeoMarketingRoute =
   SkillsExpertiseSeoMarketingRouteImport.update({
     id: '/skills-expertise/seo-marketing',
@@ -214,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
+  '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
 }
 export interface FileRoutesByTo {
@@ -244,6 +252,7 @@ export interface FileRoutesByTo {
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
+  '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/my-lifestyle': typeof MyLifestyleIndexRoute
 }
 export interface FileRoutesById {
@@ -276,6 +285,7 @@ export interface FileRoutesById {
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
+  '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
 }
 export interface FileRouteTypes {
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
     | '/skills-expertise/seo-marketing'
+    | '/skills-expertise/technical-skills'
     | '/my-lifestyle/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
     | '/skills-expertise/seo-marketing'
+    | '/skills-expertise/technical-skills'
     | '/my-lifestyle'
   id:
     | '__root__'
@@ -369,6 +381,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
     | '/skills-expertise/seo-marketing'
+    | '/skills-expertise/technical-skills'
     | '/my-lifestyle/'
   fileRoutesById: FileRoutesById
 }
@@ -398,6 +411,7 @@ export interface RootRouteChildren {
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
+  SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
 }
 
@@ -550,6 +564,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyLifestyleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skills-expertise/technical-skills': {
+      id: '/skills-expertise/technical-skills'
+      path: '/skills-expertise/technical-skills'
+      fullPath: '/skills-expertise/technical-skills'
+      preLoaderRoute: typeof SkillsExpertiseTechnicalSkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/skills-expertise/seo-marketing': {
       id: '/skills-expertise/seo-marketing'
       path: '/skills-expertise/seo-marketing'
@@ -658,6 +679,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
   SkillsExpertiseSeoMarketingRoute: SkillsExpertiseSeoMarketingRoute,
+  SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
 }
 export const routeTree = rootRouteImport
