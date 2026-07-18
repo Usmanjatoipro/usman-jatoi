@@ -478,17 +478,31 @@ function Home() {
           -webkit-text-fill-color: #ffffff !important;
         }
 
-        /* ============ The Good Stuff — dark text on white ============ */
+        /* ============ The Good Stuff — section white bg, cards dark bg ============ */
         .usman-native-home .elementor-element-d15c148 {
           background: #ffffff !important;
         }
-        .usman-native-home .elementor-element-d15c148 h1,
-        .usman-native-home .elementor-element-d15c148 h2,
-        .usman-native-home .elementor-element-d15c148 h3,
-        .usman-native-home .elementor-element-d15c148 h4,
-        .usman-native-home .elementor-element-d15c148 p,
-        .usman-native-home .elementor-element-d15c148 span,
-        .usman-native-home .elementor-element-d15c148 a:not(.elementor-button) {
+        /* Section heading ("The Good Stuff") stays dark on white */
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child h1,
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child h2,
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child h3 {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        /* Card titles/text on dark card backgrounds — force white */
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h1,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h2,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h3,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h4,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading .elementor-heading-title,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-text-editor,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-text-editor p,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-text-editor span {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+        }
+        /* But the very first (section title) widget-heading is dark - handled above */
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child .elementor-heading-title {
           color: #111 !important;
           -webkit-text-fill-color: #111 !important;
         }
