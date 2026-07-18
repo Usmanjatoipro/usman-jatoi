@@ -192,6 +192,22 @@ function Home() {
         }
 
 
+
+        /* "The Good Stuff" section — white background */
+        .usman-native-home .elementor-element-d15c148 {
+          background: #ffffff !important;
+        }
+        .usman-native-home .elementor-element-d15c148,
+        .usman-native-home .elementor-element-d15c148 h1,
+        .usman-native-home .elementor-element-d15c148 h2,
+        .usman-native-home .elementor-element-d15c148 h3,
+        .usman-native-home .elementor-element-d15c148 h4,
+        .usman-native-home .elementor-element-d15c148 p,
+        .usman-native-home .elementor-element-d15c148 a,
+        .usman-native-home .elementor-element-d15c148 span,
+        .usman-native-home .elementor-element-d15c148 li {
+          color: #111 !important;
+        }
       `}</style>
 
 
