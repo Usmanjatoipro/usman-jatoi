@@ -141,6 +141,32 @@ function Home() {
           100% { background-position: 0% 0%, 0% 50%; }
         }
 
+        /* Newsletter/form submit — keep as plain text label, no gradient pill */
+        .usman-native-home .elementor-widget-form .elementor-button,
+        .usman-native-home form button[type="submit"] {
+          background: transparent !important;
+          background-image: none !important;
+          border: none !important;
+          border-radius: 0 !important;
+          animation: none !important;
+          padding: 8px 4px !important;
+          color: #fff !important;
+          box-shadow: none !important;
+          letter-spacing: 0.08em;
+          font-weight: 700;
+        }
+        .usman-native-home .elementor-widget-form .elementor-button *,
+        .usman-native-home form button[type="submit"] * {
+          color: #fff !important;
+          fill: #fff !important;
+        }
+        .usman-native-home .elementor-widget-form .elementor-button:hover,
+        .usman-native-home form button[type="submit"]:hover {
+          box-shadow: none !important;
+          transform: none !important;
+          opacity: 0.85;
+        }
+
         /* "Your Digital Partner" pill — keep it as a plain label, not a button */
         .usman-native-home .elementor-element-a7b656e .elementor-button {
           background: transparent !important;
