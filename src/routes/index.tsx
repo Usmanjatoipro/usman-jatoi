@@ -541,6 +541,11 @@ function Home() {
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: homeBodyBefore }}
         />
+        <SayHello />
+        <div
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: homeBodyBetween }}
+        />
         <PortfolioTabs />
         <div
           suppressHydrationWarning
