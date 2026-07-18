@@ -315,10 +315,15 @@ function Home() {
         .usman-native-home .elementor-element-3359bcc h2,
         .usman-native-home .elementor-element-3359bcc h3,
         .usman-native-home .elementor-element-3359bcc h4,
+        .usman-native-home .elementor-element-3359bcc h5,
+        .usman-native-home .elementor-element-3359bcc h6,
         .usman-native-home .elementor-element-3359bcc p,
         .usman-native-home .elementor-element-3359bcc span,
-        .usman-native-home .elementor-element-3359bcc li {
-          color: #111 !important;
+        .usman-native-home .elementor-element-3359bcc li,
+        .usman-native-home .elementor-element-3359bcc div,
+        .usman-native-home .elementor-element-3359bcc a {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
         }
 
         /* "The Good Stuff" section — white outer bg, section title dark */
