@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as ContactMeRouteImport } from './routes/contact-me'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessesRouteImport } from './routes/businesses'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -30,6 +31,11 @@ const MediaKitRoute = MediaKitRouteImport.update({
 const LogRoute = LogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactMeRoute = ContactMeRouteImport.update({
+  id: '/contact-me',
+  path: '/contact-me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CareersRoute = CareersRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/contact-me': typeof ContactMeRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/contact-me': typeof ContactMeRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/contact-me': typeof ContactMeRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/contact-me'
     | '/log'
     | '/media-kit'
     | '/admin'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/contact-me'
     | '/log'
     | '/media-kit'
     | '/admin'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/contact-me'
     | '/log'
     | '/media-kit'
     | '/_authenticated/admin'
@@ -173,6 +185,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   BusinessesRoute: typeof BusinessesRoute
   CareersRoute: typeof CareersRoute
+  ContactMeRoute: typeof ContactMeRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
   CategorySlugRoute: typeof CategorySlugRoute
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/log'
       preLoaderRoute: typeof LogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact-me': {
+      id: '/contact-me'
+      path: '/contact-me'
+      fullPath: '/contact-me'
+      preLoaderRoute: typeof ContactMeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/careers': {
@@ -297,6 +317,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   BusinessesRoute: BusinessesRoute,
   CareersRoute: CareersRoute,
+  ContactMeRoute: ContactMeRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
   CategorySlugRoute: CategorySlugRoute,
