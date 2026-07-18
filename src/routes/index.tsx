@@ -174,6 +174,11 @@ function Home() {
         .usman-native-home header.elementor-location-header .elementor-shape,
         .usman-native-home header.elementor-location-header .elementor-shape-bottom,
         .usman-native-home header.elementor-location-header .elementor-shape-top { display: none !important; }
+
+        /* Remove the duplicate (non-sticky) header — keep only the sticky variant */
+        .usman-native-home header.elementor-location-header > .elementor-element-29d5d3f2 { display: none !important; }
+        /* Kill the thin gradient strip that sits right below the header */
+        .usman-native-home .elementor-element-1aa274d9 { display: none !important; }
         /* Reserve space so content isn't hidden under the fixed header */
         .usman-native-home { padding-top: 84px; }
         .usman-native-home header.elementor-location-header a,
