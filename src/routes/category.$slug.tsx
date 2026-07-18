@@ -76,7 +76,8 @@ export const Route = createFileRoute("/category/$slug")({
 });
 
 function CategoryPage() {
-  const { category, ancestors, children, posts, page, totalPages, total } = Route.useLoaderData();
+  const data = Route.useLoaderData() as NonNullable<Awaited<ReturnType<typeof getCategoryBySlug>>>;
+  const { category, ancestors, children, posts, page, totalPages, total } = data;
   const params = Route.useParams();
 
   return (
