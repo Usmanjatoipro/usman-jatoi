@@ -115,9 +115,12 @@ function Home() {
       <style>{homeStyles}</style>
       {/* Our overrides last so they win the cascade */}
       <style>{`
-        html, body, #root { margin: 0; padding: 0; min-height: 100%; background: #000; }
-        body { overflow-x: hidden; background: #000 !important; color: #fff; }
-        .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: #000; }
+        html, body, #root { margin: 0; padding: 0; min-height: 100%; }
+        :root { --scroll-theme: 0; }
+        /* Interpolate black -> white based on scroll progress */
+        html, body { background: color-mix(in srgb, #ffffff calc(var(--scroll-theme) * 100%), #000000) !important; color: #fff; }
+        body { overflow-x: hidden; transition: background-color 0.25s linear; }
+        .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: transparent; }
         /* Reveal Elementor sections that were script-gated on the original site */
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
