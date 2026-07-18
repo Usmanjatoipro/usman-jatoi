@@ -429,4 +429,6 @@ function Home() {
           dangerouslySetInnerHTML={{ __html: homeBodyAfter }}
         />
       </div>
+    </>
+  );
 }
