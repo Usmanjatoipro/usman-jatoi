@@ -30,6 +30,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
+import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
@@ -139,6 +140,12 @@ const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
   path: '/my-lifestyle/hobbies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyLifestyleFitnessHealthRoute =
+  MyLifestyleFitnessHealthRouteImport.update({
+    id: '/my-lifestyle/fitness-health',
+    path: '/my-lifestyle/fitness-health',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -184,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRoutesByTo {
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
   '/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRoutesById {
@@ -238,6 +247,7 @@ export interface FileRoutesById {
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRouteTypes {
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/import'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/hobbies'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/import'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/hobbies'
   id:
     | '__root__'
@@ -319,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/import'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/hobbies'
   fileRoutesById: FileRoutesById
 }
@@ -344,6 +357,7 @@ export interface RootRouteChildren {
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
 }
 
@@ -496,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyLifestyleHobbiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-lifestyle/fitness-health': {
+      id: '/my-lifestyle/fitness-health'
+      path: '/my-lifestyle/fitness-health'
+      fullPath: '/my-lifestyle/fitness-health'
+      preLoaderRoute: typeof MyLifestyleFitnessHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -572,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
   CategorySlugRoute: CategorySlugRoute,
+  MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
 }
 export const routeTree = rootRouteImport
