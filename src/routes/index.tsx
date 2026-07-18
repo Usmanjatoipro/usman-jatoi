@@ -80,8 +80,32 @@ function Home() {
   useEffect(() => {
     const prevLang = document.documentElement.lang;
     document.documentElement.lang = "en-US";
+
+    // Smooth hero -> white theme transition tied to scroll.
+    // We interpolate a CSS var (--scroll-theme: 0..1) over the first viewport.
+    const root = document.documentElement;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY || window.pageYOffset || 0;
+      const h = Math.max(window.innerHeight * 0.85, 1);
+      const t = Math.min(1, Math.max(0, y / h));
+      root.style.setProperty("--scroll-theme", String(t));
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
     return () => {
       document.documentElement.lang = prevLang;
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      root.style.removeProperty("--scroll-theme");
     };
   }, []);
 
@@ -91,9 +115,12 @@ function Home() {
       <style>{homeStyles}</style>
       {/* Our overrides last so they win the cascade */}
       <style>{`
-        html, body, #root { margin: 0; padding: 0; min-height: 100%; background: #000; }
-        body { overflow-x: hidden; background: #000 !important; color: #fff; }
-        .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: #000; }
+        html, body, #root { margin: 0; padding: 0; min-height: 100%; }
+        :root { --scroll-theme: 0; }
+        /* Interpolate black -> white based on scroll progress */
+        html, body { background: color-mix(in srgb, #ffffff calc(var(--scroll-theme) * 100%), #000000) !important; color: #fff; }
+        body { overflow-x: hidden; transition: background-color 0.25s linear; }
+        .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: transparent; }
         /* Reveal Elementor sections that were script-gated on the original site */
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
