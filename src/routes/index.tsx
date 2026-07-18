@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import PortfolioTabs from "@/components/PortfolioTabs";
 import homeBodyRaw from "../data/homeBody.html?raw";
 import homeLinks from "../data/homeLinks.json";
 import homeStylesRaw from "../data/homeStyles.css?raw";
