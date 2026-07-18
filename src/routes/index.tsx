@@ -141,6 +141,25 @@ function Home() {
           100% { background-position: 0% 0%, 0% 50%; }
         }
 
+        /* "Your Digital Partner" pill — keep it as a plain label, not a button */
+        .usman-native-home .elementor-element-a7b656e .elementor-button {
+          background: transparent !important;
+          background-image: none !important;
+          border: 1px solid rgba(255,255,255,0.4) !important;
+          animation: none !important;
+          color: #fff !important;
+          padding: 8px 22px !important;
+          box-shadow: none !important;
+        }
+        .usman-native-home .elementor-element-a7b656e .elementor-button * {
+          color: #fff !important;
+          fill: #fff !important;
+        }
+        .usman-native-home .elementor-element-a7b656e .elementor-button:hover {
+          box-shadow: none !important;
+          transform: none !important;
+        }
+
 
       `}</style>
       <style>{homeStyles}</style>
