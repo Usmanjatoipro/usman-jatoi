@@ -129,7 +129,7 @@ async function hydrateWordPressScripts() {
     const mirrorResponse = await fetch("/site-mirror.html", { credentials: "same-origin" });
     const mirrorHtml = localizeUsmanAssets(await mirrorResponse.text());
     const mirrorDocument = new DOMParser().parseFromString(mirrorHtml, "text/html");
-    const scripts = [...mirrorDocument.querySelectorAll("head script, body script")];
+    const scripts = [...mirrorDocument.querySelectorAll<HTMLScriptElement>("head script, body script")];
 
     for (let index = 0; index < scripts.length; index += 1) {
       await runScript(scripts[index], index);
