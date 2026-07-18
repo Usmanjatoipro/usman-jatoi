@@ -7,6 +7,11 @@ import {
   resetImport,
   claimAdminRole,
 } from "@/lib/wp-import.functions";
+import {
+  getMediaSyncStatus,
+  syncMediaChunk,
+  resetMediaSync,
+} from "@/lib/wp-media-sync.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
