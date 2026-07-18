@@ -1,0 +1,218 @@
+[
+  {
+    "rel": "stylesheet",
+    "href": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/brands.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/solid.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/tutor-icon.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/tutor.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/tutor-front.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/woocommerce-layout.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/woocommerce-smallscreen.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/woocommerce.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/wbb-widgets.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/reset.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/theme.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/header-footer.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/frontend.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-heading.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-image.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/sticky.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/motion-fx.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-progress-tracker.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-icon-list.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-form.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/fadeIn.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-divider.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/fadeInUp.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-social-icons.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/apple-webkit.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/slideInLeft.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/popup.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/elementor-icons.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-video.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/swiper.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/e-swiper.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-image-carousel.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-nested-tabs.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-nested-accordion.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/base-desktop.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/widget-styles.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/responsive.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/general.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/font-awesome.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/mystickyelements-front.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/intlTelInput.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/manrope.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/inter.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/css(1)"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/zeyada.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/fontawesome.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/solid.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/ekiticons.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/brands.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/all.min.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/all.css"
+  },
+  {
+    "rel": "stylesheet",
+    "href": "/site-assets/style"
+  }
+]
