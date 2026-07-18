@@ -74,6 +74,63 @@ function ImportPage() {
     return () => clearInterval(t);
   }, []);
 
+  async function refreshMedia() {
+    try {
+      const s = (await fetchMediaStatus()) as any;
+      setMediaStatus(s);
+    } catch (e: any) {
+      // silent — admin errors already surfaced elsewhere
+    }
+  }
+
+  useEffect(() => {
+    refresh();
+    refreshMedia();
+    const t = setInterval(() => {
+      refresh();
+      refreshMedia();
+    }, 3000);
+    return () => clearInterval(t);
+  }, []);
+
+  async function runMediaOne() {
+    try {
+      const r = (await runMediaChunk({ data: {} })) as any;
+      const failed = (r.failures ?? []).length;
+      if (failed) toast.warning(`Media: +${r.processed} (${failed} failed)`);
+      else toast.success(`Media: +${r.processed} synced`);
+      refreshMedia();
+      return r;
+    } catch (e: any) {
+      toast.error(`Media: ${e.message}`);
+      throw e;
+    }
+  }
+
+  async function runMediaAll() {
+    setMediaAuto(true);
+    mediaStopRef.current = false;
+    try {
+      while (!mediaStopRef.current) {
+        const r = await runMediaOne();
+        if (r.done) {
+          toast.success("Media sync complete");
+          break;
+        }
+      }
+    } catch {
+      /* toast already fired */
+    } finally {
+      setMediaAuto(false);
+    }
+  }
+
+  async function onResetMedia() {
+    if (!confirm("Reset media sync progress? Files already uploaded stay in storage.")) return;
+    await doResetMedia();
+    refreshMedia();
+  }
+
   async function onClaim() {
     try {
       await claim();
