@@ -218,6 +218,35 @@ function Home() {
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
 
+        /* ============ Elementor container gutters (missing from extracted CSS) ============ */
+        /* Boxed containers: constrain the container itself, keep it centered */
+        .usman-native-home .e-con.e-con-boxed,
+        .usman-native-home .elementor-section.elementor-section-boxed > .elementor-container {
+          max-width: var(--container-max-width, 1280px);
+          margin-inline: auto;
+          width: 100%;
+        }
+        /* Full-width containers: keep background edge-to-edge, constrain inner content */
+        .usman-native-home .e-con > .e-con-inner {
+          max-width: var(--container-max-width, 1280px);
+          margin-inline: auto;
+          width: 100%;
+          padding-inline: clamp(16px, 4vw, 40px);
+          box-sizing: border-box;
+        }
+        /* Any container without an .e-con-inner still needs side padding */
+        .usman-native-home .e-con.e-con-full,
+        .usman-native-home .e-con.e-flex {
+          padding-inline: clamp(0px, 2vw, 24px);
+        }
+        /* Constrain root-level content when no e-con wrapper is present */
+        .usman-native-home > div > .elementor,
+        .usman-native-home > div > .elementor > .elementor-section-wrap {
+          width: 100%;
+        }
+
+
+
 
         /* Animated gradient-border button — WHITE fill, gradient border only */
         .usman-native-home .elementor-button,
