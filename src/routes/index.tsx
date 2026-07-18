@@ -30,7 +30,12 @@ function stripScripts(html: string) {
 }
 
 const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
-const homeStyles = localizeUsmanAssets(homeStylesRaw);
+// Re-scope the Elementor "kit" (body-class) selectors onto our wrapper class so
+// all styles apply on first paint — no FOUC waiting for a body class from JS.
+const homeStyles = localizeUsmanAssets(homeStylesRaw).replace(
+  /\.elementor-kit-14\b/g,
+  ".usman-native-home",
+);
 
 export const Route = createFileRoute("/")({
   component: Home,
