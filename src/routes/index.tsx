@@ -80,8 +80,32 @@ function Home() {
   useEffect(() => {
     const prevLang = document.documentElement.lang;
     document.documentElement.lang = "en-US";
+
+    // Smooth hero -> white theme transition tied to scroll.
+    // We interpolate a CSS var (--scroll-theme: 0..1) over the first viewport.
+    const root = document.documentElement;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY || window.pageYOffset || 0;
+      const h = Math.max(window.innerHeight * 0.85, 1);
+      const t = Math.min(1, Math.max(0, y / h));
+      root.style.setProperty("--scroll-theme", String(t));
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
     return () => {
       document.documentElement.lang = prevLang;
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      root.style.removeProperty("--scroll-theme");
     };
   }, []);
 
