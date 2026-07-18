@@ -1,0 +1,23 @@
+/**
+ * WBB Common Frontend JS
+ */
+window.WBB = window.WBB || {};
+
+(function ($) {
+    'use strict';
+
+    // Global Sound Helper
+    WBB.playEffect = function (url, volume = 1) {
+        if (!window.wbbCommonData || !window.wbbCommonData.soundsEnabled) return;
+
+        const audio = new Audio(url);
+        audio.volume = (window.wbbCommonData.globalVolume || 0.5) * volume;
+        audio.play().catch(e => console.log('Audio playback blocked'));
+    };
+
+    // Initialize widgets if needed
+    $(window).on('elementor/frontend/init', function () {
+        // Common initialization logic
+    });
+
+})(jQuery);
