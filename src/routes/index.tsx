@@ -86,15 +86,64 @@ function Home() {
 
   return (
     <>
-      <style>{homeStyles}</style>
       <style>{`
         html, body, #root { margin: 0; padding: 0; min-height: 100%; background: #fff; }
         body { overflow-x: hidden; }
         .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; }
-        /* Reveal any Elementor sections that were script-gated on the original site */
+        /* Reveal Elementor sections that were script-gated on the original site */
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
+
+        /* Apply the hero's animated rainbow gradient border to EVERY button site-wide */
+        .usman-native-home .elementor-button,
+        .usman-native-home a.elementor-button-link,
+        .usman-native-home button.elementor-button,
+        .usman-native-home .wp-block-button__link,
+        .usman-native-home .btn,
+        .usman-native-home button[type="submit"] {
+          position: relative;
+          border: 1px solid transparent !important;
+          border-radius: 120px !important;
+          background-origin: border-box;
+          background-clip: content-box, border-box;
+          background-image:
+            linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)),
+            linear-gradient(45deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4) !important;
+          animation: usmanRainbowBorder 6s linear infinite;
+          padding: 14px 34px !important;
+          color: #111 !important;
+          overflow: hidden;
+          transition: box-shadow 0.3s ease, transform 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          text-decoration: none;
+        }
+        /* Dark-section variant: keep readable on dark backgrounds */
+        .usman-native-home [data-elementor-type="section"][style*="background"] .elementor-button,
+        .usman-native-home .elementor-section[style*="background-color: rgb(0"] .elementor-button {
+          --rb-inner: #0b0b0b;
+          color: #fff !important;
+        }
+        .usman-native-home .elementor-button:hover,
+        .usman-native-home .wp-block-button__link:hover,
+        .usman-native-home .btn:hover {
+          box-shadow: 0 10px 30px -10px rgba(120, 115, 245, 0.55);
+          transform: translateY(-1px);
+        }
+        .usman-native-home .elementor-button .elementor-button-text { position: relative; z-index: 1; }
+
+        @keyframes usmanRainbowBorder {
+          0%   { background-image: linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)), linear-gradient(45deg,  #ff6ec4, #7873f5, #1fd1f9, #ff6ec4); }
+          25%  { background-image: linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)), linear-gradient(135deg, #7873f5, #1fd1f9, #ff6ec4, #7873f5); }
+          50%  { background-image: linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)), linear-gradient(225deg, #1fd1f9, #ff6ec4, #7873f5, #1fd1f9); }
+          75%  { background-image: linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)), linear-gradient(315deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4); }
+          100% { background-image: linear-gradient(var(--rb-inner, #ffffff), var(--rb-inner, #ffffff)), linear-gradient(45deg,  #ff6ec4, #7873f5, #1fd1f9, #ff6ec4); }
+        }
       `}</style>
+      <style>{homeStyles}</style>
+
       <div
         className="usman-native-home"
         suppressHydrationWarning
