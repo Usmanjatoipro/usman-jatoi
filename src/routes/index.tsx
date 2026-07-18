@@ -470,7 +470,7 @@ function Home() {
           transition: transform 700ms cubic-bezier(.22,1,.36,1);
         }
         .pf-slide {
-          position: absolute; top: 0; left: 0;
+          position: absolute; top: 0; left: 50%;
           width: 300px; height: 360px; margin: 0;
           border-radius: 20px; overflow: hidden;
           background: #f4f4f7;
