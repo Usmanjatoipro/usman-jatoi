@@ -416,6 +416,123 @@ function Home() {
         }
       `}</style>
 
+      <style>{`
+        /* ============ Portfolio Tabs + Carousel ============ */
+        .pf-tabs {
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 40px 20px 80px;
+          color: #0a0a0e;
+          font-family: inherit;
+        }
+        .pf-tabs__nav {
+          display: flex; flex-wrap: wrap; justify-content: center;
+          gap: 10px; margin-bottom: 18px;
+        }
+        .pf-tabs__tab {
+          position: relative; appearance: none; border: 0; cursor: pointer;
+          padding: 12px 22px; border-radius: 999px;
+          background: #fff;
+          color: #0a0a0e;
+          font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+          box-shadow: inset 0 0 0 1px rgba(10,10,14,0.08);
+          transition: transform 220ms cubic-bezier(.22,1,.36,1), box-shadow 220ms, color 220ms, background 220ms;
+        }
+        .pf-tabs__tab:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px rgba(10,10,14,0.2); }
+        .pf-tabs__tab.is-active {
+          color: #fff;
+          background: linear-gradient(120deg, #ff6a3d, #f74a8b 40%, #7873f5 70%, #22c1c3);
+          background-size: 200% 200%;
+          animation: pfGrad 6s linear infinite;
+          box-shadow: 0 10px 24px -12px rgba(120,115,245,0.55);
+        }
+        @keyframes pfGrad { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        .pf-tabs__blurb {
+          text-align: center; max-width: 640px; margin: 0 auto 26px;
+          color: rgba(10,10,14,0.66); font-size: 15px; line-height: 1.5;
+          animation: pfFadeUp 500ms cubic-bezier(.22,1,.36,1);
+        }
+        @keyframes pfFadeUp { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+
+        .pf-carousel {
+          position: relative;
+          display: flex; align-items: center;
+          padding: 20px 0;
+        }
+        .pf-carousel__viewport {
+          flex: 1; overflow: hidden;
+          perspective: 1400px;
+          height: 380px;
+        }
+        .pf-carousel__track {
+          position: relative; height: 100%;
+          transform-style: preserve-3d;
+          transition: transform 700ms cubic-bezier(.22,1,.36,1);
+        }
+        .pf-slide {
+          position: absolute; top: 0; left: 0;
+          width: 300px; height: 360px; margin: 0;
+          border-radius: 20px; overflow: hidden;
+          background: #f4f4f7;
+          box-shadow: 0 20px 50px -22px rgba(10,10,14,0.35);
+          cursor: pointer;
+          transform-origin: center center;
+          transition: transform 700ms cubic-bezier(.22,1,.36,1), opacity 500ms, box-shadow 500ms;
+          will-change: transform, opacity;
+        }
+        .pf-slide img {
+          width: 100%; height: 100%; object-fit: cover; display: block;
+          transition: transform 900ms cubic-bezier(.22,1,.36,1);
+        }
+        .pf-slide.is-active {
+          box-shadow: 0 30px 70px -20px rgba(10,10,14,0.5), 0 0 0 1px rgba(255,255,255,0.4) inset;
+        }
+        .pf-slide.is-active img { transform: scale(1.04); }
+        .pf-slide__caption {
+          position: absolute; left: 0; right: 0; bottom: 0;
+          padding: 40px 18px 16px;
+          background: linear-gradient(to top, rgba(10,10,14,0.85), rgba(10,10,14,0));
+          color: #fff;
+          opacity: 0; transform: translateY(10px);
+          transition: opacity 400ms, transform 400ms;
+        }
+        .pf-slide.is-active .pf-slide__caption { opacity: 1; transform: none; }
+        .pf-slide__caption strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .pf-slide__caption span { display: block; font-size: 12.5px; opacity: 0.85; line-height: 1.4; }
+
+        .pf-carousel__btn {
+          flex: 0 0 auto; width: 46px; height: 46px; border-radius: 999px;
+          border: 0; cursor: pointer;
+          background: #fff; color: #0a0a0e;
+          display: inline-flex; align-items: center; justify-content: center;
+          box-shadow: 0 12px 30px -14px rgba(10,10,14,0.35), inset 0 0 0 1px rgba(10,10,14,0.08);
+          transition: transform 220ms, box-shadow 220ms;
+          z-index: 5;
+        }
+        .pf-carousel__btn:hover { transform: translateY(-1px) scale(1.05); }
+        .pf-carousel__btn--prev { margin-right: -20px; }
+        .pf-carousel__btn--next { margin-left: -20px; }
+
+        .pf-carousel__dots {
+          display: flex; gap: 8px; justify-content: center; margin-top: 8px;
+        }
+        .pf-dot {
+          width: 8px; height: 8px; border-radius: 999px; border: 0; padding: 0;
+          background: rgba(10,10,14,0.18); cursor: pointer;
+          transition: width 300ms, background 300ms;
+        }
+        .pf-dot.is-active {
+          width: 22px;
+          background: linear-gradient(90deg, #ff6a3d, #7873f5);
+        }
+
+        @media (max-width: 700px) {
+          .pf-carousel__viewport { height: 320px; }
+          .pf-slide { width: 240px; height: 300px; }
+          .pf-tabs__tab { padding: 10px 16px; font-size: 13px; }
+        }
+      `}</style>
+
 
 
       <div className="usman-native-home">
