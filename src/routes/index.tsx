@@ -219,21 +219,20 @@ function Home() {
         .usman-native-home [data-settings*="animation"] { opacity: 1 !important; transform: none !important; }
 
         /* ============ Elementor container gutters (missing from extracted CSS) ============ */
+        /* Constrain every top-level section itself, not just its inner wrapper.
+           This makes children naturally flow inside the 1280 box. */
+        .usman-native-home { padding-inline: clamp(20px, 5vw, 60px); box-sizing: border-box; overflow-x: hidden; }
+        .usman-native-home .elementor { max-width: var(--container-max-width, 1280px); margin-inline: auto; }
         .usman-native-home .e-con { box-sizing: border-box; }
-        .usman-native-home .e-con.e-parent { width: 100% !important; }
-        /* Every .e-con-inner: centered, capped, padded */
-        .usman-native-home .e-con-inner,
-        .usman-native-home .e-con .e-con-inner {
-          max-width: var(--container-max-width, 1280px) !important;
-          margin-inline: auto !important;
+        /* Reset any inner wrapper — it now sits inside a padded parent, no extra padding needed */
+        .usman-native-home .e-con-inner {
+          max-width: 100% !important;
           width: 100% !important;
-          padding-inline: clamp(20px, 5vw, 60px) !important;
+          margin-inline: auto !important;
+          padding-inline: 0 !important;
           box-sizing: border-box !important;
         }
-        /* Parents without an inner wrapper still need a gutter */
-        .usman-native-home .e-con.e-parent:not(:has(> .e-con-inner)) {
-          padding-inline: clamp(20px, 5vw, 60px) !important;
-        }
+
 
 
 
