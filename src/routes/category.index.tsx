@@ -58,7 +58,7 @@ function Node({ node, depth }: { node: WpCategoryNode; depth: number }) {
 }
 
 function CategoriesIndex() {
-  const { tree, flat } = Route.useLoaderData();
+  const { tree, flat } = Route.useLoaderData() as Awaited<ReturnType<typeof listCategoriesTree>>;
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
