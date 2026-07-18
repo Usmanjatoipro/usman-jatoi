@@ -352,17 +352,28 @@ function Home() {
         .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-widget-heading .elementor-heading-title {
           color: #111 !important;
         }
-        /* Cards inside stay dark — force white text so titles/links are visible */
+        /* Cards inside stay dark — force white text on titles/paragraphs.
+           Exclude anything inside .elementor-button so the gradient pill keeps dark label. */
         .usman-native-home .elementor-element-d15c148 .e-con.e-child .elementor-heading-title,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h1,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h2,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h3,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child h4,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child p,
-        .usman-native-home .elementor-element-d15c148 .e-con.e-child span,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child li,
         .usman-native-home .elementor-element-d15c148 .e-con.e-child a:not(.elementor-button) {
           color: #ffffff !important;
+        }
+        /* Gradient-border pill buttons in this section: dark text + dark icon on white fill */
+        .usman-native-home .elementor-element-d15c148 .elementor-button,
+        .usman-native-home .elementor-element-d15c148 .elementor-button *,
+        .usman-native-home .elementor-element-d15c148 .elementor-button .elementor-button-text {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        .usman-native-home .elementor-element-d15c148 .elementor-button .elementor-button-icon svg,
+        .usman-native-home .elementor-element-d15c148 .elementor-button .elementor-button-icon svg * {
+          fill: #111 !important;
         }
 
         /* Marquee roles strip — always white bg with dark text */
