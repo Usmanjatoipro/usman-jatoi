@@ -339,8 +339,8 @@ function Home() {
           -webkit-text-fill-color: #111 !important;
         }
         /* Feature card (with photo) keeps its dark overlay + white text */
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3.feature-card-v3 .card-content-v3,
-        .usman-native-home .elementor-element-3359bcc .impact-card-v3.feature-card-v3 .card-content-v3 * {
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3.large-card .card-content-v3,
+        .usman-native-home .elementor-element-3359bcc .impact-card-v3.large-card .card-content-v3 * {
           color: #ffffff !important;
           -webkit-text-fill-color: #ffffff !important;
         }
