@@ -17,61 +17,6 @@ export const Route = createFileRoute("/_authenticated/admin")({
   notFoundComponent: () => <div className="p-10">Not found</div>,
 });
 
-function CategoryBranch({ node, depth }: { node: WpCategoryNode; depth: number }) {
-  const hasChildren = node.children.length > 0;
-  const indent = depth * 16;
-
-  const row = (
-    <div
-      className="group flex items-center justify-between gap-3 rounded-md px-3 py-2 hover:bg-neutral-50 transition"
-      style={{ paddingLeft: `${12 + indent}px` }}
-    >
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="text-neutral-400 text-xs font-mono w-10 shrink-0">#{node.id}</span>
-        <Link
-          to="/category/$slug"
-          params={{ slug: node.slug }}
-          target="_blank"
-          className="font-medium text-neutral-900 hover:text-indigo-600 truncate"
-        >
-          {node.name}
-        </Link>
-        <span className="text-xs text-neutral-400 shrink-0">/{node.slug}</span>
-      </div>
-      <div className="flex items-center gap-3 shrink-0">
-        <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600 tabular-nums">
-          {node.count} posts
-        </span>
-        {hasChildren && (
-          <span className="text-xs text-neutral-400 tabular-nums">
-            {node.children.length} sub
-          </span>
-        )}
-      </div>
-    </div>
-  );
-
-  if (!hasChildren) return <div>{row}</div>;
-
-  return (
-    <details className="group" open={depth === 0 ? false : true}>
-      <summary className="list-none cursor-pointer flex items-center">
-        <span
-          className="text-neutral-400 group-open:rotate-90 transition-transform inline-block w-3 text-center"
-          style={{ marginLeft: `${indent}px` }}
-        >
-          ▶
-        </span>
-        <div className="flex-1">{row}</div>
-      </summary>
-      <div className="border-l border-neutral-200 ml-6">
-        {node.children.map((c) => (
-          <CategoryBranch key={c.id} node={c} depth={depth + 1} />
-        ))}
-      </div>
-    </details>
-  );
-}
 
 function AdminPage() {
   const { tree, flat } = Route.useLoaderData() as Awaited<ReturnType<typeof listCategoriesTree>>;
