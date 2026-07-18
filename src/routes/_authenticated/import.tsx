@@ -40,11 +40,23 @@ function ImportPage() {
   const runChunk = useServerFn(importChunk);
   const doReset = useServerFn(resetImport);
   const claim = useServerFn(claimAdminRole);
+  const fetchMediaStatus = useServerFn(getMediaSyncStatus);
+  const runMediaChunk = useServerFn(syncMediaChunk);
+  const doResetMedia = useServerFn(resetMediaSync);
   const [state, setState] = useState<State[]>([]);
   const [runningKind, setRunningKind] = useState<string | null>(null);
   const [autoKind, setAutoKind] = useState<string | null>(null);
   const stopRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
+  const [mediaStatus, setMediaStatus] = useState<{
+    total: number;
+    imported: number;
+    cursor: number;
+    status: string;
+    last_error: string | null;
+  } | null>(null);
+  const [mediaAuto, setMediaAuto] = useState(false);
+  const mediaStopRef = useRef(false);
 
   async function refresh() {
     try {
