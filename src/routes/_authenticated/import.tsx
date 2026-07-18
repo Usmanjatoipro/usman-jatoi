@@ -57,6 +57,24 @@ function ImportPage() {
   } | null>(null);
   const [mediaAuto, setMediaAuto] = useState(false);
   const mediaStopRef = useRef(false);
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!active) return;
+      if (error || !data.user) {
+        window.setTimeout(() => {
+          window.location.href = `/auth?next=${encodeURIComponent(window.location.pathname)}`;
+        }, 250);
+        return;
+      }
+      setAuthReady(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function refresh() {
     try {
@@ -68,12 +86,6 @@ function ImportPage() {
     }
   }
 
-  useEffect(() => {
-    refresh();
-    const t = setInterval(refresh, 3000);
-    return () => clearInterval(t);
-  }, []);
-
   async function refreshMedia() {
     try {
       const s = (await fetchMediaStatus()) as any;
@@ -84,6 +96,7 @@ function ImportPage() {
   }
 
   useEffect(() => {
+    if (!authReady) return;
     refresh();
     refreshMedia();
     const t = setInterval(() => {
@@ -91,7 +104,7 @@ function ImportPage() {
       refreshMedia();
     }, 3000);
     return () => clearInterval(t);
-  }, []);
+  }, [authReady]);
 
   async function runMediaOne() {
     try {
@@ -187,6 +200,14 @@ function ImportPage() {
   async function signOut() {
     await supabase.auth.signOut();
     window.location.href = "/auth";
+  }
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="mx-auto max-w-4xl text-sm text-muted-foreground">Checking access…</div>
+      </div>
+    );
   }
 
   return (
