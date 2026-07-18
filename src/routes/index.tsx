@@ -119,9 +119,18 @@ function Home() {
       <style>{`
         html, body, #root { margin: 0; padding: 0; min-height: 100%; }
         :root { --scroll-theme: 0; }
-        /* Interpolate black -> white based on scroll progress */
-        html, body { background: color-mix(in srgb, #ffffff calc(var(--scroll-theme) * 100%), #000000) !important; color: #fff; }
-        body { overflow-x: hidden; transition: background-color 0.25s linear; }
+        /* Interpolate hero dark -> soft white based on scroll progress (eased) */
+        html, body {
+          background:
+            radial-gradient(1200px 600px at 50% -10%,
+              color-mix(in oklab, #7873f5 calc((1 - var(--scroll-theme)) * 22%), transparent) 0%,
+              transparent 60%),
+            color-mix(in oklab, #ffffff calc(var(--scroll-theme) * 100%), #06060a) !important;
+          color: color-mix(in oklab, #111111 calc(var(--scroll-theme) * 100%), #ffffff);
+          transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
+                      color 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        body { overflow-x: hidden; }
         .usman-native-home { width: 100%; min-height: 100vh; overflow-x: clip; background: transparent; }
         /* Reveal Elementor sections that were script-gated on the original site */
         .usman-native-home .elementor-invisible { visibility: visible !important; opacity: 1 !important; }
