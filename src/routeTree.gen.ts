@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PressReleaseRouteImport } from './routes/press-release'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
@@ -25,6 +26,11 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
+const PressReleaseRoute = PressReleaseRouteImport.update({
+  id: '/press-release',
+  path: '/press-release',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MediaKitRoute = MediaKitRouteImport.update({
   id: '/media-kit',
   path: '/media-kit',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/press-release': typeof PressReleaseRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/press-release': typeof PressReleaseRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/contact-us': typeof ContactUsRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
+  '/press-release': typeof PressReleaseRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/press-release'
     | '/admin'
     | '/import'
     | '/blog/$slug'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/press-release'
     | '/admin'
     | '/import'
     | '/blog/$slug'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/log'
     | '/media-kit'
+    | '/press-release'
     | '/_authenticated/admin'
     | '/_authenticated/import'
     | '/blog/$slug'
@@ -214,11 +226,19 @@ export interface RootRouteChildren {
   ContactUsRoute: typeof ContactUsRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
+  PressReleaseRoute: typeof PressReleaseRoute
   CategorySlugRoute: typeof CategorySlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/press-release': {
+      id: '/press-release'
+      path: '/press-release'
+      fullPath: '/press-release'
+      preLoaderRoute: typeof PressReleaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/media-kit': {
       id: '/media-kit'
       path: '/media-kit'
@@ -362,6 +382,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactUsRoute: ContactUsRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
+  PressReleaseRoute: PressReleaseRoute,
   CategorySlugRoute: CategorySlugRoute,
 }
 export const routeTree = rootRouteImport
