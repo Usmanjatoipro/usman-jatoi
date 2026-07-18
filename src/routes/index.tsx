@@ -193,6 +193,22 @@ function Home() {
 
 
 
+        /* "My Impact in Numbers" section — white background */
+        .usman-native-home .elementor-element-3359bcc,
+        .usman-native-home .elementor-element-3359bcc .impact-section-v3 {
+          background: #ffffff !important;
+          background-image: none !important;
+        }
+        .usman-native-home .elementor-element-3359bcc h1,
+        .usman-native-home .elementor-element-3359bcc h2,
+        .usman-native-home .elementor-element-3359bcc h3,
+        .usman-native-home .elementor-element-3359bcc h4,
+        .usman-native-home .elementor-element-3359bcc p,
+        .usman-native-home .elementor-element-3359bcc span,
+        .usman-native-home .elementor-element-3359bcc li {
+          color: #111 !important;
+        }
+
         /* "The Good Stuff" section — white background */
         .usman-native-home .elementor-element-d15c148 {
           background: #ffffff !important;
