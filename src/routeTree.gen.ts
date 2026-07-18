@@ -28,6 +28,7 @@ import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
@@ -127,6 +128,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
+  id: '/my-lifestyle/hobbies',
+  path: '/my-lifestyle/hobbies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -195,6 +202,7 @@ export interface FileRoutesByTo {
   '/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -221,6 +229,7 @@ export interface FileRoutesById {
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/import'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/my-lifestyle/hobbies'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/import'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/my-lifestyle/hobbies'
   id:
     | '__root__'
     | '/'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/_authenticated/import'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/my-lifestyle/hobbies'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -319,6 +331,7 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-lifestyle/hobbies': {
+      id: '/my-lifestyle/hobbies'
+      path: '/my-lifestyle/hobbies'
+      fullPath: '/my-lifestyle/hobbies'
+      preLoaderRoute: typeof MyLifestyleHobbiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -531,6 +551,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
   CategorySlugRoute: CategorySlugRoute,
+  MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
