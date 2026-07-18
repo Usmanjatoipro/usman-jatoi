@@ -418,11 +418,15 @@ function Home() {
 
 
 
-      <div
-        className="usman-native-home"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: homeBody }}
-      />
-    </>
-  );
+      <div className="usman-native-home">
+        <div
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: homeBodyBefore }}
+        />
+        <PortfolioTabs />
+        <div
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: homeBodyAfter }}
+        />
+      </div>
 }
