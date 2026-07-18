@@ -439,6 +439,7 @@ function Home() {
 
     return () => {
       document.documentElement.lang = prevLang;
+      document.removeEventListener("click", onLinkClick);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       document.removeEventListener("click", onTabClick, true);
