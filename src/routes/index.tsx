@@ -88,9 +88,11 @@ function Home() {
     const update = () => {
       raf = 0;
       const y = window.scrollY || window.pageYOffset || 0;
-      const h = Math.max(window.innerHeight * 0.85, 1);
-      const t = Math.min(1, Math.max(0, y / h));
-      root.style.setProperty("--scroll-theme", String(t));
+      const h = Math.max(window.innerHeight * 1.1, 1);
+      const raw = Math.min(1, Math.max(0, y / h));
+      // Smoothstep easing for a premium, non-linear feel
+      const eased = raw * raw * (3 - 2 * raw);
+      root.style.setProperty("--scroll-theme", eased.toFixed(4));
     };
     const onScroll = () => {
       if (raf) return;
