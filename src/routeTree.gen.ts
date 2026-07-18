@@ -37,6 +37,7 @@ import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills
 import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
 import { Route as SkillsExpertiseAiResearchAndInnovationRouteImport } from './routes/skills-expertise.ai-research-and-innovation'
 import { Route as ServicesWebRouteImport } from './routes/services.web'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
 import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
@@ -189,6 +190,11 @@ const ServicesWebRoute = ServicesWebRouteImport.update({
   path: '/services/web',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/services/$slug',
+  path: '/services/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
   id: '/my-lifestyle/hobbies',
   path: '/my-lifestyle/hobbies',
@@ -259,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
@@ -374,6 +383,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/services/$slug'
     | '/services/web'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/services/$slug'
     | '/services/web'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/services/$slug'
     | '/services/web'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
@@ -485,6 +497,7 @@ export interface RootRouteChildren {
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
+  ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesWebRoute: typeof ServicesWebRoute
   SkillsExpertiseAiResearchAndInnovationRoute: typeof SkillsExpertiseAiResearchAndInnovationRoute
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
@@ -693,6 +706,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesWebRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/services/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my-lifestyle/hobbies': {
       id: '/my-lifestyle/hobbies'
       path: '/my-lifestyle/hobbies'
@@ -801,6 +821,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
+  ServicesSlugRoute: ServicesSlugRoute,
   ServicesWebRoute: ServicesWebRoute,
   SkillsExpertiseAiResearchAndInnovationRoute:
     SkillsExpertiseAiResearchAndInnovationRoute,
