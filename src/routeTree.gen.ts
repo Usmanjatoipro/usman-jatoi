@@ -12,21 +12,27 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-partnership'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as PressReleaseRouteImport } from './routes/press-release'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
 import { Route as MyCertificationsRouteImport } from './routes/my-certifications'
 import { Route as MyAwardsRouteImport } from './routes/my-awards'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as LegalRouteImport } from './routes/legal'
+import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
 import { Route as ContactMeRouteImport } from './routes/contact-me'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CertificationsRouteImport } from './routes/certifications'
+import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessesRouteImport } from './routes/businesses'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AboutMeRouteImport } from './routes/about-me'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expertise.index'
@@ -38,12 +44,21 @@ import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skil
 import { Route as SkillsExpertiseAiResearchAndInnovationRouteImport } from './routes/skills-expertise.ai-research-and-innovation'
 import { Route as ServicesWebRouteImport } from './routes/services.web'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as PortfolioWebsitesRouteImport } from './routes/portfolio.websites'
+import { Route as PortfolioGamingLifeRouteImport } from './routes/portfolio.gaming-life'
+import { Route as PortfolioCreativeProjectsRouteImport } from './routes/portfolio.creative-projects'
+import { Route as PortfolioBrandsBusinessesRouteImport } from './routes/portfolio.brands-businesses'
 import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
 import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
+import { Route as LegalPrivacyPolicyRouteImport } from './routes/legal.privacy-policy'
+import { Route as LegalOurTermsRouteImport } from './routes/legal.our-terms'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AboutMeVisionValuesRouteImport } from './routes/about-me.vision-values'
 import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
+import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
+import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
@@ -62,9 +77,19 @@ const TestimonialsRoute = TestimonialsRouteImport.update({
   path: '/testimonials',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PressReleaseRoute = PressReleaseRouteImport.update({
   id: '/press-release',
   path: '/press-release',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyTestimonialsRoute = MyTestimonialsRouteImport.update({
@@ -92,6 +117,16 @@ const LogRoute = LogRouteImport.update({
   path: '/log',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesRoute = CoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactUsRoute = ContactUsRouteImport.update({
   id: '/contact-us',
   path: '/contact-us',
@@ -110,6 +145,11 @@ const ContactRoute = ContactRouteImport.update({
 const CertificationsRoute = CertificationsRouteImport.update({
   id: '/certifications',
   path: '/certifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaseStudiesRoute = CaseStudiesRouteImport.update({
+  id: '/case-studies',
+  path: '/case-studies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CareersRoute = CareersRouteImport.update({
@@ -135,6 +175,11 @@ const AwardsRoute = AwardsRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutMeRoute = AboutMeRouteImport.update({
+  id: '/about-me',
+  path: '/about-me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -195,6 +240,28 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
   path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioWebsitesRoute = PortfolioWebsitesRouteImport.update({
+  id: '/websites',
+  path: '/websites',
+  getParentRoute: () => PortfolioRoute,
+} as any)
+const PortfolioGamingLifeRoute = PortfolioGamingLifeRouteImport.update({
+  id: '/gaming-life',
+  path: '/gaming-life',
+  getParentRoute: () => PortfolioRoute,
+} as any)
+const PortfolioCreativeProjectsRoute =
+  PortfolioCreativeProjectsRouteImport.update({
+    id: '/creative-projects',
+    path: '/creative-projects',
+    getParentRoute: () => PortfolioRoute,
+  } as any)
+const PortfolioBrandsBusinessesRoute =
+  PortfolioBrandsBusinessesRouteImport.update({
+    id: '/brands-businesses',
+    path: '/brands-businesses',
+    getParentRoute: () => PortfolioRoute,
+  } as any)
 const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
   id: '/my-lifestyle/hobbies',
   path: '/my-lifestyle/hobbies',
@@ -211,6 +278,16 @@ const MyLifestyleFitnessHealthRoute =
     path: '/my-lifestyle/fitness-health',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LegalPrivacyPolicyRoute = LegalPrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalOurTermsRoute = LegalOurTermsRouteImport.update({
+  id: '/our-terms',
+  path: '/our-terms',
+  getParentRoute: () => LegalRoute,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -221,10 +298,25 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
+  id: '/vision-values',
+  path: '/vision-values',
+  getParentRoute: () => AboutMeRoute,
+} as any)
 const AboutMeSocialMediaRoute = AboutMeSocialMediaRouteImport.update({
-  id: '/about-me/social-media',
-  path: '/about-me/social-media',
-  getParentRoute: () => rootRouteImport,
+  id: '/social-media',
+  path: '/social-media',
+  getParentRoute: () => AboutMeRoute,
+} as any)
+const AboutMePersonalLifeRoute = AboutMePersonalLifeRouteImport.update({
+  id: '/personal-life',
+  path: '/personal-life',
+  getParentRoute: () => AboutMeRoute,
+} as any)
+const AboutMeMyJourneyRoute = AboutMeMyJourneyRouteImport.update({
+  id: '/my-journey',
+  path: '/my-journey',
+  getParentRoute: () => AboutMeRoute,
 } as any)
 const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   id: '/import',
@@ -239,32 +331,47 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/case-studies': typeof CaseStudiesRoute
   '/certifications': typeof CertificationsRoute
   '/contact': typeof ContactRoute
   '/contact-me': typeof ContactMeRoute
   '/contact-us': typeof ContactUsRoute
+  '/courses': typeof CoursesRoute
+  '/legal': typeof LegalRouteWithChildren
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
   '/my-certifications': typeof MyCertificationsRoute
   '/my-testimonials': typeof MyTestimonialsRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/press-release': typeof PressReleaseRoute
+  '/shop': typeof ShopRoute
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
+  '/about-me/my-journey': typeof AboutMeMyJourneyRoute
+  '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
+  '/about-me/vision-values': typeof AboutMeVisionValuesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/legal/our-terms': typeof LegalOurTermsRoute
+  '/legal/privacy-policy': typeof LegalPrivacyPolicyRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/portfolio/brands-businesses': typeof PortfolioBrandsBusinessesRoute
+  '/portfolio/creative-projects': typeof PortfolioCreativeProjectsRoute
+  '/portfolio/gaming-life': typeof PortfolioGamingLifeRoute
+  '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
@@ -277,32 +384,47 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/case-studies': typeof CaseStudiesRoute
   '/certifications': typeof CertificationsRoute
   '/contact': typeof ContactRoute
   '/contact-me': typeof ContactMeRoute
   '/contact-us': typeof ContactUsRoute
+  '/courses': typeof CoursesRoute
+  '/legal': typeof LegalRouteWithChildren
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
   '/my-certifications': typeof MyCertificationsRoute
   '/my-testimonials': typeof MyTestimonialsRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/press-release': typeof PressReleaseRoute
+  '/shop': typeof ShopRoute
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
+  '/about-me/my-journey': typeof AboutMeMyJourneyRoute
+  '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
+  '/about-me/vision-values': typeof AboutMeVisionValuesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/legal/our-terms': typeof LegalOurTermsRoute
+  '/legal/privacy-policy': typeof LegalPrivacyPolicyRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/portfolio/brands-businesses': typeof PortfolioBrandsBusinessesRoute
+  '/portfolio/creative-projects': typeof PortfolioCreativeProjectsRoute
+  '/portfolio/gaming-life': typeof PortfolioGamingLifeRoute
+  '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
@@ -317,32 +439,47 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
   '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
+  '/case-studies': typeof CaseStudiesRoute
   '/certifications': typeof CertificationsRoute
   '/contact': typeof ContactRoute
   '/contact-me': typeof ContactMeRoute
   '/contact-us': typeof ContactUsRoute
+  '/courses': typeof CoursesRoute
+  '/legal': typeof LegalRouteWithChildren
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
   '/my-certifications': typeof MyCertificationsRoute
   '/my-testimonials': typeof MyTestimonialsRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/press-release': typeof PressReleaseRoute
+  '/shop': typeof ShopRoute
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
+  '/about-me/my-journey': typeof AboutMeMyJourneyRoute
+  '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
+  '/about-me/vision-values': typeof AboutMeVisionValuesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/legal/our-terms': typeof LegalOurTermsRoute
+  '/legal/privacy-policy': typeof LegalPrivacyPolicyRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
   '/my-lifestyle/gaming-life': typeof MyLifestyleGamingLifeRoute
   '/my-lifestyle/hobbies': typeof MyLifestyleHobbiesRoute
+  '/portfolio/brands-businesses': typeof PortfolioBrandsBusinessesRoute
+  '/portfolio/creative-projects': typeof PortfolioCreativeProjectsRoute
+  '/portfolio/gaming-life': typeof PortfolioGamingLifeRoute
+  '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
@@ -357,32 +494,47 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about-me'
     | '/auth'
     | '/awards'
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/case-studies'
     | '/certifications'
     | '/contact'
     | '/contact-me'
     | '/contact-us'
+    | '/courses'
+    | '/legal'
     | '/log'
     | '/media-kit'
     | '/my-awards'
     | '/my-certifications'
     | '/my-testimonials'
+    | '/portfolio'
     | '/press-release'
+    | '/shop'
     | '/testimonials'
     | '/trust'
     | '/white-label-partnership'
     | '/admin'
     | '/import'
+    | '/about-me/my-journey'
+    | '/about-me/personal-life'
     | '/about-me/social-media'
+    | '/about-me/vision-values'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/legal/our-terms'
+    | '/legal/privacy-policy'
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/portfolio/brands-businesses'
+    | '/portfolio/creative-projects'
+    | '/portfolio/gaming-life'
+    | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
     | '/skills-expertise/ai-research-and-innovation'
@@ -395,32 +547,47 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about-me'
     | '/auth'
     | '/awards'
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/case-studies'
     | '/certifications'
     | '/contact'
     | '/contact-me'
     | '/contact-us'
+    | '/courses'
+    | '/legal'
     | '/log'
     | '/media-kit'
     | '/my-awards'
     | '/my-certifications'
     | '/my-testimonials'
+    | '/portfolio'
     | '/press-release'
+    | '/shop'
     | '/testimonials'
     | '/trust'
     | '/white-label-partnership'
     | '/admin'
     | '/import'
+    | '/about-me/my-journey'
+    | '/about-me/personal-life'
     | '/about-me/social-media'
+    | '/about-me/vision-values'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/legal/our-terms'
+    | '/legal/privacy-policy'
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/portfolio/brands-businesses'
+    | '/portfolio/creative-projects'
+    | '/portfolio/gaming-life'
+    | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
     | '/skills-expertise/ai-research-and-innovation'
@@ -434,32 +601,47 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about-me'
     | '/auth'
     | '/awards'
     | '/blog'
     | '/businesses'
     | '/careers'
+    | '/case-studies'
     | '/certifications'
     | '/contact'
     | '/contact-me'
     | '/contact-us'
+    | '/courses'
+    | '/legal'
     | '/log'
     | '/media-kit'
     | '/my-awards'
     | '/my-certifications'
     | '/my-testimonials'
+    | '/portfolio'
     | '/press-release'
+    | '/shop'
     | '/testimonials'
     | '/trust'
     | '/white-label-partnership'
     | '/_authenticated/admin'
     | '/_authenticated/import'
+    | '/about-me/my-journey'
+    | '/about-me/personal-life'
     | '/about-me/social-media'
+    | '/about-me/vision-values'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/legal/our-terms'
+    | '/legal/privacy-policy'
     | '/my-lifestyle/fitness-health'
     | '/my-lifestyle/gaming-life'
     | '/my-lifestyle/hobbies'
+    | '/portfolio/brands-businesses'
+    | '/portfolio/creative-projects'
+    | '/portfolio/gaming-life'
+    | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
     | '/skills-expertise/ai-research-and-innovation'
@@ -474,25 +656,30 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutMeRoute: typeof AboutMeRouteWithChildren
   AuthRoute: typeof AuthRoute
   AwardsRoute: typeof AwardsRoute
   BlogRoute: typeof BlogRouteWithChildren
   BusinessesRoute: typeof BusinessesRoute
   CareersRoute: typeof CareersRoute
+  CaseStudiesRoute: typeof CaseStudiesRoute
   CertificationsRoute: typeof CertificationsRoute
   ContactRoute: typeof ContactRoute
   ContactMeRoute: typeof ContactMeRoute
   ContactUsRoute: typeof ContactUsRoute
+  CoursesRoute: typeof CoursesRoute
+  LegalRoute: typeof LegalRouteWithChildren
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
   MyAwardsRoute: typeof MyAwardsRoute
   MyCertificationsRoute: typeof MyCertificationsRoute
   MyTestimonialsRoute: typeof MyTestimonialsRoute
+  PortfolioRoute: typeof PortfolioRouteWithChildren
   PressReleaseRoute: typeof PressReleaseRoute
+  ShopRoute: typeof ShopRoute
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
-  AboutMeSocialMediaRoute: typeof AboutMeSocialMediaRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
@@ -531,11 +718,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestimonialsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/press-release': {
       id: '/press-release'
       path: '/press-release'
       fullPath: '/press-release'
       preLoaderRoute: typeof PressReleaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/my-testimonials': {
@@ -573,6 +774,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses': {
+      id: '/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof CoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact-us': {
       id: '/contact-us'
       path: '/contact-us'
@@ -599,6 +814,13 @@ declare module '@tanstack/react-router' {
       path: '/certifications'
       fullPath: '/certifications'
       preLoaderRoute: typeof CertificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case-studies': {
+      id: '/case-studies'
+      path: '/case-studies'
+      fullPath: '/case-studies'
+      preLoaderRoute: typeof CaseStudiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/careers': {
@@ -634,6 +856,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about-me': {
+      id: '/about-me'
+      path: '/about-me'
+      fullPath: '/about-me'
+      preLoaderRoute: typeof AboutMeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -713,6 +942,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/websites': {
+      id: '/portfolio/websites'
+      path: '/websites'
+      fullPath: '/portfolio/websites'
+      preLoaderRoute: typeof PortfolioWebsitesRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/portfolio/gaming-life': {
+      id: '/portfolio/gaming-life'
+      path: '/gaming-life'
+      fullPath: '/portfolio/gaming-life'
+      preLoaderRoute: typeof PortfolioGamingLifeRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/portfolio/creative-projects': {
+      id: '/portfolio/creative-projects'
+      path: '/creative-projects'
+      fullPath: '/portfolio/creative-projects'
+      preLoaderRoute: typeof PortfolioCreativeProjectsRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/portfolio/brands-businesses': {
+      id: '/portfolio/brands-businesses'
+      path: '/brands-businesses'
+      fullPath: '/portfolio/brands-businesses'
+      preLoaderRoute: typeof PortfolioBrandsBusinessesRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
     '/my-lifestyle/hobbies': {
       id: '/my-lifestyle/hobbies'
       path: '/my-lifestyle/hobbies'
@@ -734,6 +991,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyLifestyleFitnessHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/privacy-policy': {
+      id: '/legal/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/legal/privacy-policy'
+      preLoaderRoute: typeof LegalPrivacyPolicyRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/our-terms': {
+      id: '/legal/our-terms'
+      path: '/our-terms'
+      fullPath: '/legal/our-terms'
+      preLoaderRoute: typeof LegalOurTermsRouteImport
+      parentRoute: typeof LegalRoute
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -748,12 +1019,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/about-me/vision-values': {
+      id: '/about-me/vision-values'
+      path: '/vision-values'
+      fullPath: '/about-me/vision-values'
+      preLoaderRoute: typeof AboutMeVisionValuesRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
     '/about-me/social-media': {
       id: '/about-me/social-media'
-      path: '/about-me/social-media'
+      path: '/social-media'
       fullPath: '/about-me/social-media'
       preLoaderRoute: typeof AboutMeSocialMediaRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
+    '/about-me/personal-life': {
+      id: '/about-me/personal-life'
+      path: '/personal-life'
+      fullPath: '/about-me/personal-life'
+      preLoaderRoute: typeof AboutMePersonalLifeRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
+    '/about-me/my-journey': {
+      id: '/about-me/my-journey'
+      path: '/my-journey'
+      fullPath: '/about-me/my-journey'
+      preLoaderRoute: typeof AboutMeMyJourneyRouteImport
+      parentRoute: typeof AboutMeRoute
     }
     '/_authenticated/import': {
       id: '/_authenticated/import'
@@ -785,6 +1077,23 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AboutMeRouteChildren {
+  AboutMeMyJourneyRoute: typeof AboutMeMyJourneyRoute
+  AboutMePersonalLifeRoute: typeof AboutMePersonalLifeRoute
+  AboutMeSocialMediaRoute: typeof AboutMeSocialMediaRoute
+  AboutMeVisionValuesRoute: typeof AboutMeVisionValuesRoute
+}
+
+const AboutMeRouteChildren: AboutMeRouteChildren = {
+  AboutMeMyJourneyRoute: AboutMeMyJourneyRoute,
+  AboutMePersonalLifeRoute: AboutMePersonalLifeRoute,
+  AboutMeSocialMediaRoute: AboutMeSocialMediaRoute,
+  AboutMeVisionValuesRoute: AboutMeVisionValuesRoute,
+}
+
+const AboutMeRouteWithChildren =
+  AboutMeRoute._addFileChildren(AboutMeRouteChildren)
+
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
 }
@@ -795,28 +1104,63 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface LegalRouteChildren {
+  LegalOurTermsRoute: typeof LegalOurTermsRoute
+  LegalPrivacyPolicyRoute: typeof LegalPrivacyPolicyRoute
+}
+
+const LegalRouteChildren: LegalRouteChildren = {
+  LegalOurTermsRoute: LegalOurTermsRoute,
+  LegalPrivacyPolicyRoute: LegalPrivacyPolicyRoute,
+}
+
+const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
+
+interface PortfolioRouteChildren {
+  PortfolioBrandsBusinessesRoute: typeof PortfolioBrandsBusinessesRoute
+  PortfolioCreativeProjectsRoute: typeof PortfolioCreativeProjectsRoute
+  PortfolioGamingLifeRoute: typeof PortfolioGamingLifeRoute
+  PortfolioWebsitesRoute: typeof PortfolioWebsitesRoute
+}
+
+const PortfolioRouteChildren: PortfolioRouteChildren = {
+  PortfolioBrandsBusinessesRoute: PortfolioBrandsBusinessesRoute,
+  PortfolioCreativeProjectsRoute: PortfolioCreativeProjectsRoute,
+  PortfolioGamingLifeRoute: PortfolioGamingLifeRoute,
+  PortfolioWebsitesRoute: PortfolioWebsitesRoute,
+}
+
+const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
+  PortfolioRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutMeRoute: AboutMeRouteWithChildren,
   AuthRoute: AuthRoute,
   AwardsRoute: AwardsRoute,
   BlogRoute: BlogRouteWithChildren,
   BusinessesRoute: BusinessesRoute,
   CareersRoute: CareersRoute,
+  CaseStudiesRoute: CaseStudiesRoute,
   CertificationsRoute: CertificationsRoute,
   ContactRoute: ContactRoute,
   ContactMeRoute: ContactMeRoute,
   ContactUsRoute: ContactUsRoute,
+  CoursesRoute: CoursesRoute,
+  LegalRoute: LegalRouteWithChildren,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
   MyAwardsRoute: MyAwardsRoute,
   MyCertificationsRoute: MyCertificationsRoute,
   MyTestimonialsRoute: MyTestimonialsRoute,
+  PortfolioRoute: PortfolioRouteWithChildren,
   PressReleaseRoute: PressReleaseRoute,
+  ShopRoute: ShopRoute,
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
-  AboutMeSocialMediaRoute: AboutMeSocialMediaRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
