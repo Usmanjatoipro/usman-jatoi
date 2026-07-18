@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-partnership'
+import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as PressReleaseRouteImport } from './routes/press-release'
 import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
@@ -37,6 +38,11 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
   id: '/white-label-partnership',
   path: '/white-label-partnership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestimonialsRoute = TestimonialsRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
   '/testimonials': typeof TestimonialsRoute
+  '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
   '/testimonials': typeof TestimonialsRoute
+  '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/import': typeof AuthenticatedImportRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/my-testimonials': typeof MyTestimonialsRoute
   '/press-release': typeof PressReleaseRoute
   '/testimonials': typeof TestimonialsRoute
+  '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/my-testimonials'
     | '/press-release'
     | '/testimonials'
+    | '/trust'
     | '/white-label-partnership'
     | '/admin'
     | '/import'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/my-testimonials'
     | '/press-release'
     | '/testimonials'
+    | '/trust'
     | '/white-label-partnership'
     | '/admin'
     | '/import'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/my-testimonials'
     | '/press-release'
     | '/testimonials'
+    | '/trust'
     | '/white-label-partnership'
     | '/_authenticated/admin'
     | '/_authenticated/import'
@@ -329,6 +341,7 @@ export interface RootRouteChildren {
   MyTestimonialsRoute: typeof MyTestimonialsRoute
   PressReleaseRoute: typeof PressReleaseRoute
   TestimonialsRoute: typeof TestimonialsRoute
+  TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/white-label-partnership'
       fullPath: '/white-label-partnership'
       preLoaderRoute: typeof WhiteLabelPartnershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/testimonials': {
@@ -549,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyTestimonialsRoute: MyTestimonialsRoute,
   PressReleaseRoute: PressReleaseRoute,
   TestimonialsRoute: TestimonialsRoute,
+  TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
