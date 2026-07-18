@@ -7,6 +7,11 @@ import {
   resetImport,
   claimAdminRole,
 } from "@/lib/wp-import.functions";
+import {
+  getMediaSyncStatus,
+  syncMediaChunk,
+  resetMediaSync,
+} from "@/lib/wp-media-sync.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -35,11 +40,23 @@ function ImportPage() {
   const runChunk = useServerFn(importChunk);
   const doReset = useServerFn(resetImport);
   const claim = useServerFn(claimAdminRole);
+  const fetchMediaStatus = useServerFn(getMediaSyncStatus);
+  const runMediaChunk = useServerFn(syncMediaChunk);
+  const doResetMedia = useServerFn(resetMediaSync);
   const [state, setState] = useState<State[]>([]);
   const [runningKind, setRunningKind] = useState<string | null>(null);
   const [autoKind, setAutoKind] = useState<string | null>(null);
   const stopRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
+  const [mediaStatus, setMediaStatus] = useState<{
+    total: number;
+    imported: number;
+    cursor: number;
+    status: string;
+    last_error: string | null;
+  } | null>(null);
+  const [mediaAuto, setMediaAuto] = useState(false);
+  const mediaStopRef = useRef(false);
 
   async function refresh() {
     try {
@@ -56,6 +73,63 @@ function ImportPage() {
     const t = setInterval(refresh, 3000);
     return () => clearInterval(t);
   }, []);
+
+  async function refreshMedia() {
+    try {
+      const s = (await fetchMediaStatus()) as any;
+      setMediaStatus(s);
+    } catch (e: any) {
+      // silent — admin errors already surfaced elsewhere
+    }
+  }
+
+  useEffect(() => {
+    refresh();
+    refreshMedia();
+    const t = setInterval(() => {
+      refresh();
+      refreshMedia();
+    }, 3000);
+    return () => clearInterval(t);
+  }, []);
+
+  async function runMediaOne() {
+    try {
+      const r = (await runMediaChunk({ data: {} })) as any;
+      const failed = (r.failures ?? []).length;
+      if (failed) toast.warning(`Media: +${r.processed} (${failed} failed)`);
+      else toast.success(`Media: +${r.processed} synced`);
+      refreshMedia();
+      return r;
+    } catch (e: any) {
+      toast.error(`Media: ${e.message}`);
+      throw e;
+    }
+  }
+
+  async function runMediaAll() {
+    setMediaAuto(true);
+    mediaStopRef.current = false;
+    try {
+      while (!mediaStopRef.current) {
+        const r = await runMediaOne();
+        if (r.done) {
+          toast.success("Media sync complete");
+          break;
+        }
+      }
+    } catch {
+      /* toast already fired */
+    } finally {
+      setMediaAuto(false);
+    }
+  }
+
+  async function onResetMedia() {
+    if (!confirm("Reset media sync progress? Files already uploaded stay in storage.")) return;
+    await doResetMedia();
+    refreshMedia();
+  }
 
   async function onClaim() {
     try {
@@ -142,6 +216,92 @@ function ImportPage() {
             </CardContent>
           </Card>
         )}
+
+        {mediaStatus && (
+          <Card className="border-primary/40">
+            <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+              <div>
+                <CardTitle className="text-base">Media sync (from XML export)</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Downloads all 609 attachments from usmanjatoi.com and stores them in Lovable Cloud Storage.
+                </p>
+              </div>
+              <Badge
+                variant={
+                  mediaStatus.status === "done"
+                    ? "default"
+                    : mediaStatus.status === "error"
+                      ? "destructive"
+                      : mediaStatus.status === "running"
+                        ? "secondary"
+                        : "outline"
+                }
+              >
+                {mediaStatus.status}
+              </Badge>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>
+                  {mediaStatus.imported.toLocaleString()} /{" "}
+                  {mediaStatus.total.toLocaleString()} files uploaded
+                </span>
+                <span className="text-muted-foreground">
+                  cursor {mediaStatus.cursor} / {mediaStatus.total}
+                </span>
+              </div>
+              <Progress
+                value={
+                  mediaStatus.total
+                    ? Math.round((mediaStatus.imported / mediaStatus.total) * 100)
+                    : 0
+                }
+              />
+              {mediaStatus.last_error && (
+                <p className="text-xs text-destructive break-words">
+                  {mediaStatus.last_error}
+                </p>
+              )}
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  size="sm"
+                  onClick={() => runMediaOne()}
+                  disabled={mediaAuto}
+                >
+                  Sync next batch
+                </Button>
+                {mediaAuto ? (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => (mediaStopRef.current = true)}
+                  >
+                    Stop
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={runMediaAll}
+                    disabled={mediaStatus.status === "done"}
+                  >
+                    Auto-sync until done
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onResetMedia}
+                  disabled={mediaAuto}
+                >
+                  Reset cursor
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+
 
         {state.map((s) => {
           const pct = s.total_items
