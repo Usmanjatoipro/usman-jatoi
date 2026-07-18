@@ -156,9 +156,9 @@ function Home() {
           top: 4px; left: 0; right: 0;
           width: 100% !important;
           z-index: 99999 !important;
-          background-color: color-mix(in oklab, rgba(255,255,255,0.92) calc(var(--scroll-theme) * 100%), rgba(10,10,14,0.85)) !important;
-          backdrop-filter: saturate(140%) blur(14px);
-          -webkit-backdrop-filter: saturate(140%) blur(14px);
+          background-color: color-mix(in oklab, rgba(255,255,255,0.92) calc(var(--scroll-theme) * 100%), transparent) !important;
+          backdrop-filter: saturate(140%) blur(calc(var(--scroll-theme) * 14px));
+          -webkit-backdrop-filter: saturate(140%) blur(calc(var(--scroll-theme) * 14px));
           box-shadow: none !important;
           border: 0 !important;
           transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1);
