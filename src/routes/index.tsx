@@ -443,35 +443,10 @@ function Home() {
         .usman-native-home .swiper-slide { min-width: 280px; }
         .usman-native-home .swiper-slide-image { width: 100%; height: auto; display: block; }
 
-        /* ============ Skills & Expertise icon fallbacks (no external font) ============ */
-        .usman-native-home .elementor-widget-icon .elementor-icon {
-          width: 72px; height: 72px;
-          display: inline-flex; align-items: center; justify-content: center;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #ff6ec4, #7873f5, #1fd1f9);
-          color: #fff !important;
-          text-decoration: none !important;
-          box-shadow: 0 8px 22px -10px rgba(120,115,245,0.55);
-        }
-        .usman-native-home .elementor-widget-icon .elementor-icon i {
-          font-style: normal; font-size: 32px; line-height: 1; color: #fff;
-        }
-        /* Replace missing custom-font glyphs with emoji */
-        .usman-native-home i.icon.icon-management::before { content: "👥"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-magic-wand::before { content: "✨"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-design::before { content: "🎨"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-code::before { content: "💻"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-seo::before { content: "📈"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-ai::before { content: "🤖"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-social::before { content: "📱"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-business::before { content: "🏢"; font-family: initial !important; }
-        .usman-native-home i.icon.icon-lead::before { content: "🎯"; font-family: initial !important; }
-        .usman-native-home i.icon[class*="icon-"]::before { font-family: initial !important; }
-        /* Elementor's own eicon fallbacks in case font failed */
-        .usman-native-home i.eicon-user-preferences::before {
-          font-family: eicons, initial;
-          content: "\\e8b8";
-        }
+        /* ============ Skills & Expertise — use native icon rendering ============ */
+        /* (Icon fonts eicons + elementskit are hosted locally in /public/fonts,
+           so icons render natively without gradient-circle fallbacks.) */
+
 
         /* ============ My Impact — restore proper colors (dark on white) ============ */
         /* Section wrapper background stays with body theme */
@@ -503,17 +478,31 @@ function Home() {
           -webkit-text-fill-color: #ffffff !important;
         }
 
-        /* ============ The Good Stuff — dark text on white ============ */
+        /* ============ The Good Stuff — section white bg, cards dark bg ============ */
         .usman-native-home .elementor-element-d15c148 {
           background: #ffffff !important;
         }
-        .usman-native-home .elementor-element-d15c148 h1,
-        .usman-native-home .elementor-element-d15c148 h2,
-        .usman-native-home .elementor-element-d15c148 h3,
-        .usman-native-home .elementor-element-d15c148 h4,
-        .usman-native-home .elementor-element-d15c148 p,
-        .usman-native-home .elementor-element-d15c148 span,
-        .usman-native-home .elementor-element-d15c148 a:not(.elementor-button) {
+        /* Section heading ("The Good Stuff") stays dark on white */
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child h1,
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child h2,
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child h3 {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        /* Card titles/text on dark card backgrounds — force white */
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h1,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h2,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h3,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading h4,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-heading .elementor-heading-title,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-text-editor,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-text-editor p,
+        .usman-native-home .elementor-element-d15c148 .elementor-widget-text-editor span {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+        }
+        /* But the very first (section title) widget-heading is dark - handled above */
+        .usman-native-home .elementor-element-d15c148 > .e-con-inner > .elementor-element:first-child .elementor-heading-title {
           color: #111 !important;
           -webkit-text-fill-color: #111 !important;
         }
