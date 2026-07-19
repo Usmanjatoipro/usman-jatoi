@@ -1,6 +1,24 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
-import { ChevronRight, Menu, X } from "lucide-react";
+import {
+  ChevronRight,
+  Menu,
+  X,
+  Instagram,
+  Facebook,
+  Linkedin,
+  Twitter,
+  Github,
+  Youtube,
+  Send as Telegram,
+  MessageCircle,
+  Globe,
+  Rss,
+  Pin,
+  PenTool,
+  Video,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 /* ---------------------------------------------------------------- */
 /*  Chrome assets — native header/footer only need local icon fonts. */
