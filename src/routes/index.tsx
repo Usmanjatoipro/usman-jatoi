@@ -763,7 +763,7 @@ function Home() {
         .usman-native-home > .elementor-element-55ef8f5 {
           position: relative !important;
           min-height: 92vh !important;
-          padding-top: clamp(2.5rem, 6vw, 5rem) !important;
+          padding-top: calc(clamp(2.5rem, 6vw, 5rem) + 60px) !important;
           padding-bottom: clamp(2.5rem, 5vw, 4rem) !important;
           display: flex !important;
           align-items: center !important;
@@ -771,7 +771,7 @@ function Home() {
         @media (max-width: 900px) {
           .usman-native-home > .elementor-element-55ef8f5 {
             min-height: auto !important;
-            padding-top: 6rem !important;
+            padding-top: calc(6rem + 60px) !important;
           }
         }
         /* Hero top accent bar (decorative "top section") */
