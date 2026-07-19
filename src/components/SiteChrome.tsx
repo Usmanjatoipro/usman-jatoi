@@ -185,18 +185,19 @@ const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; hre
 
 
 
-const SOCIAL_LINKS: { label: string; href: string; icon: string }[] = [
-  { label: "Google", href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d", icon: "fab fa-google" },
-  { label: "Instagram", href: "https://www.instagram.com/usmanjatoipro/", icon: "fab fa-instagram" },
-  { label: "Facebook", href: "https://www.facebook.com/Muhd.Usman418/", icon: "fab fa-facebook" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/usman-jatoi-pro/", icon: "fab fa-linkedin-in" },
-  { label: "X", href: "https://twitter.com/UsmanJatoiPro", icon: "fab fa-x-twitter" },
-  { label: "Pinterest", href: "https://www.pinterest.com/usmanjatoipro/", icon: "fab fa-pinterest" },
-  { label: "Reddit", href: "https://www.reddit.com/user/usmanjatoipro/", icon: "fab fa-reddit" },
-  { label: "GitHub", href: "https://github.com/Usmanjatoipro", icon: "fab fa-github" },
-  { label: "Medium", href: "https://medium.com/@usmanjatoipro", icon: "fab fa-medium" },
-  { label: "Vimeo", href: "https://vimeo.com/usmanjatoipro", icon: "fab fa-vimeo" },
-  { label: "WhatsApp", href: "https://web.whatsapp.com/send?phone=+1(209)7766324", icon: "fab fa-whatsapp" },
+const SOCIAL_LINKS: { label: string; href: string; Icon: LucideIcon }[] = [
+  { label: "Google", href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d", Icon: Globe },
+  { label: "Instagram", href: "https://www.instagram.com/usmanjatoipro/", Icon: Instagram },
+  { label: "Facebook", href: "https://www.facebook.com/Muhd.Usman418/", Icon: Facebook },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/usman-jatoi-pro/", Icon: Linkedin },
+  { label: "X", href: "https://twitter.com/UsmanJatoiPro", Icon: Twitter },
+  { label: "Pinterest", href: "https://www.pinterest.com/usmanjatoipro/", Icon: Pin },
+  { label: "Reddit", href: "https://www.reddit.com/user/usmanjatoipro/", Icon: Rss },
+  { label: "GitHub", href: "https://github.com/Usmanjatoipro", Icon: Github },
+  { label: "Medium", href: "https://medium.com/@usmanjatoipro", Icon: PenTool },
+  { label: "Vimeo", href: "https://vimeo.com/usmanjatoipro", Icon: Video },
+  { label: "YouTube", href: "https://www.youtube.com/@UsmanJatoi", Icon: Youtube },
+  { label: "WhatsApp", href: "https://web.whatsapp.com/send?phone=+1(209)7766324", Icon: MessageCircle },
 ];
 
 /* ---------------------------------------------------------------- */
