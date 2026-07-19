@@ -27,6 +27,7 @@ function stripScripts(html: string) {
 
 const homeBody = stripScripts(localizeUsmanAssets(homeBodyRaw));
 const homeStyles = localizeUsmanAssets(homeStylesRaw)
+  .replace(/[^{}]*(?:elementor-88520|elementor-88530|elementor-location-header|elementor-location-footer)[^{]*\{[^{}]*\}/gi, "")
   .replace(/\.elementor-kit-14\b/g, ".usman-native-home")
   .replace(/:not\(\.e-lazyloaded\):not\(\.e-no-lazyload\)/g, ".__lovable-never-match");
 
@@ -488,48 +489,7 @@ function Home() {
           transition: width 120ms linear;
         }
 
-        /* ============ Header ============ */
-        .usman-native-home header.elementor-location-header,
-        .usman-native-home header.elementor-location-header .elementor-sticky--active,
-        .usman-native-home header.elementor-location-header .elementor-sticky--effects {
-          position: fixed !important;
-          top: 4px; left: 0; right: 0;
-          width: 100% !important;
-          z-index: 99999 !important;
-          background-color: color-mix(in oklab, rgba(255,255,255,0.92) calc(var(--scroll-theme) * 100%), transparent) !important;
-          backdrop-filter: saturate(140%) blur(calc(var(--scroll-theme) * 14px));
-          -webkit-backdrop-filter: saturate(140%) blur(calc(var(--scroll-theme) * 14px));
-          box-shadow: none !important;
-          border: 0 !important;
-          transition: background-color 500ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .usman-native-home header.elementor-location-header::before,
-        .usman-native-home header.elementor-location-header::after,
-        .usman-native-home header.elementor-location-header > *::before,
-        .usman-native-home header.elementor-location-header > *::after {
-          background-image: none !important;
-          border: 0 !important;
-        }
-        .usman-native-home header.elementor-location-header .elementor-shape,
-        .usman-native-home header.elementor-location-header .elementor-shape-bottom,
-        .usman-native-home header.elementor-location-header .elementor-shape-top { display: none !important; }
-
-        .usman-native-home { padding-top: 84px; }
-        .usman-native-home header.elementor-location-header a,
-        .usman-native-home header.elementor-location-header .elementor-nav-menu a,
-        .usman-native-home header.elementor-location-header .elementor-item,
-        .usman-native-home header.elementor-location-header .elementor-heading-title,
-        .usman-native-home header.elementor-location-header p,
-        .usman-native-home header.elementor-location-header span {
-          color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
-          transition: color 500ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .usman-native-home header.elementor-location-header svg,
-        .usman-native-home header.elementor-location-header svg * {
-          fill: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff);
-          stroke: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff);
-          transition: fill 500ms cubic-bezier(0.22, 1, 0.36, 1), stroke 500ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
+        .usman-native-home { padding-top: 0; }
 
         html, body {
           background:
@@ -773,43 +733,6 @@ function Home() {
           -webkit-text-fill-color: #111 !important;
         }
 
-        /* ============ Header "Let's Talk" pill ============ */
-        .usman-native-home header.elementor-location-header a[href*="/contact-me/"] img {
-          display: none !important;
-        }
-        .usman-native-home header.elementor-location-header a[href*="/contact-me/"] {
-          position: relative;
-          display: inline-flex !important;
-          align-items: center;
-          justify-content: center;
-          min-width: 150px;
-          padding: 12px 26px !important;
-          border-radius: 999px !important;
-          border: 2px solid transparent !important;
-          background-origin: border-box !important;
-          background-clip: padding-box, border-box !important;
-          background-image:
-            linear-gradient(
-              color-mix(in oklab, #ffffff calc(var(--scroll-theme) * 100%), #0a0a0e),
-              color-mix(in oklab, #ffffff calc(var(--scroll-theme) * 100%), #0a0a0e)
-            ),
-            linear-gradient(45deg, #ff6ec4, #7873f5, #1fd1f9, #ff6ec4) !important;
-          background-size: auto, 300% 300% !important;
-          animation: usmanRainbowBorder 6s linear infinite;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-          text-decoration: none !important;
-        }
-        .usman-native-home header.elementor-location-header a[href*="/contact-me/"]::before {
-          content: "Let's Talk";
-          color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
-          font-size: 15px;
-        }
-        .usman-native-home header.elementor-location-header a[href*="/contact-me/"]::after {
-          content: "✦";
-          margin-left: 10px;
-          color: color-mix(in oklab, #0a0a0e calc(var(--scroll-theme) * 100%), #ffffff) !important;
-        }
       `}</style>
 
       <div
