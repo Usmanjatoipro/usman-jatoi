@@ -365,8 +365,48 @@ export function SiteHeader() {
 /* ---------------------------------------------------------------- */
 
 export function SiteFooter() {
+  const [dockVisible, setDockVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setDockVisible(window.scrollY > 400);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
     <footer className="bg-neutral-950 text-neutral-300">
+      {/* Sticky floating dock (fades in after scrolling) */}
+      <div
+        className={`pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4 transition-all duration-500 ease-out ${
+          dockVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+        }`}
+        aria-hidden={!dockVisible}
+      >
+        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-neutral-950/80 p-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+          <a href="/" aria-label="Home" className="h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
+            <img
+              src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </a>
+          {[
+            { label: "Services", href: "/services" },
+            { label: "About", href: "/about-me" },
+            { label: "Portfolio", href: "/portfolio" },
+            { label: "Contact", href: "/contact-me" },
+          ].map((b) => (
+            <a
+              key={b.href}
+              href={b.href}
+              className="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] text-white/85 transition hover:bg-white hover:text-neutral-950"
+            >
+              {b.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-20 md:px-10 lg:grid-cols-4 lg:gap-10">
         {/* Column 1: brand + pill nav */}
         <div>
@@ -420,33 +460,8 @@ export function SiteFooter() {
         ))}
       </div>
 
-      {/* Center avatar + pill nav row */}
-      <div className="mx-auto flex w-full max-w-[1440px] justify-center px-5 pb-8 md:px-10">
-        <div className="flex items-center gap-3">
-          <a href="/" aria-label="Home" className="h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
-            <img
-              src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </a>
-          {[
-            { label: "Services", href: "/services" },
-            { label: "About", href: "/about-me" },
-            { label: "Portfolio", href: "/portfolio" },
-            { label: "Contact", href: "/contact-me" },
-          ].map((b) => (
-            <a
-              key={b.href}
-              href={b.href}
-              className="rounded-full border border-white/15 px-5 py-2 text-xs font-medium uppercase tracking-[0.18em] text-white/85 transition hover:border-white/40 hover:bg-white hover:text-neutral-950"
-            >
-              {b.label}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* Center avatar + pill nav row — now rendered as a sticky dock above */}
+
 
       {/* Divider */}
       <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
