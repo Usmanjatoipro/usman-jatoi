@@ -124,11 +124,19 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const hideChrome =
+    pathname === "/" ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/import") ||
+    pathname.startsWith("/auth");
 
   return (
     <QueryClientProvider client={queryClient}>
+      {!hideChrome && <SiteHeader />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      {!hideChrome && <SiteFooter />}
     </QueryClientProvider>
   );
 }
