@@ -31,6 +31,38 @@ const homeStyles = localizeUsmanAssets(homeStylesRaw)
   .replace(/\.elementor-kit-14\b/g, ".usman-native-home")
   .replace(/:not\(\.e-lazyloaded\):not\(\.e-no-lazyload\)/g, ".__lovable-never-match");
 
+const HOME_ALLOWED_STYLES = new Set([
+  "/site-assets/frontend.min.css",
+  "/site-assets/widget-heading.min.css",
+  "/site-assets/widget-image.min.css",
+  "/site-assets/widget-progress-tracker.min.css",
+  "/site-assets/widget-icon-list.min.css",
+  "/site-assets/widget-form.min.css",
+  "/site-assets/fadeIn.min.css",
+  "/site-assets/widget-divider.min.css",
+  "/site-assets/fadeInUp.min.css",
+  "/site-assets/widget-social-icons.min.css",
+  "/site-assets/apple-webkit.min.css",
+  "/site-assets/slideInLeft.min.css",
+  "/site-assets/popup.min.css",
+  "/site-assets/elementor-icons.min.css",
+  "/site-assets/widget-video.min.css",
+  "/site-assets/swiper.min.css",
+  "/site-assets/e-swiper.min.css",
+  "/site-assets/widget-image-carousel.min.css",
+  "/site-assets/widget-nested-tabs.min.css",
+  "/site-assets/widget-nested-accordion.min.css",
+  "/site-assets/base-desktop.css",
+  "/site-assets/responsive.css",
+  "/site-assets/manrope.css",
+  "/site-assets/inter.css",
+  "/site-assets/css(1)",
+  "/site-assets/zeyada.css",
+  "/site-assets/fontawesome.min.css",
+  "/site-assets/solid.min.css",
+  "/site-assets/brands.min.css",
+]);
+
 export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
@@ -47,9 +79,7 @@ export const Route = createFileRoute("/")({
       ...homeLinks
         .filter((link: any) => {
           const href = String(link.href || "");
-          return !/reset\.css|theme\.css|header-footer\.css|woocommerce|\/wc-|tutor-|wbb-|saboxplugin|sabox-|wp-emoji|wp-img-auto-sizes|mystickyelements|intl-tel-input|photoswipe|flexslider|order-attribution|widget-styles\.css|eael-general|general\.min\.css/i.test(
-            href,
-          );
+          return HOME_ALLOWED_STYLES.has(href);
         })
         .map((link) => ({ ...link })),
       { rel: "canonical", href: SITE_URL },
