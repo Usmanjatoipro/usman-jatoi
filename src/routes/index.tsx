@@ -762,22 +762,23 @@ function Home() {
         /* ============ Hero: extend bg under header + taller ============ */
         .usman-native-home .elementor-element-55ef8f5 {
           position: relative !important;
-          min-height: 115vh !important;
+          min-height: 100vh !important;
           margin-top: -120px !important;
-          padding-top: calc(120px + clamp(3rem, 7vw, 6rem)) !important;
-          padding-bottom: clamp(1rem, 2vw, 2rem) !important;
+          padding-top: calc(120px + clamp(2rem, 5vw, 4rem)) !important;
+          padding-bottom: 0 !important;
           display: flex !important;
           align-items: center !important;
+          background-color: #000 !important;
         }
         @media (max-width: 900px) {
           .usman-native-home .elementor-element-55ef8f5 {
             min-height: auto !important;
             margin-top: -100px !important;
-            padding-top: calc(100px + 5rem) !important;
+            padding-top: calc(100px + 4rem) !important;
           }
         }
-        /* Hero top accent bar */
-        .usman-native-home .elementor-element-55ef8f5::before {
+        /* Hero top accent bar — use ::after so we don't overwrite Elementor's ::before bg image */
+        .usman-native-home .elementor-element-55ef8f5::after {
           content: "";
           position: absolute;
           top: 0; left: 0; right: 0;
@@ -786,8 +787,10 @@ function Home() {
           background-size: 300% 100%;
           animation: usmanRainbowBorder 6s linear infinite;
           opacity: .9;
-          z-index: 2;
+          z-index: 3;
+          pointer-events: none;
         }
+
 
         /* Marquee: bigger, always visible band */
         .usman-native-home .marquee-container {
