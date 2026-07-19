@@ -48,3 +48,4 @@ _Every user prompt in this project, in order. Paraphrased for compactness._
 42. Import all posts with full 70/30 template matching the reference screenshot.
 43. Fix header/footer linking + trailing slashes; add missing routes.
 44. Create cave/ architecture docs (this system) and keep them updated.
+45. Import all pages + posts + media via WXR XML (Drive-hosted) to avoid connector credit spend: parsed `pages.xml` (21,614 pages) and `media.zip` (609 attachments) with lxml iterparse, bulk-loaded via `psql \copy` into `wp_posts` + `wp_media`, rehosted all 609 media into `wp-media` Supabase storage bucket via service-role Storage API + PostgREST PATCH (100% success). Added `src/routes/$.tsx` splat page template that resolves any unmatched path against `wp_posts.path`, renders hero + featured image + WordPress HTML content + related grid, with per-page SEO (seo_title/seo_description → meta + og + canonical).
