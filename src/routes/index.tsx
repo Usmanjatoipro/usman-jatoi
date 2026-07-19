@@ -760,7 +760,7 @@ function Home() {
         }
 
         /* ============ Hero: extend bg under header + taller ============ */
-        .usman-native-home > .elementor-element-55ef8f5 {
+        .usman-native-home .elementor-element-55ef8f5 {
           position: relative !important;
           min-height: 115vh !important;
           margin-top: -120px !important;
@@ -770,14 +770,14 @@ function Home() {
           align-items: center !important;
         }
         @media (max-width: 900px) {
-          .usman-native-home > .elementor-element-55ef8f5 {
+          .usman-native-home .elementor-element-55ef8f5 {
             min-height: auto !important;
             margin-top: -100px !important;
             padding-top: calc(100px + 5rem) !important;
           }
         }
-        /* Hero top accent bar (decorative "top section") */
-        .usman-native-home > .elementor-element-55ef8f5::before {
+        /* Hero top accent bar */
+        .usman-native-home .elementor-element-55ef8f5::before {
           content: "";
           position: absolute;
           top: 0; left: 0; right: 0;
@@ -788,6 +788,21 @@ function Home() {
           opacity: .9;
           z-index: 2;
         }
+
+        /* Marquee: bigger, always visible band */
+        .usman-native-home .marquee-container {
+          padding: 1.25rem 0 !important;
+          border-top: 1px solid rgba(0,0,0,.06);
+          border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+        .usman-native-home .marquee span {
+          font-size: clamp(1.5rem, 3vw, 2.75rem) !important;
+          font-weight: 800 !important;
+          letter-spacing: -0.01em !important;
+          padding: 0 2.5rem !important;
+          white-space: nowrap;
+        }
+        .usman-native-home .marquee { animation-duration: 60s !important; }
 
         /* Force FontAwesome icons to render (checkmarks etc.) */
         .usman-native-home .elementor-icon-list-icon i.fas,
