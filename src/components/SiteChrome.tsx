@@ -348,15 +348,28 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="site-footer bg-neutral-950 text-neutral-300">
-      <div className="grid w-full gap-12 px-5 py-20 md:px-10 lg:grid-cols-4 lg:gap-10">
-        {/* Column 1: brand */}
+      <div className="grid w-full gap-14 px-6 py-20 md:px-12 lg:grid-cols-[1.15fr_1fr_1fr_1fr] lg:gap-12">
+        {/* Column 1: brand + primary nav pills */}
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white">
             Usman Jatoi
           </p>
-          <p className="mt-6 max-w-xs text-sm leading-relaxed text-neutral-400">
+          <p className="mt-5 max-w-xs text-sm leading-relaxed text-neutral-400">
             Digital entrepreneur and a full-stack digital expert.
           </p>
+          <ul className="mt-8 max-w-[260px] space-y-2.5">
+            {PRIMARY_NAV.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  className="group flex items-center justify-between rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-[13px] font-medium text-neutral-200 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight className="h-4 w-4 text-neutral-500 transition group-hover:translate-x-0.5 group-hover:text-white" />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Columns 2-4: link groups */}
@@ -364,7 +377,7 @@ export function SiteFooter() {
           <div key={idx} className="space-y-10">
             {column.map((group) => (
               <div key={group.title}>
-                <h4 className="text-[15px] font-medium text-white">
+                <h4 className="text-[15px] font-semibold tracking-tight text-white">
                   {group.href ? (
                     <a href={group.href} className="hover:text-amber-300">
                       {group.title}
@@ -384,45 +397,52 @@ export function SiteFooter() {
                 </ul>
               </div>
             ))}
+
+            {/* Newsletter under column 4 */}
+            {idx === FOOTER_GROUPS.length - 1 && (
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="mt-10 flex items-center gap-2 border-b border-white/15 pb-2 focus-within:border-white/40"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="Email"
+                  className="min-w-0 flex-1 bg-transparent py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:text-amber-300"
+                >
+                  Send
+                </button>
+              </form>
+            )}
           </div>
         ))}
       </div>
 
       {/* Divider */}
-      <div className="w-full px-5 md:px-10">
+      <div className="w-full px-6 md:px-12">
         <div className="h-px w-full bg-white/10" />
       </div>
 
-
       {/* Bottom bar */}
-      <div className="flex w-full flex-col gap-6 px-5 py-8 md:flex-row md:items-center md:justify-between md:px-10">
-
-        <p className="text-sm text-neutral-400">
+      <div className="grid w-full grid-cols-1 items-center gap-6 px-6 py-8 md:grid-cols-3 md:px-12">
+        <p className="text-sm text-neutral-400 md:justify-self-start">
           © {new Date().getFullYear()} Usman Jatoi Pro&nbsp;|&nbsp;Designed by{" "}
           <a href="http://redsglow.com/" target="_blank" rel="noopener" className="text-white hover:text-amber-300">
             Redsglow.com
           </a>
         </p>
 
-        <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-400">
-          <li>
-            <a href="/sitemap.xml" className="hover:text-white">
-              Sitemap
-            </a>
-          </li>
-          <li>
-            <a href="/legal/privacy-policy" className="hover:text-white">
-              Privacy Policy
-            </a>
-          </li>
-          <li>
-            <a href="/legal/our-terms" className="hover:text-white">
-              Our Terms
-            </a>
-          </li>
+        <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-400 md:justify-self-center">
+          <li><a href="/sitemap.xml" className="hover:text-white">Sitemap</a></li>
+          <li><a href="/legal/privacy-policy" className="hover:text-white">Privacy Policy</a></li>
+          <li><a href="/legal/our-terms" className="hover:text-white">Our Terms</a></li>
         </ul>
 
-        <ul className="flex flex-wrap items-center gap-2">
+        <ul className="flex flex-wrap items-center gap-1.5 md:justify-self-end">
           {SOCIAL_LINKS.map((s) => (
             <li key={s.label}>
               <a
@@ -430,7 +450,7 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener"
                 aria-label={s.label}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-neutral-300 transition hover:bg-white hover:text-neutral-950"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 transition hover:bg-white hover:text-neutral-950"
               >
                 <i className={s.icon} aria-hidden="true" />
               </a>
@@ -438,8 +458,8 @@ export function SiteFooter() {
           ))}
         </ul>
       </div>
-
     </footer>
   );
 }
+
 
