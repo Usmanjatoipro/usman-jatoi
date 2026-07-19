@@ -194,6 +194,7 @@ const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; hre
 ];
 
 
+
 const SOCIAL_LINKS: { label: string; href: string; icon: string }[] = [
   { label: "Google", href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d", icon: "fab fa-google" },
   { label: "Instagram", href: "https://www.instagram.com/usmanjatoipro/", icon: "fab fa-instagram" },
@@ -243,14 +244,26 @@ export function SiteHeader() {
 
   return (
     <>
+      <style>{`
+        header.site-header, header.site-header a, header.site-header button { color: inherit; border-color: transparent; }
+        header.site-header a { text-decoration: none; }
+        header.site-header, header.site-header * { border-bottom-color: transparent !important; }
+        footer.site-footer { color: rgb(212 212 212); background: #0a0a0a; }
+        footer.site-footer a { color: inherit; text-decoration: none; }
+        footer.site-footer a:hover { color: #fff; }
+        footer.site-footer h4, footer.site-footer .footer-brand { color: #fff; }
+        footer.site-footer input { color: #fff; background: transparent; }
+      `}</style>
+
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-500 ${
+        className={`site-header fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-500 ${
           scrolled
             ? "bg-white/85 text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.06)] backdrop-blur-lg"
             : "bg-transparent text-white"
         }`}
       >
         <div className="mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 md:px-10">
+
           {/* Left: hamburger */}
           <div className="flex justify-start">
             <button
@@ -373,7 +386,7 @@ export function SiteFooter() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return (
-    <footer className="bg-neutral-950 text-neutral-300">
+    <footer className="site-footer bg-neutral-950 text-neutral-300">
       {/* Sticky floating dock (fades in after scrolling) */}
       <div
         className={`pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4 transition-all duration-500 ease-out ${
@@ -456,23 +469,64 @@ export function SiteFooter() {
                 </ul>
               </div>
             ))}
+            {idx === FOOTER_GROUPS.length - 1 && (
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="mt-10 flex items-center gap-3 border-b border-white/15 pb-2"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="Email"
+                  className="flex-1 bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="text-xs font-semibold uppercase tracking-[0.24em] text-white transition hover:text-amber-300"
+                >
+                  Send
+                </button>
+              </form>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Center avatar + pill nav row — now rendered as a sticky dock above */}
 
+
+      {/* Center avatar + pill nav row (static) */}
+      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-center gap-4 px-5 pb-8 md:px-10">
+        <a href="/" aria-label="Home" className="h-11 w-11 overflow-hidden rounded-full ring-1 ring-white/15">
+          <img
+            src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
+            alt=""
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </a>
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { label: "Services", href: "/services" },
+            { label: "About", href: "/about-me" },
+            { label: "Portfolio", href: "/portfolio" },
+            { label: "Contact", href: "/contact-me" },
+          ].map((b) => (
+            <a
+              key={b.href}
+              href={b.href}
+              className="rounded-full border border-white/20 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 transition hover:bg-white hover:text-neutral-950"
+            >
+              {b.label}
+            </a>
+          ))}
+        </div>
+      </div>
 
       {/* Divider */}
       <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
         <div className="h-px w-full bg-white/10" />
       </div>
 
-
-      {/* Divider */}
-      <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
-        <div className="h-px w-full bg-white/10" />
-      </div>
 
       {/* Bottom bar */}
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-5 py-8 md:flex-row md:items-center md:justify-between md:px-10">
