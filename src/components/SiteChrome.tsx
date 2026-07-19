@@ -320,8 +320,6 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Spacer so page content doesn't sit under the fixed header */}
-      <div aria-hidden className="h-[75px]" />
     </>
   );
 }
