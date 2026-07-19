@@ -244,13 +244,16 @@ export function SiteHeader() {
   return (
     <>
       <style>{`
-        header.site-header, header.site-header a, header.site-header button { color: inherit; }
+        header.site-header, header.site-header a, header.site-header button { color: inherit; border-color: transparent; }
         header.site-header a { text-decoration: none; }
-        footer.site-footer { color: rgb(212 212 212); }
+        header.site-header, header.site-header * { border-bottom-color: transparent !important; }
+        footer.site-footer { color: rgb(212 212 212); background: #0a0a0a; }
         footer.site-footer a { color: inherit; text-decoration: none; }
+        footer.site-footer a:hover { color: #fff; }
         footer.site-footer h4, footer.site-footer .footer-brand { color: #fff; }
-        footer.site-footer input { color: #fff; }
+        footer.site-footer input { color: #fff; background: transparent; }
       `}</style>
+
       <header
         className={`site-header fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-500 ${
           scrolled
