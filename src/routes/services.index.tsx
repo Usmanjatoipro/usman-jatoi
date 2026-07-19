@@ -251,8 +251,9 @@ function ServicesPage() {
           ))}
         </div>
 
+        <ServiceDirectory />
+
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold sm:text-3xl">How we work</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {process.map((p) => (
               <div
