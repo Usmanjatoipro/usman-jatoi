@@ -19,6 +19,7 @@ function localizeUsmanAssets(value: string) {
 }
 
 const HEAD_JUNK_PATTERNS = [
+  /hello-elementor/i,
   /woocommerce/i,
   /\bwc-/i,
   /tutor-/i,
@@ -37,23 +38,30 @@ const HEAD_JUNK_PATTERNS = [
   /\/reset\.css/i,
   /\/theme\.css/i,
   /header-footer\.css/i,
+  /elementor-location-header|elementor-location-footer/i,
+  /elementor-88520|elementor-88530/i,
 ];
 
 
 function injectHomeHeadAssets() {
   if (typeof document === "undefined") return;
   if (document.getElementById("usman-chrome-head")) return;
-  const container = document.createElement("div");
-  container.id = "usman-chrome-head";
-  container.style.display = "none";
+  const marker = document.createElement("meta");
+  marker.id = "usman-chrome-head";
+  const container = document.createElement("template");
   container.innerHTML = localizeUsmanAssets(homeHeadRaw)
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
-  Array.from(container.querySelectorAll("link, style")).forEach((node) => {
-    if (HEAD_JUNK_PATTERNS.some((rx) => rx.test(node.outerHTML))) return;
-    document.head.appendChild(node);
+  Array.from(container.content.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).forEach((node) => {
+    const source = [node.id, node.href, node.getAttribute("href"), node.outerHTML].join(" ");
+    if (HEAD_JUNK_PATTERNS.some((rx) => rx.test(source))) return;
+    const href = node.getAttribute("href");
+    if (href && document.head.querySelector(`link[rel="stylesheet"][href="${CSS.escape(href)}"]`)) return;
+    const clone = node.cloneNode(true) as HTMLLinkElement;
+    clone.dataset.usmanHeadAsset = "true";
+    document.head.appendChild(clone);
   });
-  document.head.appendChild(container);
+  document.head.appendChild(marker);
 }
 injectHomeHeadAssets();
 
