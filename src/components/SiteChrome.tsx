@@ -243,14 +243,23 @@ export function SiteHeader() {
 
   return (
     <>
+      <style>{`
+        header.site-header, header.site-header a, header.site-header button { color: inherit; }
+        header.site-header a { text-decoration: none; }
+        footer.site-footer { color: rgb(212 212 212); }
+        footer.site-footer a { color: inherit; text-decoration: none; }
+        footer.site-footer h4, footer.site-footer .footer-brand { color: #fff; }
+        footer.site-footer input { color: #fff; }
+      `}</style>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-500 ${
+        className={`site-header fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-500 ${
           scrolled
             ? "bg-white/85 text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.06)] backdrop-blur-lg"
             : "bg-transparent text-white"
         }`}
       >
         <div className="mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 md:px-10">
+
           {/* Left: hamburger */}
           <div className="flex justify-start">
             <button
