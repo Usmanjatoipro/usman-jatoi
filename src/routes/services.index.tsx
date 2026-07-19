@@ -316,3 +316,152 @@ function ServicesPage() {
     </main>
   );
 }
+
+const ICONS: Record<string, string> = {
+  ai: "🤖", "bulk-publishing": "📚", consulting: "🧭", content: "✍️",
+  conversion: "🎯", creative: "🎨", digital: "💻", dubbing: "🎙️",
+  game: "🎮", investment: "📈", "lead-generaton": "🧲", legal: "⚖️",
+  management: "🗂️", marketing: "📣", monetization: "💰", operations: "⚙️",
+  pr: "📰", product: "📦", researching: "🔬", security: "🛡️",
+  "social-media": "🌐", startup: "🚀", supports: "🤝",
+  "technical-skills": "🛠️", training: "🎓", web: "🕸️", web3: "⛓️",
+};
+
+function decodeHtml(s: string) {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&#8211;/g, "–")
+    .replace(/&#8217;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function ServiceDirectory() {
+  const [q, setQ] = useState("");
+  const { data, isLoading } = useQuery({
+    queryKey: ["service-directory"],
+    queryFn: async () => {
+      const top = await supabase
+        .from("wp_posts")
+        .select("id, slug, title, excerpt, path")
+        .eq("post_type", "page")
+        .eq("status", "publish")
+        .like("path", "/services/%")
+        .order("title", { ascending: true });
+      const items = (top.data || []).filter((p: any) =>
+        /^\/services\/[^/]+\/?$/.test(p.path || ""),
+      );
+      const counts = await supabase
+        .from("wp_posts")
+        .select("path")
+        .eq("post_type", "page")
+        .eq("status", "publish")
+        .like("path", "/services/%");
+      const countMap: Record<string, number> = {};
+      for (const r of counts.data || []) {
+        const m = /^\/services\/([^/]+)\//.exec((r as any).path || "");
+        if (m) countMap[m[1]] = (countMap[m[1]] || 0) + 1;
+      }
+      return items.map((p: any) => {
+        const slug = (p.path || "").split("/").filter(Boolean)[1] || p.slug;
+        return {
+          slug,
+          path: p.path,
+          title: decodeHtml(p.title || slug),
+          excerpt: p.excerpt ? decodeHtml(p.excerpt).slice(0, 120) : "",
+          count: Math.max(0, (countMap[slug] || 1) - 1),
+        };
+      });
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const filtered = useMemo(() => {
+    const list = data || [];
+    if (!q.trim()) return list;
+    const needle = q.toLowerCase();
+    return list.filter(
+      (s) => s.title.toLowerCase().includes(needle) || s.slug.includes(needle),
+    );
+  }, [data, q]);
+
+  return (
+    <section className="mt-20">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <span className="inline-block rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium uppercase tracking-widest text-neutral-600">
+            Full service catalog
+          </span>
+          <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
+            Explore every service line
+          </h2>
+          <p className="mt-2 max-w-xl text-neutral-600">
+            {data ? `${data.length} core service lines` : "Loading services"}
+            {data && data.reduce((a, s) => a + s.count, 0) > 0
+              ? ` · ${data.reduce((a, s) => a + s.count, 0)}+ specialized sub-pages`
+              : ""}
+            . Search or click through to a discipline.
+          </p>
+        </div>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search services…"
+          className="w-full max-w-xs rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm outline-none focus:border-neutral-900 sm:w-64"
+        />
+      </div>
+
+      {isLoading ? (
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-28 animate-pulse rounded-2xl border border-neutral-200 bg-neutral-50"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((s) => (
+            <a
+              key={s.slug}
+              href={s.path}
+              className="group relative flex items-start gap-3 overflow-hidden rounded-2xl border border-neutral-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-neutral-900 hover:shadow-lg"
+            >
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-50 to-neutral-100 text-xl">
+                {ICONS[s.slug] || "✨"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="truncate font-semibold text-neutral-900">
+                    {s.title}
+                  </h3>
+                  {s.count > 0 && (
+                    <span className="flex-shrink-0 rounded-full bg-neutral-900 px-2 py-0.5 text-[10px] font-medium text-white">
+                      {s.count}
+                    </span>
+                  )}
+                </div>
+                {s.excerpt && (
+                  <p className="mt-1 line-clamp-2 text-sm text-neutral-600">
+                    {s.excerpt}
+                  </p>
+                )}
+                <span className="mt-2 inline-flex text-xs font-medium text-neutral-500 group-hover:text-neutral-900">
+                  Explore →
+                </span>
+              </div>
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-[linear-gradient(90deg,#ff2d55,#ff9500,#ffcc00,#34c759,#5ac8fa,#af52de)] transition-transform duration-300 group-hover:scale-x-100" />
+            </a>
+          ))}
+          {filtered.length === 0 && (
+            <div className="col-span-full rounded-2xl border border-dashed border-neutral-200 p-8 text-center text-neutral-500">
+              No services match "{q}".
+            </div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
