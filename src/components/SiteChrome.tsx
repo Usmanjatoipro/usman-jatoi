@@ -47,6 +47,30 @@ function useSpaLinkIntercept() {
   }, [router]);
 }
 
+// Junk we DON'T need — this stuff came from WordPress/WooCommerce/Tutor LMS/
+// EmbedPress etc. and has nothing to do with the header/footer/homepage design.
+const HEAD_JUNK_PATTERNS = [
+  /woocommerce/i,
+  /\bwc-/i,
+  /tutor-/i,
+  /wbb-/i,
+  /saboxplugin|sabox-/i,
+  /wp-emoji/i,
+  /wp-img-auto-sizes/i,
+  /mystickyelements/i,
+  /intl-tel-input|intlTelInput/i,
+  /googleidentityservice/i,
+  /photoswipe/i,
+  /flexslider/i,
+  /order-attribution/i,
+  /ekit-widget-styles|widget-styles\.css/i,
+  /eael-general|general\.min\.css/i,
+];
+
+function isJunkNode(html: string) {
+  return HEAD_JUNK_PATTERNS.some((rx) => rx.test(html));
+}
+
 function injectHomeHeadAssets() {
   if (typeof document === "undefined") return;
   if (document.getElementById("usman-chrome-head")) return;
@@ -57,7 +81,10 @@ function injectHomeHeadAssets() {
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
   const nodes = Array.from(container.querySelectorAll("link, style"));
-  nodes.forEach((node) => document.head.appendChild(node));
+  nodes.forEach((node) => {
+    if (isJunkNode(node.outerHTML)) return;
+    document.head.appendChild(node);
+  });
   document.head.appendChild(container);
 }
 
