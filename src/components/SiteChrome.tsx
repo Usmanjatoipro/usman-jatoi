@@ -471,7 +471,7 @@ export function SiteFooter() {
                 aria-label={s.label}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 transition hover:bg-white hover:text-neutral-950"
               >
-                <i className={s.icon} aria-hidden="true" />
+                <s.Icon className="h-4 w-4" aria-hidden="true" strokeWidth={1.75} />
               </a>
             </li>
           ))}
