@@ -759,6 +759,57 @@ function Home() {
           -webkit-text-fill-color: #111 !important;
         }
 
+        /* ============ Hero: taller + top breathing room + working icons ============ */
+        .usman-native-home > .elementor-element-55ef8f5 {
+          position: relative !important;
+          min-height: 92vh !important;
+          padding-top: clamp(2.5rem, 6vw, 5rem) !important;
+          padding-bottom: clamp(2.5rem, 5vw, 4rem) !important;
+          display: flex !important;
+          align-items: center !important;
+        }
+        @media (max-width: 900px) {
+          .usman-native-home > .elementor-element-55ef8f5 {
+            min-height: auto !important;
+            padding-top: 6rem !important;
+          }
+        }
+        /* Hero top accent bar (decorative "top section") */
+        .usman-native-home > .elementor-element-55ef8f5::before {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 3px;
+          background: linear-gradient(90deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4);
+          background-size: 300% 100%;
+          animation: usmanRainbowBorder 6s linear infinite;
+          opacity: .9;
+          z-index: 2;
+        }
+
+        /* Force FontAwesome icons to render (checkmarks etc.) */
+        .usman-native-home .elementor-icon-list-icon i.fas,
+        .usman-native-home .elementor-icon-list-icon i.fa-solid,
+        .usman-native-home i.fas, .usman-native-home i.fa-solid {
+          font-family: "Font Awesome 5 Free", "Font Awesome 6 Free" !important;
+          font-weight: 900 !important;
+          font-style: normal !important;
+          display: inline-block;
+          line-height: 1;
+        }
+        .usman-native-home .elementor-icon-list-icon i.fab,
+        .usman-native-home i.fab {
+          font-family: "Font Awesome 5 Brands", "Font Awesome 6 Brands" !important;
+          font-weight: 400 !important;
+          font-style: normal !important;
+        }
+        .usman-native-home .elementor-icon-list-icon {
+          min-width: 1.25em;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
       `}</style>
 
       <div
