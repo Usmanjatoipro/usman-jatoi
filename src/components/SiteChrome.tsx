@@ -291,19 +291,7 @@ export function SiteHeader() {
         </div>
 
 
-        {/* Scroll progress bar */}
-        <div className="h-[3px] w-full bg-black/10">
-          <div
-            className="h-full transition-[width] duration-150"
-            style={{
-              width: `${progress * 100}%`,
-              backgroundImage:
-                "linear-gradient(90deg,#ff2d55,#ff9500,#ffcc00,#34c759,#00c7be,#007aff,#5856d6,#af52de,#ff2d55)",
-              backgroundSize: "200% 100%",
-              animation: "chrome-rainbow 6s linear infinite",
-            }}
-          />
-        </div>
+
       </header>
 
       <style>{`@keyframes chrome-rainbow{0%{background-position:0% 50%}100%{background-position:200% 50%}}`}</style>
