@@ -499,50 +499,7 @@ export function SiteFooter() {
         </ul>
       </div>
 
-      {/* Floating sticky quick-nav pill (desktop only) */}
-      <FloatingQuickNav />
     </footer>
   );
 }
 
-function FloatingQuickNav() {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return (
-    <div
-      className={`pointer-events-none fixed inset-x-0 bottom-5 z-40 hidden justify-center transition-all duration-500 md:flex ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-      }`}
-    >
-      <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-neutral-950/90 px-2 py-2 shadow-2xl backdrop-blur-xl">
-        <a href="/" className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white/10">
-          <img
-            src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
-            alt=""
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
-        </a>
-        {[
-          { label: "Services", href: "/services" },
-          { label: "About", href: "/about-me" },
-          { label: "Portfolio", href: "/portfolio" },
-          { label: "Contact", href: "/contact-me" },
-        ].map((b) => (
-          <a
-            key={b.href}
-            href={b.href}
-            className="rounded-full px-4 py-2 text-sm font-medium text-white/90 transition hover:bg-white hover:text-neutral-950"
-          >
-            {b.label}
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
