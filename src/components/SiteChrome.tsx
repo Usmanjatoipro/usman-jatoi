@@ -380,7 +380,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="site-footer bg-neutral-950 text-neutral-300">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-20 md:px-10 lg:grid-cols-4 lg:gap-10">
+      <div className="grid w-full gap-12 px-5 py-20 md:px-10 lg:grid-cols-4 lg:gap-10">
         {/* Column 1: brand */}
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white">
@@ -420,45 +420,15 @@ export function SiteFooter() {
         ))}
       </div>
 
-
-
-
-      {/* Center avatar + pill nav row (static) */}
-      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-center gap-4 px-5 pb-8 md:px-10">
-        <a href="/" aria-label="Home" className="h-11 w-11 overflow-hidden rounded-full ring-1 ring-white/15">
-          <img
-            src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
-            alt=""
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
-        </a>
-        <div className="flex flex-wrap items-center gap-2">
-          {[
-            { label: "Services", href: "/services" },
-            { label: "About", href: "/about-me" },
-            { label: "Portfolio", href: "/portfolio" },
-            { label: "Contact", href: "/contact-me" },
-          ].map((b) => (
-            <a
-              key={b.href}
-              href={b.href}
-              className="rounded-full border border-white/20 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 transition hover:bg-white hover:text-neutral-950"
-            >
-              {b.label}
-            </a>
-          ))}
-        </div>
-      </div>
-
       {/* Divider */}
-      <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
+      <div className="w-full px-5 md:px-10">
         <div className="h-px w-full bg-white/10" />
       </div>
 
 
       {/* Bottom bar */}
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-5 py-8 md:flex-row md:items-center md:justify-between md:px-10">
+      <div className="flex w-full flex-col gap-6 px-5 py-8 md:flex-row md:items-center md:justify-between md:px-10">
+
         <p className="text-sm text-neutral-400">
           © {new Date().getFullYear()} Usman Jatoi Pro&nbsp;|&nbsp;Designed by{" "}
           <a href="http://redsglow.com/" target="_blank" rel="noopener" className="text-white hover:text-amber-300">
