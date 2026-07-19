@@ -2,68 +2,32 @@ import { useEffect, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { ChevronRight, Menu, X } from "lucide-react";
 
-import homeHeadRaw from "../data/homeHead.html?raw";
-
 /* ---------------------------------------------------------------- */
-/*  Head-asset injection — needed only for the homepage Elementor    */
-/*  body content. Header/footer no longer depend on it.              */
+/*  Chrome assets — native header/footer only need local icon fonts. */
 /* ---------------------------------------------------------------- */
 
-function localizeUsmanAssets(value: string) {
-  return value
-    .replace(
-      /https:\/\/usmanjatoi\.com\/wp-content\/uploads\/\d{4}\/\d{2}\/([^\s"'(),<>]+)/g,
-      (_m, fileName: string) => `/site-assets/${fileName.replace(/&amp;/g, "&")}`,
-    )
-    .replace(/https:\/\/usmanjatoi\.com\//g, "/");
-}
-
-const HEAD_JUNK_PATTERNS = [
-  /hello-elementor/i,
-  /woocommerce/i,
-  /\bwc-/i,
-  /tutor-/i,
-  /wbb-/i,
-  /saboxplugin|sabox-/i,
-  /wp-emoji/i,
-  /wp-img-auto-sizes/i,
-  /mystickyelements/i,
-  /intl-tel-input|intlTelInput/i,
-  /googleidentityservice/i,
-  /photoswipe/i,
-  /flexslider/i,
-  /order-attribution/i,
-  /ekit-widget-styles|widget-styles\.css/i,
-  /eael-general|general\.min\.css/i,
-  /\/reset\.css/i,
-  /\/theme\.css/i,
-  /header-footer\.css/i,
-  /elementor-location-header|elementor-location-footer/i,
-  /elementor-88520|elementor-88530/i,
+const CHROME_STYLESHEETS = [
+  "/site-assets/fontawesome.min.css",
+  "/site-assets/solid.min.css",
+  "/site-assets/brands.min.css",
 ];
 
-
-function injectHomeHeadAssets() {
+function injectChromeAssets() {
   if (typeof document === "undefined") return;
-  if (document.getElementById("usman-chrome-head")) return;
+  if (document.getElementById("usman-chrome-assets")) return;
   const marker = document.createElement("meta");
-  marker.id = "usman-chrome-head";
-  const container = document.createElement("template");
-  container.innerHTML = localizeUsmanAssets(homeHeadRaw)
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
-    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
-  Array.from(container.content.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).forEach((node) => {
-    const source = [node.id, node.href, node.getAttribute("href"), node.outerHTML].join(" ");
-    if (HEAD_JUNK_PATTERNS.some((rx) => rx.test(source))) return;
-    const href = node.getAttribute("href");
-    if (href && document.head.querySelector(`link[rel="stylesheet"][href="${CSS.escape(href)}"]`)) return;
-    const clone = node.cloneNode(true) as HTMLLinkElement;
+  marker.id = "usman-chrome-assets";
+  CHROME_STYLESHEETS.forEach((href) => {
+    if (document.head.querySelector(`link[rel="stylesheet"][href="${CSS.escape(href)}"]`)) return;
+    const clone = document.createElement("link");
+    clone.rel = "stylesheet";
+    clone.href = href;
     clone.dataset.usmanHeadAsset = "true";
     document.head.appendChild(clone);
   });
   document.head.appendChild(marker);
 }
-injectHomeHeadAssets();
+injectChromeAssets();
 
 /* ---------------------------------------------------------------- */
 /*  SPA link interception                                            */
