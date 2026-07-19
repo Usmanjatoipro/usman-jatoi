@@ -57,20 +57,50 @@ export const Route = createFileRoute("/")({
   }),
 });
 
+/* ============ Floating social rail (left edge) ============ */
+function SocialRail() {
+  const socials = [
+    { icon: Instagram, href: "https://www.instagram.com/usmanjatoi/", label: "Instagram" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/usmanjatoi/", label: "LinkedIn" },
+    { icon: Youtube, href: "https://www.youtube.com/@UsmanJatoi", label: "YouTube" },
+    { icon: Twitter, href: "https://twitter.com/usmanjatoi", label: "Twitter" },
+    { icon: Github, href: "https://github.com/usmanjatoi", label: "GitHub" },
+  ];
+  return (
+    <div className="fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-3 md:flex">
+      {socials.map((s) => {
+        const Icon = s.icon;
+        return (
+          <a
+            key={s.label}
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={s.label}
+            className="gradient-border group flex h-10 w-10 items-center justify-center rounded-full bg-background/50 backdrop-blur-md transition-transform hover:scale-110"
+          >
+            <Icon className="h-4 w-4 text-foreground/70 transition-colors group-hover:text-foreground" />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ============ Hero ============ */
 function Hero() {
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden pt-24">
-      {/* Ambient gradient orb */}
+    <section className="relative flex min-h-[100svh] items-center overflow-hidden pb-20 pt-24">
+      {/* Ambient gradient glow behind portrait */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 h-[800px] w-[800px] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute right-[-10%] top-1/2 h-[900px] w-[900px] -translate-y-1/2 rounded-full opacity-[0.12] blur-3xl"
         style={{ background: "var(--gradient-brand-conic)" }}
       />
-      {/* Grid overlay */}
+      {/* Subtle grid */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
             "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
@@ -78,93 +108,117 @@ function Hero() {
         }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl gap-16 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:px-10">
-        <div>
-          <div className="gradient-border inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/80">
-            <Sparkles className="h-3 w-3" />
-            Top 0.1% Digital Expert
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
+        {/* LEFT — copy */}
+        <div className="relative z-10">
+          <div className="gradient-border inline-flex items-center gap-2 rounded-full px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-foreground">
+            Your Digital Partner
           </div>
 
-          <h1 className="mt-8 text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.95] tracking-tight">
-            Building the
+          <h1
+            className="mt-8 font-bold uppercase leading-[0.95] tracking-tight text-foreground"
+            style={{ fontSize: "clamp(2.5rem, 6.2vw, 5.5rem)" }}
+          >
+            Hi, I'm
             <br />
-            <span className="text-gradient">next-generation</span>
-            <br />
-            of digital brands.
+            Usman Jatoi
           </h1>
 
-          <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            I'm Usman Jatoi — full-stack strategist, technologist and founder.
-            I help ambitious companies design, build and scale extraordinary
-            digital products, brands and businesses.
+          <p className="mt-8 text-[13px] font-semibold uppercase tracking-[0.3em] text-gradient">
+            19 Years Old · 7 Years in the Digital World
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              to="/services"
-              className="group inline-flex items-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-sm font-semibold text-background transition-transform hover:scale-[1.02]"
-            >
-              Explore Services
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              to="/contact-me"
-              className="gradient-border inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-foreground"
-            >
-              Let's Talk
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
+          <div className="mt-6 max-w-xl space-y-3 text-[15px] leading-relaxed text-foreground/85">
+            <p>
+              Built 1,000+ plugins, 190+ websites, and 700+ pages using Python automation.
+              Created 200+ AI videos, 300+ graphic designs, and led teams of 19+ members
+              starting from the age of 16.
+            </p>
+            <p>
+              Produced 5+ video ads, worked with Blender for over 2 years, developed 5+
+              Chrome extensions & many more things.
+            </p>
           </div>
 
-          <div className="mt-14 grid max-w-lg grid-cols-3 gap-8 border-t border-white/10 pt-8">
+          <ul className="mt-8 space-y-3.5">
             {[
-              { k: "16K+", v: "Projects" },
-              { k: "60+", v: "Countries" },
-              { k: "10+", v: "Years" },
-            ].map((s) => (
-              <div key={s.v}>
-                <div className="text-3xl font-bold tracking-tight text-foreground">
-                  {s.k}
-                </div>
-                <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  {s.v}
-                </div>
-              </div>
+              "Founder of Redsglow — helping startups launch online.",
+              "Head of Web Design at UK-based agency.",
+              "I code with vibe. I build with purpose.",
+            ].map((line) => (
+              <li key={line} className="flex items-start gap-3 text-[15px] text-foreground/90">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                  <Check className="h-4 w-4 text-foreground" strokeWidth={2.5} />
+                </span>
+                {line}
+              </li>
             ))}
+          </ul>
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            {/* Audio player with gradient border */}
+            <div className="gradient-border overflow-hidden rounded-full">
+              <audio
+                controls
+                preload="metadata"
+                src="/site-assets/Usman-Jatoi-Introductional-Voicenote.mp3"
+                className="h-12 min-w-[280px] bg-background"
+                style={{
+                  colorScheme: "dark",
+                }}
+              />
+            </div>
+
+            <Link
+              to="/contact-me"
+              className="gradient-border group inline-flex items-center gap-2 rounded-full bg-background px-9 py-3.5 text-[13px] font-bold uppercase tracking-[0.25em] text-foreground transition-transform hover:scale-[1.02]"
+            >
+              Hire Me
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
         </div>
 
-        {/* Portrait / abstract badge */}
-        <div className="relative">
-          <div className="gradient-border relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-card">
-            <img
-              src="/site-assets/usman-jatoi.jpg"
-              alt="Usman Jatoi"
-              className="h-full w-full object-cover"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = "none";
-              }}
+        {/* RIGHT — portrait, full-bleed to the right edge */}
+        <div className="relative h-[520px] w-full lg:h-[680px]">
+          {/* soft flowing gradient strokes behind */}
+          <svg
+            aria-hidden
+            className="absolute inset-0 h-full w-full opacity-40"
+            viewBox="0 0 600 700"
+            fill="none"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <defs>
+              <linearGradient id="hero-stroke" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#ff0080" />
+                <stop offset=".33" stopColor="#ffd700" />
+                <stop offset=".66" stopColor="#00bfff" />
+                <stop offset="1" stopColor="#8a2be2" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M-50,200 C150,100 300,400 550,180 M-20,320 C200,240 340,520 600,300 M0,440 C220,380 380,620 620,420"
+              stroke="url(#hero-stroke)"
+              strokeWidth="0.6"
+              opacity="0.5"
             />
-            <div
-              aria-hidden
-              className="absolute inset-0 opacity-30"
-              style={{ background: "var(--gradient-brand-conic)" }}
-            />
-            <div className="absolute inset-0 flex items-end p-6">
-              <div className="gradient-border rounded-2xl bg-background/70 px-5 py-3 backdrop-blur-md">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-                  Currently
-                </div>
-                <div className="mt-1 text-sm font-semibold text-foreground">
-                  Building UJ Online, Redsglow & RabbitFlare
-                </div>
-              </div>
-            </div>
-          </div>
+          </svg>
+
+          <img
+            src="/site-assets/Usman-Jatoi-Pro.webp"
+            alt="Usman Jatoi"
+            className="relative z-10 h-full w-full object-contain object-bottom drop-shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+            }}
+          />
         </div>
       </div>
     </section>
   );
+}
+
 }
 
 /* ============ Marquee ============ */
