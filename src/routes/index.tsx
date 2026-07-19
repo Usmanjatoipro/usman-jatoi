@@ -43,7 +43,14 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      ...homeLinks.map((link) => ({ ...link })),
+      ...homeLinks
+        .filter((link: any) => {
+          const href = String(link.href || "");
+          return !/reset\.css|theme\.css|header-footer\.css|woocommerce|\/wc-|tutor-|wbb-|saboxplugin|sabox-|wp-emoji|wp-img-auto-sizes|mystickyelements|intl-tel-input|photoswipe|flexslider|order-attribution|widget-styles\.css|eael-general|general\.min\.css/i.test(
+            href,
+          );
+        })
+        .map((link) => ({ ...link })),
       { rel: "canonical", href: SITE_URL },
     ],
     scripts: [
