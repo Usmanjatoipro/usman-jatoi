@@ -590,11 +590,102 @@ function Home() {
       <Hero />
 
       <Marquee />
+      <AboutMe />
       <ServicesGrid />
       <Manifesto />
       <Businesses />
       <Testimonials />
+      <SayHello />
       <CTA />
     </main>
+  );
+}
+
+/* ============ About Me ============ */
+function AboutMe() {
+  return (
+    <section className="mx-auto max-w-7xl px-6 py-32 lg:px-10">
+      <div className="mb-10 flex items-center justify-between border-t border-white/15 pt-6">
+        <span className="text-sm text-foreground/60">(The Story)</span>
+        <span className="gradient-border inline-flex h-8 min-w-[3rem] items-center justify-center rounded-full px-3 text-xs font-semibold text-foreground/80">
+          01
+        </span>
+      </div>
+      <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <div>
+          <h2 className="text-[clamp(3rem,7vw,6rem)] font-bold leading-[0.95] tracking-tight text-foreground">
+            ABOUT ME
+          </h2>
+          <div className="mt-10 space-y-6 text-base leading-relaxed text-foreground/75 md:text-lg">
+            <p>
+              Hi, I'm Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
+              creative artist, and tech innovator who began his digital journey at
+              just <strong className="text-foreground">7 years old</strong> and started
+              working professionally at 12.
+            </p>
+            <p>
+              With over 7 years of hands-on experience in the digital world, I've built
+              a reputation as a <em>Vibe Coder</em>, AI &amp; Automation Expert, and Head
+              of Web Design at <strong className="text-foreground">UK-based agency</strong> where
+              I was the youngest employee, leading a team of 19+ members.
+            </p>
+            <p>
+              I'm also the founder of <strong className="text-foreground">Redsglow</strong>,
+              a business establishment agency and the parent company of my future startups
+              like <strong className="text-foreground">DreamJobChaser</strong>,{" "}
+              <strong className="text-foreground">HirePakistani</strong>, and{" "}
+              <strong className="text-foreground">Build On Vibe</strong> — an AI startup
+              focused on turning ideas into tools, plugins, software, and Chrome extensions.
+            </p>
+          </div>
+          <Link
+            to={"/about-me" as any}
+            className="gradient-border mt-10 inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold text-foreground"
+          >
+            MORE ABOUT ME
+            <Sparkles className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="relative">
+          <div className="gradient-border overflow-hidden rounded-sm">
+            <img
+              src="/site-assets/My-own-Picture-2.jpg"
+              alt="Usman Jatoi portrait"
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============ Say Hello ============ */
+function SayHello() {
+  return (
+    <section className="relative bg-white py-40 text-black">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <h2 className="group flex flex-wrap items-center justify-center gap-x-6 gap-y-4 text-center text-[clamp(4rem,15vw,13rem)] font-bold leading-[0.9] tracking-tight">
+          <span>SAY</span>
+          <Link
+            to="/contact-me"
+            aria-label="Contact Usman Jatoi"
+            className="relative inline-block aspect-square h-[0.85em] w-[0.85em] shrink-0 overflow-hidden rounded-[18%] bg-neutral-100 shadow-inner transition-transform duration-500 ease-out hover:rotate-[-4deg] hover:scale-105"
+          >
+            <img
+              src="/site-assets/Me-Playng-Usman.webp"
+              alt="Usman playing football"
+              className="h-full w-full scale-[1.15] object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              loading="lazy"
+            />
+          </Link>
+          <span>HELLO</span>
+        </h2>
+        <p className="mt-10 text-center text-lg text-black/70 md:text-xl">
+          Let's create something that fits — and scales.
+        </p>
+      </div>
+    </section>
   );
 }
