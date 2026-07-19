@@ -219,7 +219,7 @@ function Hero() {
   );
 }
 
-}
+
 
 /* ============ Marquee ============ */
 function Marquee() {
