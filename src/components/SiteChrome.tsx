@@ -469,9 +469,30 @@ export function SiteFooter() {
                 </ul>
               </div>
             ))}
+            {idx === FOOTER_GROUPS.length - 1 && (
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="mt-10 flex items-center gap-3 border-b border-white/15 pb-2"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="Email"
+                  className="flex-1 bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="text-xs font-semibold uppercase tracking-[0.24em] text-white transition hover:text-amber-300"
+                >
+                  Send
+                </button>
+              </form>
+            )}
           </div>
         ))}
       </div>
+
+
 
       {/* Center avatar + pill nav row — now rendered as a sticky dock above */}
 
