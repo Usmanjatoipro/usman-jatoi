@@ -194,6 +194,7 @@ const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; hre
 ];
 
 
+
 const SOCIAL_LINKS: { label: string; href: string; icon: string }[] = [
   { label: "Google", href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d", icon: "fab fa-google" },
   { label: "Instagram", href: "https://www.instagram.com/usmanjatoipro/", icon: "fab fa-instagram" },
