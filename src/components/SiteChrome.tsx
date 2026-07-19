@@ -234,32 +234,52 @@ export function SiteHeader() {
             : "bg-transparent text-white"
         }`}
       >
-        <div className="mx-auto flex h-[72px] w-full max-w-[1440px] items-center justify-between gap-6 px-5 md:px-10">
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-            className={`inline-flex h-11 w-11 items-center justify-center rounded-full border transition ${
-              scrolled ? "border-black/10 hover:bg-black/5" : "border-white/25 hover:bg-white/10"
-            }`}
-          >
-            <Menu className="h-5 w-5" strokeWidth={2.25} />
-          </button>
+        <div className="mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 md:px-10">
+          {/* Left: hamburger */}
+          <div className="flex justify-start">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md transition hover:opacity-70"
+            >
+              <Menu className="h-6 w-6" strokeWidth={2} />
+            </button>
+          </div>
 
-          <a href="/" className="font-serif text-2xl tracking-tight md:text-[28px]" style={{ fontFamily: '"DM Serif Display", serif' }}>
+          {/* Center: brand */}
+          <a
+            href="/"
+            className="text-[13px] font-medium uppercase tracking-[0.28em] md:text-sm"
+          >
             Usman Jatoi
           </a>
 
-          <a
-            href="/contact-me"
-            className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium tracking-wide transition ${
-              scrolled
-                ? "bg-neutral-900 text-white hover:bg-neutral-800"
-                : "border border-white/40 bg-white/5 text-white hover:bg-white/10"
-            }`}
-          >
-            Let’s Talk <ChevronRight className="h-4 w-4" />
-          </a>
+          {/* Right: Let's Talk pill with avatars */}
+          <div className="flex justify-end">
+            <a
+              href="/contact-me"
+              className={`inline-flex items-center gap-2 rounded-full py-1 pl-4 pr-1 text-sm font-medium transition ${
+                scrolled
+                  ? "bg-neutral-900 text-white hover:bg-neutral-800"
+                  : "bg-white text-neutral-900 hover:bg-white/90"
+              }`}
+            >
+              <span>Let’s Talk</span>
+              <span className="flex -space-x-2">
+                <img
+                  src="/site-assets/Usman-Jatoi-Pro-252x300.webp"
+                  alt=""
+                  className="h-7 w-7 rounded-full object-cover ring-2 ring-white"
+                />
+                <img
+                  src="/site-assets/Me-Playng-Usman-150x150.webp"
+                  alt=""
+                  className="h-7 w-7 rounded-full object-cover ring-2 ring-white"
+                />
+              </span>
+            </a>
+          </div>
         </div>
 
         {/* Scroll progress bar */}
