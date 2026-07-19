@@ -460,33 +460,8 @@ export function SiteFooter() {
         ))}
       </div>
 
-      {/* Center avatar + pill nav row */}
-      <div className="mx-auto flex w-full max-w-[1440px] justify-center px-5 pb-8 md:px-10">
-        <div className="flex items-center gap-3">
-          <a href="/" aria-label="Home" className="h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
-            <img
-              src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </a>
-          {[
-            { label: "Services", href: "/services" },
-            { label: "About", href: "/about-me" },
-            { label: "Portfolio", href: "/portfolio" },
-            { label: "Contact", href: "/contact-me" },
-          ].map((b) => (
-            <a
-              key={b.href}
-              href={b.href}
-              className="rounded-full border border-white/15 px-5 py-2 text-xs font-medium uppercase tracking-[0.18em] text-white/85 transition hover:border-white/40 hover:bg-white hover:text-neutral-950"
-            >
-              {b.label}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* Center avatar + pill nav row — now rendered as a sticky dock above */}
+
 
       {/* Divider */}
       <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
