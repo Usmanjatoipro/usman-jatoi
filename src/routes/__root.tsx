@@ -126,10 +126,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const hideChrome =
-    pathname === "/" ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/import") ||
     pathname.startsWith("/auth");
+
 
   return (
     <QueryClientProvider client={queryClient}>
