@@ -450,7 +450,7 @@ export function SiteFooter() {
       <div className="grid w-full grid-cols-1 items-center gap-6 px-6 py-8 md:grid-cols-3 md:px-12">
         <p className="text-sm text-neutral-400 md:justify-self-start">
           © {new Date().getFullYear()} Usman Jatoi Pro&nbsp;|&nbsp;Designed by{" "}
-          <a href="http://redsglow.com/" target="_blank" rel="noopener" className="text-white hover:text-amber-300">
+          <a href="https://redsglow.com/" target="_blank" rel="noopener noreferrer" className="text-white underline-offset-4 hover:text-amber-300 hover:underline">
             Redsglow.com
           </a>
         </p>
