@@ -759,19 +759,21 @@ function Home() {
           -webkit-text-fill-color: #111 !important;
         }
 
-        /* ============ Hero: taller + top breathing room + working icons ============ */
+        /* ============ Hero: extend bg under header + taller ============ */
         .usman-native-home > .elementor-element-55ef8f5 {
           position: relative !important;
-          min-height: 105vh !important;
-          padding-top: calc(clamp(2.5rem, 6vw, 5rem) + 60px) !important;
-          padding-bottom: clamp(2.5rem, 5vw, 4rem) !important;
+          min-height: 115vh !important;
+          margin-top: -120px !important;
+          padding-top: calc(120px + clamp(3rem, 7vw, 6rem)) !important;
+          padding-bottom: clamp(1rem, 2vw, 2rem) !important;
           display: flex !important;
           align-items: center !important;
         }
         @media (max-width: 900px) {
           .usman-native-home > .elementor-element-55ef8f5 {
             min-height: auto !important;
-            padding-top: calc(6rem + 60px) !important;
+            margin-top: -100px !important;
+            padding-top: calc(100px + 5rem) !important;
           }
         }
         /* Hero top accent bar (decorative "top section") */
