@@ -762,7 +762,7 @@ function Home() {
         /* ============ Hero: taller + top breathing room + working icons ============ */
         .usman-native-home > .elementor-element-55ef8f5 {
           position: relative !important;
-          min-height: 92vh !important;
+          min-height: 105vh !important;
           padding-top: calc(clamp(2.5rem, 6vw, 5rem) + 60px) !important;
           padding-bottom: clamp(2.5rem, 5vw, 4rem) !important;
           display: flex !important;
