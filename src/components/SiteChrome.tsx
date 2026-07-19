@@ -245,6 +245,12 @@ export function SiteHeader() {
   return (
     <>
       <style>{`
+        header.site-header, footer.site-footer {
+          max-width: none !important;
+          width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
         header.site-header, header.site-header a, header.site-header button { color: inherit; border-color: transparent; }
         header.site-header a { text-decoration: none; }
         header.site-header, header.site-header * { border-bottom-color: transparent !important; }
@@ -253,6 +259,7 @@ export function SiteHeader() {
         footer.site-footer a:hover { color: #fff; }
         footer.site-footer h4, footer.site-footer .footer-brand { color: #fff; }
         footer.site-footer input { color: #fff; background: transparent; }
+
       `}</style>
 
       <header
