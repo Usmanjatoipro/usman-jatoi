@@ -378,50 +378,10 @@ export function SiteHeader() {
 /* ---------------------------------------------------------------- */
 
 export function SiteFooter() {
-  const [dockVisible, setDockVisible] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setDockVisible(window.scrollY > 400);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
   return (
     <footer className="site-footer bg-neutral-950 text-neutral-300">
-      {/* Sticky floating dock (fades in after scrolling) */}
-      <div
-        className={`pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4 transition-all duration-500 ease-out ${
-          dockVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-        }`}
-        aria-hidden={!dockVisible}
-      >
-        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-neutral-950/80 p-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl">
-          <a href="/" aria-label="Home" className="h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
-            <img
-              src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </a>
-          {[
-            { label: "Services", href: "/services" },
-            { label: "About", href: "/about-me" },
-            { label: "Portfolio", href: "/portfolio" },
-            { label: "Contact", href: "/contact-me" },
-          ].map((b) => (
-            <a
-              key={b.href}
-              href={b.href}
-              className="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] text-white/85 transition hover:bg-white hover:text-neutral-950"
-            >
-              {b.label}
-            </a>
-          ))}
-        </div>
-      </div>
-
       <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-20 md:px-10 lg:grid-cols-4 lg:gap-10">
-        {/* Column 1: brand + pill nav */}
+        {/* Column 1: brand */}
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white">
             Usman Jatoi
@@ -429,19 +389,6 @@ export function SiteFooter() {
           <p className="mt-6 max-w-xs text-sm leading-relaxed text-neutral-400">
             Digital entrepreneur and a full-stack digital expert.
           </p>
-
-          <div className="mt-8 space-y-3">
-            {PRIMARY_NAV.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="group flex items-center justify-between rounded-md border border-white/10 px-4 py-3 text-sm text-white/90 transition hover:border-white/30 hover:bg-white/5"
-              >
-                <span>{item.label}</span>
-                <ChevronRight className="h-4 w-4 text-neutral-500 transition group-hover:translate-x-0.5 group-hover:text-white" />
-              </a>
-            ))}
-          </div>
         </div>
 
         {/* Columns 2-4: link groups */}
@@ -469,28 +416,10 @@ export function SiteFooter() {
                 </ul>
               </div>
             ))}
-            {idx === FOOTER_GROUPS.length - 1 && (
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="mt-10 flex items-center gap-3 border-b border-white/15 pb-2"
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder="Email"
-                  className="flex-1 bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  className="text-xs font-semibold uppercase tracking-[0.24em] text-white transition hover:text-amber-300"
-                >
-                  Send
-                </button>
-              </form>
-            )}
           </div>
         ))}
       </div>
+
 
 
 
