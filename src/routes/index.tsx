@@ -771,7 +771,7 @@ function Home() {
         @media (max-width: 900px) {
           .usman-native-home > .elementor-element-55ef8f5 {
             min-height: auto !important;
-            padding-top: 6rem !important;
+            padding-top: calc(6rem + 60px) !important;
           }
         }
         /* Hero top accent bar (decorative "top section") */
