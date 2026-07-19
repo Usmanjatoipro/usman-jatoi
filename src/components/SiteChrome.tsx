@@ -68,7 +68,7 @@ injectHomeHeadAssets();
 
 export function SiteHeader() {
   useSpaLinkIntercept();
-  useHomeHeadAssets();
+  
   return (
     <>
       <style>{CHROME_STYLES}</style>
