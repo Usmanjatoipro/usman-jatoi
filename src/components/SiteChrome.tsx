@@ -4,6 +4,7 @@ import { useRouter } from "@tanstack/react-router";
 import homeHeaderRaw from "../data/homeHeader.html?raw";
 import homeFooterRaw from "../data/homeFooter.html?raw";
 import homeStylesRaw from "../data/homeStyles.css?raw";
+import homeHeadRaw from "../data/homeHead.html?raw";
 
 function localizeUsmanAssets(value: string) {
   return value
@@ -46,8 +47,27 @@ function useSpaLinkIntercept() {
   }, [router]);
 }
 
+function useHomeHeadAssets() {
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (document.getElementById("usman-chrome-head")) return;
+    const container = document.createElement("div");
+    container.id = "usman-chrome-head";
+    container.style.display = "none";
+    // eslint-disable-next-line react-compiler/react-compiler
+    container.innerHTML = localizeUsmanAssets(homeHeadRaw)
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+      .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
+    // Move link/style tags into <head> so they apply globally
+    const nodes = Array.from(container.querySelectorAll("link, style"));
+    nodes.forEach((node) => document.head.appendChild(node));
+    document.head.appendChild(container);
+  }, []);
+}
+
 export function SiteHeader() {
   useSpaLinkIntercept();
+  useHomeHeadAssets();
   return (
     <>
       <style>{CHROME_STYLES}</style>
@@ -59,6 +79,7 @@ export function SiteHeader() {
     </>
   );
 }
+
 
 export function SiteFooter() {
   return (
