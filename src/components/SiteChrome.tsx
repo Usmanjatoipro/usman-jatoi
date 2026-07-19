@@ -94,89 +94,101 @@ const PRIMARY_NAV: { label: string; href: string }[] = [
   { label: "Contact Me", href: "/contact-me" },
 ];
 
-const FOOTER_COLUMNS: { title: string; href?: string; links: { label: string; href: string }[] }[] = [
-  {
-    title: "About Me",
-    href: "/about-me",
-    links: [
-      { label: "My Journey", href: "/about-me/my-journey" },
-      { label: "Vision & Values", href: "/about-me/vision-values" },
-      { label: "Personal Life", href: "/about-me/personal-life" },
-      { label: "Social Media", href: "/about-me/social-media" },
-    ],
-  },
-  {
-    title: "Portfolio",
-    href: "/portfolio",
-    links: [
-      { label: "Brands & Businesses", href: "/portfolio/brands-businesses" },
-      { label: "Websites", href: "/portfolio/websites" },
-      { label: "Creative Projects", href: "/portfolio/creative-projects" },
-    ],
-  },
-  {
-    title: "My Services",
-    href: "/services",
-    links: [
-      { label: "AI Automation", href: "/services/ai" },
-      { label: "Bulk Publishing", href: "/services/bulk-publishing" },
-      { label: "Creative Projects", href: "/services/creative" },
-      { label: "Marketing", href: "/services/marketing" },
-      { label: "Website Design & Dev", href: "/services/web" },
-      { label: "View More →", href: "/services" },
-    ],
-  },
-  {
-    title: "Skills & Expertise",
-    href: "/skills-expertise",
-    links: [
-      { label: "AI Research and Innovation", href: "/skills-expertise/ai-research-and-innovation" },
-      { label: "Creative Skills", href: "/skills-expertise/creative-skills" },
-      { label: "Technical Skills", href: "/skills-expertise/technical-skills" },
-      { label: "SEO & Marketing", href: "/skills-expertise/seo-marketing" },
-    ],
-  },
-  {
-    title: "My Lifestyle",
-    href: "/my-lifestyle",
-    links: [
-      { label: "Gaming Life", href: "/portfolio/gaming-life" },
-      { label: "Fitness & Health", href: "/my-lifestyle/fitness-health" },
-      { label: "Hobbies", href: "/my-lifestyle/hobbies" },
-    ],
-  },
-  {
-    title: "Trust and Proof",
-    href: "/trust",
-    links: [
-      { label: "Certifications", href: "/certifications" },
-      { label: "Awards", href: "/awards" },
-      { label: "Testimonials", href: "/testimonials" },
-      { label: "White Label Partnership", href: "/white-label-partnership" },
-      { label: "Press Release", href: "/press-release" },
-    ],
-  },
-  {
-    title: "Contact Me",
-    href: "/contact-me",
-    links: [
-      { label: "Info@usmanjatoi.com", href: "mailto:Info@usmanjatoi.com" },
-      { label: "Reach Out", href: "/contact-me" },
-      { label: "Let’s Collaborate", href: "/contact-me" },
-    ],
-  },
-  {
-    title: "Others",
-    links: [
-      { label: "Blog", href: "/blog" },
-      { label: "Business I Own", href: "/businesses" },
-      { label: "Changelog", href: "/log" },
-      { label: "Careers", href: "/careers" },
-      { label: "Legal", href: "/legal" },
-      { label: "Media Kits", href: "/media-kit" },
-    ],
-  },
+const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; href: string }[] }[][] = [
+  // Column 2
+  [
+    {
+      title: "About Me",
+      href: "/about-me",
+      links: [
+        { label: "My Journey", href: "/about-me/my-journey" },
+        { label: "Vision & Values", href: "/about-me/vision-values" },
+        { label: "Personal Life", href: "/about-me/personal-life" },
+        { label: "Social Media", href: "/about-me/social-media" },
+      ],
+    },
+    {
+      title: "Portfolio",
+      href: "/portfolio",
+      links: [
+        { label: "Brands & Businesses", href: "/portfolio/brands-businesses" },
+        { label: "Websites", href: "/portfolio/websites" },
+        { label: "Creative Projects", href: "/portfolio/creative-projects" },
+      ],
+    },
+    {
+      title: "My Services",
+      href: "/services",
+      links: [
+        { label: "AI Automation", href: "/services/ai" },
+        { label: "Bulk Publishing", href: "/services/bulk-publishing" },
+        { label: "Creative Projects", href: "/services/creative" },
+        { label: "Marketing", href: "/services/marketing" },
+        { label: "Website Design & Dev", href: "/services/web" },
+        { label: "View More →", href: "/services" },
+      ],
+    },
+  ],
+  // Column 3
+  [
+    {
+      title: "Skills & Expertise",
+      href: "/skills-expertise",
+      links: [
+        { label: "AI Research and Innovation", href: "/skills-expertise/ai-research-and-innovation" },
+        { label: "Creative Skills", href: "/skills-expertise/creative-skills" },
+        { label: "Technical Skills", href: "/skills-expertise/technical-skills" },
+        { label: "SEO & Marketing", href: "/skills-expertise/seo-marketing" },
+      ],
+    },
+    {
+      title: "My Lifestyle",
+      href: "/my-lifestyle",
+      links: [
+        { label: "Gaming Life", href: "/portfolio/gaming-life" },
+        { label: "Fitness & Health", href: "/my-lifestyle/fitness-health" },
+        { label: "Hobbies", href: "/my-lifestyle/hobbies" },
+      ],
+    },
+    {
+      title: "Trust and Proof",
+      links: [
+        { label: "Certifications", href: "/certifications" },
+        { label: "Awards", href: "/awards" },
+        { label: "Testimonials", href: "/testimonials" },
+        { label: "White Label Partnership", href: "/white-label-partnership" },
+        { label: "Press Release", href: "/press-release" },
+      ],
+    },
+  ],
+  // Column 4
+  [
+    {
+      title: "Our Contacts",
+      links: [{ label: "Info@usmanjatoi.com", href: "mailto:Info@usmanjatoi.com" }],
+    },
+    {
+      title: "Contact Me",
+      href: "/contact-me",
+      links: [
+        { label: "Reach Out", href: "/contact-me" },
+        { label: "Let’s Collaborate", href: "/contact-me" },
+      ],
+    },
+    {
+      title: "Others",
+      links: [
+        { label: "Blog", href: "/blog" },
+        { label: "Business I Own", href: "/businesses" },
+        { label: "Changelog", href: "/log" },
+        { label: "Careers", href: "/careers" },
+        { label: "Legal", href: "/legal" },
+        { label: "Media Kits", href: "/media-kit" },
+      ],
+    },
+  ],
 ];
+
 
 const SOCIAL_LINKS: { label: string; href: string; icon: string }[] = [
   { label: "Google", href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d", icon: "fab fa-google" },
