@@ -586,7 +586,9 @@ function Home() {
 
   return (
     <main className="relative bg-background text-foreground">
+      <SocialRail />
       <Hero />
+
       <Marquee />
       <ServicesGrid />
       <Manifesto />
