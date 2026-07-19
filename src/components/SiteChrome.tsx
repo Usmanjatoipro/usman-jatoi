@@ -34,7 +34,11 @@ const HEAD_JUNK_PATTERNS = [
   /order-attribution/i,
   /ekit-widget-styles|widget-styles\.css/i,
   /eael-general|general\.min\.css/i,
+  /\/reset\.css/i,
+  /\/theme\.css/i,
+  /header-footer\.css/i,
 ];
+
 
 function injectHomeHeadAssets() {
   if (typeof document === "undefined") return;
