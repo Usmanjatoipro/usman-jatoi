@@ -4,6 +4,7 @@ import { useRouter } from "@tanstack/react-router";
 import homeHeaderRaw from "../data/homeHeader.html?raw";
 import homeFooterRaw from "../data/homeFooter.html?raw";
 import homeStylesRaw from "../data/homeStyles.css?raw";
+import homeHeadRaw from "../data/homeHead.html?raw";
 
 function localizeUsmanAssets(value: string) {
   return value
