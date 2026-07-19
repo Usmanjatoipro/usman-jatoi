@@ -386,7 +386,7 @@ export function SiteFooter() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return (
-    <footer className="bg-neutral-950 text-neutral-300">
+    <footer className="site-footer bg-neutral-950 text-neutral-300">
       {/* Sticky floating dock (fades in after scrolling) */}
       <div
         className={`pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4 transition-all duration-500 ease-out ${
