@@ -11,7 +11,14 @@ import {
   Globe,
   Users,
   Star,
+  Check,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Twitter,
+  Github,
 } from "lucide-react";
+
 
 const TITLE = "Usman Jatoi — Top 0.1% Full-Stack Digital Expert & Entrepreneur";
 const DESC =
