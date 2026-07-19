@@ -47,23 +47,24 @@ function useSpaLinkIntercept() {
   }, [router]);
 }
 
-function useHomeHeadAssets() {
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    if (document.getElementById("usman-chrome-head")) return;
-    const container = document.createElement("div");
-    container.id = "usman-chrome-head";
-    container.style.display = "none";
-    // eslint-disable-next-line react-compiler/react-compiler
-    container.innerHTML = localizeUsmanAssets(homeHeadRaw)
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
-      .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
-    // Move link/style tags into <head> so they apply globally
-    const nodes = Array.from(container.querySelectorAll("link, style"));
-    nodes.forEach((node) => document.head.appendChild(node));
-    document.head.appendChild(container);
-  }, []);
+function injectHomeHeadAssets() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("usman-chrome-head")) return;
+  const container = document.createElement("div");
+  container.id = "usman-chrome-head";
+  container.style.display = "none";
+  container.innerHTML = localizeUsmanAssets(homeHeadRaw)
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
+  const nodes = Array.from(container.querySelectorAll("link, style"));
+  nodes.forEach((node) => document.head.appendChild(node));
+  document.head.appendChild(container);
 }
+
+// Run at module import time (before first render) so stylesheets start
+// fetching in parallel with hydration, eliminating the unstyled-header flash.
+injectHomeHeadAssets();
+
 
 export function SiteHeader() {
   useSpaLinkIntercept();
