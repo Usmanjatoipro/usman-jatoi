@@ -363,60 +363,92 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="bg-neutral-950 text-neutral-300">
-      {/* Top: brand + big vertical menu */}
-      <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-16 md:grid-cols-[1fr_1.2fr] md:px-10 lg:gap-20">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-20 md:px-10 lg:grid-cols-4 lg:gap-10">
+        {/* Column 1: brand + pill nav */}
         <div>
-          <a
-            href="/"
-            className="font-serif text-4xl text-white md:text-5xl"
-            style={{ fontFamily: '"DM Serif Display", serif' }}
-          >
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white">
             Usman Jatoi
-          </a>
-          <p className="mt-4 max-w-md text-base text-neutral-400">
+          </p>
+          <p className="mt-6 max-w-xs text-sm leading-relaxed text-neutral-400">
             Digital entrepreneur and a full-stack digital expert.
           </p>
 
-          <div className="mt-10 overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/5">
+          <div className="mt-8 space-y-3">
             {PRIMARY_NAV.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="group flex items-center justify-between border-b border-white/5 bg-neutral-900 px-5 py-4 text-[15px] text-white transition last:border-b-0 hover:bg-neutral-800"
+                className="group flex items-center justify-between rounded-md border border-white/10 px-4 py-3 text-sm text-white/90 transition hover:border-white/30 hover:bg-white/5"
               >
                 <span>{item.label}</span>
-                <ChevronRight className="h-4 w-4 text-neutral-500 transition group-hover:translate-x-1 group-hover:text-amber-300" />
+                <ChevronRight className="h-4 w-4 text-neutral-500 transition group-hover:translate-x-0.5 group-hover:text-white" />
               </a>
             ))}
           </div>
         </div>
 
-        {/* 4-column link grid */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-sm font-semibold uppercase tracking-widest text-white">
-                {col.href ? (
-                  <a href={col.href} className="hover:text-amber-300">
-                    {col.title}
-                  </a>
-                ) : (
-                  col.title
-                )}
-              </h4>
-              <ul className="mt-4 space-y-2.5 text-sm">
-                {col.links.map((link) => (
-                  <li key={link.href + link.label}>
-                    <a href={link.href} className="text-neutral-400 transition hover:text-white">
-                      {link.label}
+        {/* Columns 2-4: link groups */}
+        {FOOTER_GROUPS.map((column, idx) => (
+          <div key={idx} className="space-y-10">
+            {column.map((group) => (
+              <div key={group.title}>
+                <h4 className="text-[15px] font-medium text-white">
+                  {group.href ? (
+                    <a href={group.href} className="hover:text-amber-300">
+                      {group.title}
                     </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  ) : (
+                    group.title
+                  )}
+                </h4>
+                <ul className="mt-5 space-y-3 text-sm">
+                  {group.links.map((link) => (
+                    <li key={link.href + link.label}>
+                      <a href={link.href} className="text-neutral-400 transition hover:text-white">
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Center avatar + pill nav row */}
+      <div className="mx-auto flex w-full max-w-[1440px] justify-center px-5 pb-8 md:px-10">
+        <div className="flex items-center gap-3">
+          <a href="/" aria-label="Home" className="h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
+            <img
+              src="/site-assets/cropped-Imagee-Character-2-150x150.webp"
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </a>
+          {[
+            { label: "Services", href: "/services" },
+            { label: "About", href: "/about-me" },
+            { label: "Portfolio", href: "/portfolio" },
+            { label: "Contact", href: "/contact-me" },
+          ].map((b) => (
+            <a
+              key={b.href}
+              href={b.href}
+              className="rounded-full border border-white/15 px-5 py-2 text-xs font-medium uppercase tracking-[0.18em] text-white/85 transition hover:border-white/40 hover:bg-white hover:text-neutral-950"
+            >
+              {b.label}
+            </a>
           ))}
         </div>
       </div>
+
+      {/* Divider */}
+      <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
+        <div className="h-px w-full bg-white/10" />
+      </div>
+
 
       {/* Divider */}
       <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
