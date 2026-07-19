@@ -267,10 +267,10 @@ export function SiteHeader() {
           <div className="flex justify-end">
             <a
               href="/contact-me"
-              className={`inline-flex items-center gap-2 rounded-full py-1 pl-4 pr-1 text-sm font-medium transition ${
+              className={`inline-flex items-center gap-2 rounded-full border py-1 pl-4 pr-1 text-sm font-medium transition ${
                 scrolled
-                  ? "bg-neutral-900 text-white hover:bg-neutral-800"
-                  : "bg-white text-neutral-900 hover:bg-white/90"
+                  ? "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50"
+                  : "border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20"
               }`}
             >
               <span>Let’s Talk</span>
@@ -290,19 +290,8 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* Scroll progress bar */}
-        <div className="h-[3px] w-full bg-black/10">
-          <div
-            className="h-full transition-[width] duration-150"
-            style={{
-              width: `${progress * 100}%`,
-              backgroundImage:
-                "linear-gradient(90deg,#ff2d55,#ff9500,#ffcc00,#34c759,#00c7be,#007aff,#5856d6,#af52de,#ff2d55)",
-              backgroundSize: "200% 100%",
-              animation: "chrome-rainbow 6s linear infinite",
-            }}
-          />
-        </div>
+
+
       </header>
 
       <style>{`@keyframes chrome-rainbow{0%{background-position:0% 50%}100%{background-position:200% 50%}}`}</style>
