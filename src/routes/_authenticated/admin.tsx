@@ -301,7 +301,7 @@ function CleanupPanel() {
           `Batch ${offset}: processed ${r.processed}, updated ${r.updated}, uploaded ${r.uploaded} (total posts left ~${Math.max(0, r.total - (r.nextOffset ?? r.processed))})`,
         ]);
         if (r.done) break;
-        offset = r.nextOffset ?? offset + r.processed;
+        offset = (r as any).nextOffset ?? offset + r.processed;
       }
       setLog((l) => [...l, `✓ Done. Rewrote ${totalUpdated} posts, uploaded ${totalUploaded} images.`]);
       await refresh();
@@ -323,7 +323,7 @@ function CleanupPanel() {
         totalUpdated += r.updated;
         setLog((l) => [...l, `Batch ${offset}: processed ${r.processed}, updated ${r.updated}`]);
         if (r.done) break;
-        offset = r.nextOffset ?? offset + r.processed;
+        offset = (r as any).nextOffset ?? offset + r.processed;
       }
       setLog((l) => [...l, `✓ Done. Backfilled ${totalUpdated} featured images.`]);
       await refresh();
