@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
 import { getCategoryBySlug } from "@/lib/wp-categories.functions";
+import PageHero, { type Crumb } from "@/components/PageHero";
 
 const SITE = "https://usman-connects-us.lovable.app";
 
@@ -80,38 +81,29 @@ function CategoryPage() {
   const { category, ancestors, children, posts, page, totalPages, total } = data;
   const params = Route.useParams();
 
+  const crumbs: Crumb[] = [
+    { label: "Home", href: "/" },
+    { label: "Categories", href: "/category" },
+    ...ancestors.map((a) => ({ label: a.name, href: `/category/${a.slug}` })),
+    { label: category.name },
+  ];
+
   return (
     <div className="min-h-screen bg-white text-neutral-900">
-      <div className="mx-auto max-w-6xl px-6 py-14">
-        <nav className="text-sm text-neutral-500 mb-6 flex flex-wrap items-center gap-2">
-          <Link to="/" className="hover:text-neutral-900">Home</Link>
-          <span>/</span>
-          <Link to="/category" className="hover:text-neutral-900">Categories</Link>
-          {ancestors.map((a) => (
-            <span key={a.id} className="flex items-center gap-2">
-              <span>/</span>
-              <Link to="/category/$slug" params={{ slug: a.slug }} className="hover:text-neutral-900">
-                {a.name}
-              </Link>
-            </span>
-          ))}
-          <span>/</span>
-          <span className="text-neutral-900 font-medium">{category.name}</span>
-        </nav>
+      <PageHero
+        eyebrow="Category Archive"
+        title={category.name}
+        description={category.description || undefined}
+        crumbs={crumbs}
+        size="lg"
+      >
+        <p className="text-xs md:text-sm uppercase tracking-[0.22em] text-white/60">
+          {total} {total === 1 ? "post" : "posts"} in this category
+        </p>
+      </PageHero>
 
-        <header className="mb-12 border-b border-neutral-200 pb-10">
-          <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-indigo-600 mb-4">
-            <span className="h-px w-8 bg-indigo-600" />
-            Category Archive
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{category.name}</h1>
-          {category.description && (
-            <p className="text-lg text-neutral-600 max-w-3xl">{category.description}</p>
-          )}
-          <p className="text-sm text-neutral-500 mt-4">
-            {total} {total === 1 ? "post" : "posts"} in this category
-          </p>
-        </header>
+      <div className="mx-auto max-w-6xl px-6 py-14">
+
 
         {children.length > 0 && (
           <section className="mb-12">
