@@ -267,6 +267,7 @@ export const getBackfillStats = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [noSeo, noExcerpt, noHero, total] = await Promise.all([
+      supabaseAdmin
         .from("wp_posts")
         .select("id", { count: "exact", head: true })
         .eq("post_type", "post")
