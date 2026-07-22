@@ -2,6 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
 const SITE = "https://usmanjatoi.lovable.app";
+const CHUNK = 5000;
+
+const GROUPS: Array<{ key: string; types: string[] }> = [
+  { key: "pages", types: ["page"] },
+  { key: "posts", types: ["post"] },
+  { key: "products", types: ["product"] },
+  { key: "courses", types: ["courses"] },
+];
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -12,50 +20,37 @@ export const Route = createFileRoute("/sitemap.xml")({
           process.env.SUPABASE_PUBLISHABLE_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
         const supa = createClient(url!, key!, { auth: { persistSession: false } });
 
-        const urls: Array<{ loc: string; lastmod?: string; priority?: string }> = [
-          { loc: `${SITE}/`, priority: "1.0" },
-          { loc: `${SITE}/services`, priority: "0.9" },
-          { loc: `${SITE}/blog`, priority: "0.9" },
-          { loc: `${SITE}/about-me`, priority: "0.8" },
-          { loc: `${SITE}/contact-me`, priority: "0.8" },
+        const now = new Date().toISOString();
+        const children: Array<{ loc: string; lastmod: string }> = [
+          { loc: `${SITE}/sitemap-static.xml`, lastmod: now },
         ];
 
-        // Paginate wp_posts so we don't hit row limits.
-        const pageSize = 1000;
-        for (let from = 0; from < 60000; from += pageSize) {
-          const { data, error } = await supa
+        for (const g of GROUPS) {
+          const { count } = await supa
             .from("wp_posts")
-            .select("path, post_modified, post_type")
-            .in("post_type", ["page", "post", "product", "courses"])
+            .select("id", { count: "exact", head: true })
+            .in("post_type", g.types)
             .eq("status", "publish")
-            .not("path", "is", null)
-            .range(from, from + pageSize - 1);
-          if (error || !data || data.length === 0) break;
-          for (const row of data as Array<{ path: string; post_modified: string | null; post_type: string }>) {
-            if (!row.path) continue;
-            const clean = row.path.replace(/\/+$/, "");
-            urls.push({
-              loc: `${SITE}${clean}`,
-              lastmod: row.post_modified ? new Date(row.post_modified).toISOString() : undefined,
-              priority: row.post_type === "page" ? "0.7" : "0.6",
-            });
+            .not("path", "is", null);
+          const total = count ?? 0;
+          const pages = Math.max(1, Math.ceil(total / CHUNK));
+          if (total === 0) continue;
+          for (let i = 1; i <= pages; i++) {
+            children.push({ loc: `${SITE}/sitemap-${g.key}-${i}.xml`, lastmod: now });
           }
-          if (data.length < pageSize) break;
         }
 
         const xml =
           `<?xml version="1.0" encoding="UTF-8"?>\n` +
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-          urls
+          `<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n` +
+          `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+          children
             .map(
-              (u) =>
-                `  <url><loc>${u.loc}</loc>` +
-                (u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : "") +
-                (u.priority ? `<priority>${u.priority}</priority>` : "") +
-                `</url>`,
+              (c) =>
+                `  <sitemap><loc>${c.loc}</loc><lastmod>${c.lastmod}</lastmod></sitemap>`,
             )
             .join("\n") +
-          `\n</urlset>\n`;
+          `\n</sitemapindex>\n`;
 
         return new Response(xml, {
           headers: {
