@@ -109,6 +109,8 @@ function AdminPage() {
           </div>
         </section>
 
+        <CleanupPanel />
+
         {/* Categories */}
         <section className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
           <div className="p-6 border-b border-neutral-200">
