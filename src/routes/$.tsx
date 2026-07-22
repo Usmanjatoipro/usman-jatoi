@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle, FolderOpen } from "lucide-react";
+import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-category-archive";
 
 type WpPost = {
   id: number;
