@@ -5,12 +5,19 @@ import {
   backfillFeaturedImagesBatch,
   getCleanupStats,
 } from "@/lib/wp-cleanup.functions";
+import { getContentTypeStats, type ContentTypeStat } from "@/lib/wp-content-stats.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  loader: async () => await listCategoriesTree(),
+  loader: async () => {
+    const [categories, content] = await Promise.all([
+      listCategoriesTree(),
+      getContentTypeStats(),
+    ]);
+    return { ...categories, content };
+  },
   head: () => ({
     meta: [
       { title: "Admin — Usman Jatoi" },
@@ -23,6 +30,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   ),
   notFoundComponent: () => <div className="p-10">Not found</div>,
 });
+
 
 
 function AdminPage() {
