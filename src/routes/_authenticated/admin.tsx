@@ -310,6 +310,9 @@ function ContentStat({ stat }: { stat: ContentTypeStat }) {
     );
   }
   return <div className={cls}>{inner}</div>;
+}
+
+
 
 
 function maxDepth(nodes: WpCategoryNode[], d = 1): number {
