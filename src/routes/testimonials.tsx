@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import PageHero from "@/components/PageHero";
 
 export const Route = createFileRoute("/testimonials")({
   head: () => ({
@@ -238,20 +239,13 @@ function TestimonialsPage() {
         }}
       />
 
-      {/* Hero */}
-      <section className="pt-32 pb-16 px-6 md:px-10 max-w-6xl mx-auto text-center">
-        <span className="t-tag mb-6">Testimonials</span>
-        <h1 className="mt-6 text-5xl md:text-7xl font-black tracking-tight leading-[1.05]">
-          Kind words from
-          <br />
-          <span className="t-gradient-text">real partners</span>.
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-          A collection of feedback from founders, creators, and teams I've
-          had the privilege to work with. No paid reviews — just honest words
-          from real projects.
-        </p>
-      </section>
+      <PageHero
+        eyebrow="Testimonials"
+        title="Kind words from real partners."
+        description="A collection of feedback from founders, creators, and teams I've had the privilege to work with. No paid reviews — just honest words from real projects."
+        crumbs={[{ label: "Home", href: "/" }, { label: "Testimonials" }]}
+      />
+      <div className="pt-16" />
 
       {/* Stats */}
       <section className="px-6 md:px-10 max-w-6xl mx-auto pb-16">

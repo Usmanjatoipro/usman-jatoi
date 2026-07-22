@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import PageHero from "@/components/PageHero";
 
 export const Route = createFileRoute("/white-label-partnership")({
   head: () => ({
