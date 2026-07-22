@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { serverGetPageByPath } from "@/lib/wp-data.server";
 import { Calendar, ArrowLeft, Tag } from "lucide-react";
 
 type WpPost = {
@@ -20,37 +21,8 @@ type WpPost = {
 
 type WpMedia = { storage_url: string | null; source_url: string; alt_text: string | null };
 
-const CANDIDATE_TYPES = ["page", "post", "product", "courses"];
-
-async function loadPage(rawPath: string): Promise<{ post: WpPost; media: WpMedia | null } | null> {
-  // Normalize to variants: /foo/bar and /foo/bar/
-  let p = "/" + rawPath.replace(/^\/+|\/+$/g, "");
-  const withSlash = p.endsWith("/") ? p : p + "/";
-  const noSlash = p.replace(/\/+$/, "");
-
-  const { data } = await supabase
-    .from("wp_posts")
-    .select(
-      "id, post_type, slug, title, excerpt, content, path, permalink, seo_title, seo_description, post_date, featured_media_id",
-    )
-    .in("post_type", CANDIDATE_TYPES)
-    .in("path", [withSlash, noSlash])
-    .eq("status", "publish")
-    .limit(1);
-
-  const post = data?.[0] as WpPost | undefined;
-  if (!post) return null;
-
-  let media: WpMedia | null = null;
-  if (post.featured_media_id) {
-    const { data: m } = await supabase
-      .from("wp_media")
-      .select("storage_url, source_url, alt_text")
-      .eq("id", post.featured_media_id)
-      .maybeSingle();
-    media = (m as WpMedia) ?? null;
-  }
-  return { post, media };
+async function loadPage(rawPath: string) {
+  return await serverGetPageByPath(rawPath);
 }
 
 // Rewrite absolute usmanjatoi.com URLs & re-host media in the raw HTML content.

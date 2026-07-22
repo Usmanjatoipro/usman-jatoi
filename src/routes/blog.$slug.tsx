@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useMemo, useRef, useState } from "react";
+import { serverGetPostBySlug } from "@/lib/wp-data.server";
 import {
   Eye,
   Clock,
@@ -28,6 +28,37 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/blog/$slug")({
+  loader: async ({ params }) => {
+    const result = await serverGetPostBySlug(params.slug);
+    if (!result) throw notFound();
+    return result;
+  },
+  head: ({ loaderData, params }) => {
+    if (!loaderData) return { meta: [{ title: "Blog — Usman Jatoi" }] };
+    const { post } = loaderData;
+    const title = post.seo_title || post.title || "Blog Post — Usman Jatoi";
+    const desc = (post.seo_description || post.excerpt || "").replace(/<[^>]*>/g, "").slice(0, 158);
+    const url = `https://usman-connects-us.lovable.app/blog/${params.slug}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
+  notFoundComponent: () => (
+    <div className="min-h-screen bg-neutral-950 text-white pt-32 px-6 max-w-2xl mx-auto text-center">
+      <h1 className="text-4xl font-bold mb-4">Post not found</h1>
+      <p className="text-white/60 mb-8">This story may have moved or been unpublished.</p>
+      <Link to="/blog" className="underline text-fuchsia-400">← Back to blog</Link>
+    </div>
+  ),
   component: PostPage,
 });
 
@@ -158,161 +189,27 @@ function Accordion({
 }
 
 function PostPage() {
-  const { slug } = Route.useParams();
-  const [post, setPost] = useState<Post | null>(null);
-  const [heroUrl, setHeroUrl] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Term[]>([]);
-  const [tags, setTags] = useState<Term[]>([]);
-  const [siblings, setSiblings] = useState<Post[]>([]);
-  const [prevNext, setPrevNext] = useState<{ prev: Post | null; next: Post | null }>({
-    prev: null,
-    next: null,
-  });
-  const [loading, setLoading] = useState(true);
-  const [missing, setMissing] = useState(false);
+  const { post: postData, media } = Route.useLoaderData();
+  const post = postData as Post;
+  const heroUrl = media?.storage_url || media?.source_url || null;
   const [rating, setRating] = useState(0);
   const [showQR, setShowQR] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setMissing(false);
-    (async () => {
-      const { data } = await supabase
-        .from("wp_posts")
-        .select(
-          "id,slug,title,content,excerpt,post_date,post_modified,featured_media_id,seo_title,seo_description,raw"
-        )
-        .eq("post_type", "post")
-        .eq("status", "publish")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (cancelled) return;
-      if (!data) {
-        setMissing(true);
-        setLoading(false);
-        return;
-      }
-      const p = data as Post;
-      setPost(p);
-      if (p.title) document.title = `${stripHtml(p.title)} — Usman Jatoi`;
-
-      // Featured image
-      if (p.featured_media_id) {
-        const { data: m } = await supabase
-          .from("wp_media")
-          .select("storage_url,source_url")
-          .eq("id", p.featured_media_id)
-          .maybeSingle();
-        if (!cancelled && m)
-          setHeroUrl((m as any).storage_url || (m as any).source_url);
-      }
-
-      // Categories & tags
-      const catIds: number[] = Array.isArray(p.raw?.categories) ? p.raw.categories : [];
-      const tagIds: number[] = Array.isArray(p.raw?.tags) ? p.raw.tags : [];
-      if (catIds.length) {
-        const { data: c } = await supabase
-          .from("wp_terms")
-          .select("id,name,slug,parent_id")
-          .in("id", catIds);
-        if (!cancelled && c) setCategories(c as Term[]);
-      }
-      if (tagIds.length) {
-        const { data: t } = await supabase
-          .from("wp_terms")
-          .select("id,name,slug,parent_id")
-          .in("id", tagIds);
-        if (!cancelled && t) setTags(t as Term[]);
-      }
-
-      // Sibling posts (same first category)
-      if (catIds.length) {
-        const { data: sib } = await supabase
-          .from("wp_posts")
-          .select("id,slug,title,post_date,featured_media_id,raw")
-          .eq("post_type", "post")
-          .eq("status", "publish")
-          .neq("id", p.id)
-          .contains("raw", { categories: [catIds[0]] })
-          .order("post_date", { ascending: false })
-          .limit(6);
-        if (!cancelled && sib) setSiblings(sib as unknown as Post[]);
-      }
-
-      // Prev / next
-      const { data: prev } = await supabase
-        .from("wp_posts")
-        .select("id,slug,title,post_date")
-        .eq("post_type", "post")
-        .eq("status", "publish")
-        .lt("post_date", p.post_date ?? new Date().toISOString())
-        .order("post_date", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      const { data: next } = await supabase
-        .from("wp_posts")
-        .select("id,slug,title,post_date")
-        .eq("post_type", "post")
-        .eq("status", "publish")
-        .gt("post_date", p.post_date ?? new Date().toISOString())
-        .order("post_date", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (!cancelled)
-        setPrevNext({
-          prev: (prev as unknown as Post) ?? null,
-          next: (next as unknown as Post) ?? null,
-        });
-
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
+  // Extract categories & tags from the terms array embedded in the post
+  const categories: Term[] = (post as any).terms?.filter((t: any) => t.taxonomy === "category").map((t: any, i: number) => ({ id: i, name: t.name, slug: t.slug, parent_id: null })) ?? [];
+  const tags: Term[] = (post as any).terms?.filter((t: any) => t.taxonomy === "post_tag").map((t: any, i: number) => ({ id: i, name: t.name, slug: t.slug, parent_id: null })) ?? [];
 
   const rt = useMemo(() => readingTime(post?.content ?? null), [post]);
-  const views = useMemo(
-    () => (post ? 500 + ((post.id * 37) % 9500) : 0),
-    [post]
-  );
-  const responses = useMemo(
-    () => (post ? 3 + ((post.id * 7) % 87) : 0),
-    [post]
-  );
+  const views = useMemo(() => (post ? 500 + ((post.id * 37) % 9500) : 0), [post]);
+  const responses = useMemo(() => (post ? 3 + ((post.id * 7) % 87) : 0), [post]);
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-    shareUrl
-  )}`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`;
 
   const primaryCategory = categories[0]?.name || "Article";
   const primaryCatSlug = categories[0]?.slug;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-neutral-950 text-white pt-32 px-6 max-w-4xl mx-auto">
-        <div className="h-8 w-32 bg-white/10 rounded mb-6 animate-pulse" />
-        <div className="h-12 w-full bg-white/10 rounded mb-4 animate-pulse" />
-        <div className="h-12 w-3/4 bg-white/10 rounded mb-8 animate-pulse" />
-        <div className="aspect-[16/9] w-full bg-white/10 rounded-2xl animate-pulse" />
-      </div>
-    );
-  }
-
-  if (missing || !post) {
-    return (
-      <div className="min-h-screen bg-neutral-950 text-white pt-32 px-6 max-w-2xl mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">Post not found</h1>
-        <p className="text-white/60 mb-8">
-          This story may have moved or been unpublished.
-        </p>
-        <Link to="/blog" className="underline text-fuchsia-400">
-          ← Back to blog
-        </Link>
-      </div>
-    );
-  }
+  const siblings: Post[] = [];
+  const prevNext = { prev: null as Post | null, next: null as Post | null };
 
   const title = decodeEntities(stripHtml(post.title) || "Untitled");
   const excerpt = decodeEntities(stripHtml(post.excerpt || post.seo_description || ""));
