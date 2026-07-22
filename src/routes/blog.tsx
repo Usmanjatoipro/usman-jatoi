@@ -96,7 +96,6 @@ function BlogPage() {
         .select("id,slug,title,excerpt,content,post_date,featured_media_id", { count: "exact" })
         .eq("post_type", "post")
         .eq("status", "publish")
-        .gt("featured_media_id", 0)
         .order("post_date", { ascending: false })
         .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
       if (debounced) q = q.ilike("title", `%${debounced}%`);
@@ -166,10 +165,6 @@ function BlogPage() {
           Essays, tutorials, and behind-the-scenes writing on design, code,
           automation, and building in public.
         </p>
-        <p className="mt-4 text-xs text-neutral-500 font-mono tracking-wide">
-          {total.toLocaleString()} {total === 1 ? "story" : "stories"} in the archive
-        </p>
-
         {/* Search */}
         <div className="mt-10 max-w-xl mx-auto">
           <div className="relative">
