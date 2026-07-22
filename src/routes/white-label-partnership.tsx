@@ -212,26 +212,16 @@ function WhiteLabelPage() {
         }}
       />
 
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-6 md:px-10 max-w-6xl mx-auto text-center">
-        <span className="wl-tag mb-6">For Agencies & Studios</span>
-        <h1 className="mt-6 text-5xl md:text-7xl font-black tracking-tight leading-[1.05]">
-          Your clients.
-          <br />
-          Our <span className="wl-gradient-text">delivery engine</span>.
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-          A discreet white-label partnership for agencies, freelancers, and
-          consultancies. Sell branding, web, automation, and AI — we build it
-          silently under your brand.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-3 justify-center">
-          <a href="/contact-me" className="wl-pill dark">
-            Start a partnership →
-          </a>
-          <a href="/media-kit" className="wl-pill">
-            View our work
-          </a>
+      <PageHero
+        eyebrow="For Agencies & Studios"
+        title="Your clients. Our delivery engine."
+        description="A discreet white-label partnership for agencies, freelancers, and consultancies. Sell branding, web, automation, and AI — we build it silently under your brand."
+        crumbs={[{ label: "Home", href: "/" }, { label: "White Label Partnership" }]}
+      />
+      <section className="pt-16 pb-8 px-6 md:px-10 max-w-6xl mx-auto text-center">
+        <div className="flex flex-wrap gap-3 justify-center">
+          <a href="/contact-me" className="wl-pill dark">Start a partnership</a>
+          <a href="/media-kit" className="wl-pill">View our work</a>
         </div>
       </section>
 

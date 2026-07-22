@@ -154,32 +154,24 @@ function BlogPage() {
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
-      {/* Hero */}
-      <section className="pt-32 pb-14 px-6 md:px-10 max-w-5xl mx-auto text-center">
-        <span className="inline-block text-[11px] font-semibold tracking-[0.18em] uppercase text-neutral-500 border border-neutral-200 rounded-full px-3 py-1">
-          Journal
-        </span>
-        <h1 className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] text-neutral-900">
-          Notes from the workshop.
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-          Essays, tutorials, and behind-the-scenes writing on design, code,
-          automation, and building in public.
-        </p>
-        {/* Search */}
-        <div className="mt-10 max-w-xl mx-auto">
-          <div className="relative">
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search stories…"
-              aria-label="Search stories"
-              className="w-full px-5 py-3.5 pr-12 rounded-xl border border-neutral-200 bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:outline-none transition text-[15px] placeholder:text-neutral-400"
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400" aria-hidden>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
+      <PageHero
+        eyebrow="Journal"
+        title="Notes from the workshop."
+        description="Essays, tutorials, and behind-the-scenes writing on design, code, automation, and building in public."
+        crumbs={[{ label: "Home", href: "/" }, { label: "Blog" }]}
+      />
+      <section className="pt-12 pb-6 px-6 md:px-10 max-w-2xl mx-auto">
+        <div className="relative">
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search stories…"
+            aria-label="Search stories"
+            className="w-full px-5 py-3.5 pr-12 rounded-xl border border-neutral-200 bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:outline-none transition text-[15px] placeholder:text-neutral-400"
+          />
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400" aria-hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           </div>
         </div>
       </section>
