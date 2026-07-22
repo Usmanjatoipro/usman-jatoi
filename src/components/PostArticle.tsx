@@ -31,6 +31,8 @@ import {
   Award,
   Rss,
 } from "lucide-react";
+import PageHero from "@/components/PageHero";
+
 
 export type PostArticleData = {
   id: number;
@@ -243,57 +245,20 @@ export function PostArticle({
         />
       </div>
 
-      {/* ================= Dark hero ================= */}
-      <header className="relative overflow-hidden bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(139,92,246,0.28),transparent),radial-gradient(900px_500px_at_100%_0%,rgba(6,182,212,0.2),transparent),#0a0a0a] text-white pt-40 pb-16">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          {primaryCategory && (
-            <Link
-              to={archiveHref as any}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-white/80 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-6 hover:bg-white/15 transition"
-            >
-              <Hash className="h-3 w-3" />
-              {primaryCategoryName}
-            </Link>
-          )}
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight max-w-4xl mx-auto leading-tight">
-            {title}
-          </h1>
-          {excerpt && (
-            <p className="mt-5 text-white/70 max-w-2xl mx-auto text-base md:text-lg leading-relaxed line-clamp-3">
-              {excerpt}
-            </p>
-          )}
-          <div className="mt-6 flex items-center justify-center gap-5 text-sm text-white/70 flex-wrap">
-            <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" /> {formatDate(post.post_date)}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-4 w-4" /> {rt} min read
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Eye className="h-4 w-4" /> {views.toLocaleString()} views
-            </span>
-          </div>
-          <nav
-            aria-label="Breadcrumb"
-            className="mt-6 flex items-center justify-center gap-2 text-xs text-white/60 flex-wrap"
-          >
-            <Link to="/" className="hover:text-white transition">Home</Link>
-            <ChevronRight className="h-3 w-3 opacity-60" />
-            {primaryCategory && (
-              <>
-                <Link to={archiveHref as any} className="hover:text-white transition">
-                  {primaryCategoryName}
-                </Link>
-                <ChevronRight className="h-3 w-3 opacity-60" />
-              </>
-            )}
-            <span className="text-white font-medium line-clamp-1 max-w-[60vw]">
-              {title}
-            </span>
-          </nav>
-        </div>
-      </header>
+      {/* ================= Dark hero (silky bg + gradient overlay) ================= */}
+      <PageHero
+        title={title}
+        eyebrow={primaryCategoryName || undefined}
+        size="md"
+        crumbs={[
+          { label: "Home", href: "/" },
+          ...(primaryCategory
+            ? [{ label: primaryCategoryName!, href: archiveHref }]
+            : []),
+          { label: title },
+        ]}
+      />
+
 
       {/* ================= 70/30 body ================= */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 grid lg:grid-cols-[minmax(0,1fr)_340px] gap-10 relative">

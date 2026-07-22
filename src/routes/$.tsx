@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle, FolderOpen } from "lucide-react";
 import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-category-archive";
 import { PostArticle, type PostArticleTerm } from "@/components/PostArticle";
+import PageHero from "@/components/PageHero";
+
 
 type WpPost = {
   id: number;
@@ -652,23 +654,29 @@ function DynamicPage() {
   // Fallback template — plain HTML content.
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="relative overflow-hidden border-b">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background pointer-events-none" />
-        <div className="relative max-w-5xl mx-auto px-6 py-16 md:py-24">
-          {post.path && <Breadcrumbs path={post.path} />}
-          <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-muted-foreground mb-4">
-            <span className="px-2 py-1 rounded bg-muted">{post.post_type}</span>
-            {date && (
-              <span className="inline-flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-              </span>
-            )}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{post.title}</h1>
-          {post.excerpt && <p className="text-lg text-muted-foreground max-w-3xl">{post.excerpt}</p>}
-        </div>
-      </section>
+      <PageHero
+        title={post.title || ""}
+        eyebrow={post.post_type}
+        description={post.excerpt || undefined}
+        size="md"
+        crumbs={
+          post.path
+            ? [
+                { label: "Home", href: "/" },
+                ...post.path
+                  .replace(/^\/|\/$/g, "")
+                  .split("/")
+                  .slice(0, -1)
+                  .map((seg: string, i: number, arr: string[]) => ({
+                    label: seg.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+                    href: "/" + arr.slice(0, i + 1).join("/") + "/",
+                  })),
+                { label: post.title || "" },
+              ]
+            : [{ label: "Home", href: "/" }, { label: post.title || "" }]
+        }
+      />
+
 
       {heroUrl && (
         <div className="max-w-5xl mx-auto px-6 -mt-4 md:-mt-8">
@@ -860,35 +868,25 @@ function CategoryArchivePage({ archive }: { archive: CategoryArchive }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-        <div className="absolute inset-0 opacity-30 pointer-events-none [background:radial-gradient(60%_60%_at_10%_10%,#a855f7_0%,transparent_60%),radial-gradient(50%_50%_at_90%_20%,#3b82f6_0%,transparent_60%),radial-gradient(50%_50%_at_50%_100%,#ec4899_0%,transparent_60%)]" />
-        <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <nav aria-label="Breadcrumb" className="text-xs text-white/70 mb-5 flex flex-wrap items-center gap-1.5">
-            <Link to="/" className="hover:text-white">Home</Link>
-            {ancestors.map((a, i) => {
-              const href = "/" + ancestors.slice(0, i + 1).map((x) => x.slug).join("/") + "/";
-              return (
-                <span key={a.id} className="inline-flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3" />
-                  <Link to={href as any} className="hover:text-white">{a.name}</Link>
-                </span>
-              );
-            })}
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-white">{category.name}</span>
-          </nav>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs uppercase tracking-wider mb-4">
-            <FolderOpen className="w-3 h-3" /> Category
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 max-w-4xl">{category.name}</h1>
-          {category.description && (
-            <p className="text-lg text-white/80 max-w-3xl">{category.description}</p>
-          )}
-          <p className="text-sm text-white/60 mt-5">
-            {total} {total === 1 ? "post" : "posts"} in this category
-          </p>
-        </div>
-      </section>
+      <PageHero
+        title={category.name}
+        eyebrow="Category"
+        description={category.description || undefined}
+        size="md"
+        crumbs={[
+          { label: "Home", href: "/" },
+          ...ancestors.map((a, i) => ({
+            label: a.name,
+            href: "/" + ancestors.slice(0, i + 1).map((x) => x.slug).join("/") + "/",
+          })),
+          { label: category.name },
+        ]}
+      >
+        <p className="text-xs text-white/60">
+          {total} {total === 1 ? "post" : "posts"} in this category
+        </p>
+      </PageHero>
+
 
       <div className="max-w-6xl mx-auto px-6 py-12">
         {children.length > 0 && (
