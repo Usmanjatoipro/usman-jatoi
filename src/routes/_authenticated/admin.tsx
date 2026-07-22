@@ -4,6 +4,8 @@ import {
   rewriteInlineMediaBatch,
   backfillFeaturedImagesBatch,
   getCleanupStats,
+  getBackfillStats,
+  backfillThinPostsBatch,
 } from "@/lib/wp-cleanup.functions";
 import { getContentTypeStats, type ContentTypeStat } from "@/lib/wp-content-stats.functions";
 import { useServerFn } from "@tanstack/react-start";
