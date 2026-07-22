@@ -409,8 +409,21 @@ export function PostArticle({
         />
       </div>
 
-      {/* Top spacer so hero card clears the transparent header */}
-      <div className="h-24 md:h-28" />
+      {/* Top page hero — silky black bg with title + breadcrumb */}
+      <PageHero
+        title={title}
+        eyebrow={primaryCategoryName || undefined}
+        size="sm"
+        crumbs={[
+          { label: "Home", href: "/" },
+          ...(primaryCategory
+            ? [{ label: primaryCategoryName, href: archiveHref }]
+            : [{ label: "Blog", href: "/blog" }]),
+          { label: title },
+        ]}
+      />
+
+      <div className="h-8" />
 
       {/* ================= 70/30 ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
