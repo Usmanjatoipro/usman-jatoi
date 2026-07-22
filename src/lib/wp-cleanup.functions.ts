@@ -266,12 +266,7 @@ export const getBackfillStats = createServerFn({ method: "GET" })
     if (!isAdmin) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const [thin, noSeo, noExcerpt, noHero, total] = await Promise.all([
-      supabaseAdmin.rpc("count_thin_posts").then(
-        (r) => r,
-        () => ({ data: null, error: null }),
-      ),
-      supabaseAdmin
+    const [noSeo, noExcerpt, noHero, total] = await Promise.all([
         .from("wp_posts")
         .select("id", { count: "exact", head: true })
         .eq("post_type", "post")
