@@ -610,6 +610,18 @@ function DynamicPage() {
     },
   });
 
+  // WordPress blog posts get the dedicated PostArticle template
+  // (mirrors usmanjatoi.com — dark hero + 70/30 body with sticky sidebar).
+  if (post.post_type === "post") {
+    return (
+      <PostArticleFromWp
+        post={post}
+        heroUrl={heroUrl}
+        related={related as any[] | undefined}
+      />
+    );
+  }
+
   // Rich structured template — used when RankMath/ACF meta sections exist.
   if (hasStructured) {
     return (
