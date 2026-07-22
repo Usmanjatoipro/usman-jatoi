@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, ArrowLeft, Tag, ChevronRight } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle } from "lucide-react";
 
 type WpPost = {
   id: number;
@@ -16,11 +16,81 @@ type WpPost = {
   seo_description: string | null;
   post_date: string | null;
   featured_media_id: number | null;
+  meta: Record<string, unknown> | null;
 };
 
 type WpMedia = { storage_url: string | null; source_url: string; alt_text: string | null };
-
 type ChildPage = { id: number; title: string | null; path: string; slug: string; excerpt: string | null; featured_media_id: number | null };
+
+// -------------------- Structured meta parsing --------------------
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  features?: string[];
+  paragraphs?: string[];
+  bullets?: Array<{ heading?: string; description?: string; list?: string[] }>;
+};
+type ProcessSection = { steps?: Array<{ step_number?: number; title?: string; description?: string }> };
+type FaqSection = { faqs?: Array<{ question?: string; answer?: string }> };
+type ServicesSection = {
+  section_title?: string;
+  section_subtitle?: string;
+  services?: Array<{ icon?: string; title?: string; description?: string; tags?: string[]; link?: string }>;
+};
+type AboutSection = {
+  title?: string;
+  intro?: string;
+  paragraphs?: string[];
+  bullets?: Array<{ heading?: string; description?: string; list?: string[] }>;
+};
+
+type Structured = {
+  hero: HeroSection | null;
+  about: AboutSection | null;
+  process: ProcessSection | null;
+  services: ServicesSection | null;
+  faqs: FaqSection | null;
+  promoVideo: string | null;
+};
+
+function pickFirst<T>(value: unknown): T | null {
+  if (value == null) return null;
+  const first = Array.isArray(value) ? value[0] : value;
+  if (typeof first === "string") {
+    const trimmed = first.trim();
+    if (!trimmed) return null;
+    try {
+      return JSON.parse(trimmed) as T;
+    } catch {
+      return trimmed as unknown as T;
+    }
+  }
+  if (typeof first === "object") return first as T;
+  return null;
+}
+
+function extractStructured(meta: Record<string, unknown> | null): Structured {
+  if (!meta) return { hero: null, about: null, process: null, services: null, faqs: null, promoVideo: null };
+  const promo = pickFirst<string>(meta["promovideo"]);
+  return {
+    hero: pickFirst<HeroSection>(meta["hero_section"]),
+    about: pickFirst<AboutSection>(meta["aboutexpertise_section"]),
+    process: pickFirst<ProcessSection>(meta["process"]),
+    services: pickFirst<ServicesSection>(meta["our_services"]),
+    faqs: pickFirst<FaqSection>(meta["faqs"]),
+    promoVideo: typeof promo === "string" ? promo : null,
+  };
+}
+
+function toYouTubeEmbed(url: string | null): string | null {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+  return m ? `https://www.youtube.com/embed/${m[1]}` : null;
+}
+
+// -------------------- Loader --------------------
 
 const CANDIDATE_TYPES = ["page", "post", "product", "courses"];
 
@@ -29,7 +99,7 @@ function normalizeVariants(rawPath: string) {
   return {
     withSlash: p.endsWith("/") ? p : p + "/",
     noSlash: p.replace(/\/+$/, ""),
-    prefix: (p.endsWith("/") ? p : p + "/"),
+    prefix: p.endsWith("/") ? p : p + "/",
   };
 }
 
@@ -44,7 +114,7 @@ async function loadPage(
   const { data } = await supabase
     .from("wp_posts")
     .select(
-      "id, post_type, slug, title, excerpt, content, path, permalink, seo_title, seo_description, post_date, featured_media_id",
+      "id, post_type, slug, title, excerpt, content, path, permalink, seo_title, seo_description, post_date, featured_media_id, meta",
     )
     .in("post_type", CANDIDATE_TYPES)
     .in("path", [withSlash, noSlash])
@@ -64,11 +134,16 @@ async function loadPage(
     media = (m as WpMedia) ?? null;
   }
 
-  // For "hub" pages under /services/ or similar hierarchies, list direct children.
   let children: ChildPage[] = [];
   const childrenMedia: Record<number, WpMedia> = {};
   const segCount = prefix.split("/").filter(Boolean).length;
-  const isHubCandidate = prefix.startsWith("/services/") || prefix === "/services/" || prefix.startsWith("/about-me/") || prefix.startsWith("/my-lifestyle/") || prefix.startsWith("/portfolio/") || prefix.startsWith("/skills-expertise/");
+  const isHubCandidate =
+    prefix.startsWith("/services/") ||
+    prefix === "/services/" ||
+    prefix.startsWith("/about-me/") ||
+    prefix.startsWith("/my-lifestyle/") ||
+    prefix.startsWith("/portfolio/") ||
+    prefix.startsWith("/skills-expertise/");
 
   if (isHubCandidate) {
     const { data: kids } = await supabase
@@ -82,7 +157,6 @@ async function loadPage(
       .limit(500);
 
     if (kids && kids.length) {
-      // Keep only immediate children: exactly one segment deeper
       const direct = (kids as any[]).filter((k) => {
         if (!k.path) return false;
         const kSegs = k.path.replace(/^\/+|\/+$/g, "").split("/");
@@ -106,13 +180,14 @@ async function loadPage(
   return { post, media, children, childrenMedia };
 }
 
-// Rewrite absolute usmanjatoi.com URLs in the HTML at render time (defence in depth).
 function rewriteContentHtml(html: string): string {
   if (!html) return html;
   return html
     .replace(/https?:\/\/(?:www\.)?usmanjatoi\.com/g, "")
     .replace(/href="\/([^"#?]*?)\/?"/g, (_m, p1) => `href="/${p1}"`);
 }
+
+// -------------------- Route --------------------
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -121,7 +196,6 @@ export const Route = createFileRoute("/$")({
     const result = await loadPage(splat);
     if (result) return result;
 
-    // Redirect fallback
     const p = "/" + splat.replace(/^\/+|\/+$/g, "");
     const { data: rd } = await supabase
       .from("redirects")
@@ -143,24 +217,41 @@ export const Route = createFileRoute("/$")({
     const url = `https://usmanjatoi.lovable.app/${splat}`;
     const image = media?.storage_url || media?.source_url || undefined;
 
-    const jsonLd: Record<string, unknown> = post.post_type === "post"
-      ? {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: post.title,
-          datePublished: post.post_date,
-          image: image ? [image] : undefined,
-          author: { "@type": "Person", name: "Usman Jatoi" },
-          mainEntityOfPage: url,
-        }
-      : {
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: post.title,
-          url,
-          description: (desc || "").slice(0, 158),
-          image: image || undefined,
-        };
+    const structured = extractStructured(post.meta);
+    const jsonLdEntries: Array<Record<string, unknown>> = [];
+
+    jsonLdEntries.push(
+      post.post_type === "post"
+        ? {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            datePublished: post.post_date,
+            image: image ? [image] : undefined,
+            author: { "@type": "Person", name: "Usman Jatoi" },
+            mainEntityOfPage: url,
+          }
+        : {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: post.title,
+            url,
+            description: (desc || "").slice(0, 158),
+            image: image || undefined,
+          },
+    );
+
+    if (structured.faqs?.faqs?.length) {
+      jsonLdEntries.push({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: structured.faqs.faqs.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      });
+    }
 
     return {
       meta: [
@@ -174,7 +265,10 @@ export const Route = createFileRoute("/$")({
         { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
       ],
       links: [{ rel: "canonical", href: url }],
-      scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
+      scripts: jsonLdEntries.map((entry) => ({
+        type: "application/ld+json",
+        children: JSON.stringify(entry),
+      })),
     };
   },
   component: DynamicPage,
@@ -230,11 +324,216 @@ function Breadcrumbs({ path }: { path: string }) {
   );
 }
 
+// -------------------- Structured section components --------------------
+
+function StructuredHero({ hero, post, media }: { hero: HeroSection; post: WpPost; media: WpMedia | null }) {
+  const heroUrl = media?.storage_url || media?.source_url || null;
+  return (
+    <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      <div className="absolute inset-0 opacity-30 pointer-events-none [background:radial-gradient(60%_60%_at_10%_10%,#a855f7_0%,transparent_60%),radial-gradient(50%_50%_at_90%_20%,#3b82f6_0%,transparent_60%),radial-gradient(50%_50%_at_50%_100%,#ec4899_0%,transparent_60%)]" />
+      <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-24">
+        {post.path && <div className="[&_a]:text-white/70 [&_span]:text-white/70"><Breadcrumbs path={post.path} /></div>}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs uppercase tracking-wider mb-4">
+          <Sparkles className="w-3 h-3" /> {post.post_type === "page" ? "Service" : post.post_type}
+        </div>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 max-w-4xl">
+          {hero.title || post.title}
+        </h1>
+        {hero.subtitle && (
+          <p className="text-lg md:text-xl text-white/80 max-w-3xl mb-6">{hero.subtitle}</p>
+        )}
+        {hero.description && (
+          <p className="text-base text-white/70 max-w-3xl mb-8">{hero.description}</p>
+        )}
+        {hero.features && hero.features.length > 0 && (
+          <ul className="grid sm:grid-cols-2 gap-3 max-w-3xl mb-8">
+            {hero.features.map((f, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-white/90">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" /> {f}
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex gap-3">
+          <Link to="/contact-me" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-900 font-semibold hover:bg-white/90 transition">
+            Hire Me <ChevronRight className="w-4 h-4" />
+          </Link>
+          <Link to="/services" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 text-white hover:bg-white/10 transition">
+            All Services
+          </Link>
+        </div>
+        {heroUrl && (
+          <div className="mt-10 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            <img src={heroUrl} alt={media?.alt_text || post.title || ""} className="w-full" loading="lazy" />
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function AboutBlock({ about }: { about: AboutSection }) {
+  return (
+    <section className="border-b">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        {about.title && <h2 className="text-3xl md:text-4xl font-bold mb-4">{about.title}</h2>}
+        {about.intro && <p className="text-lg text-muted-foreground max-w-3xl mb-8">{about.intro}</p>}
+        {about.paragraphs?.map((p, i) => (
+          <p key={i} className="text-base text-foreground/80 max-w-3xl mb-4">{p}</p>
+        ))}
+        {about.bullets && about.bullets.length > 0 && (
+          <div className="grid md:grid-cols-2 gap-6 mt-8">
+            {about.bullets.map((b, i) => (
+              <div key={i} className="p-6 rounded-xl border bg-card">
+                {b.heading && <h3 className="font-semibold text-lg mb-2">{b.heading}</h3>}
+                {b.description && <p className="text-sm text-muted-foreground mb-3">{b.description}</p>}
+                {b.list && (
+                  <ul className="space-y-2">
+                    {b.list.map((li, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> {li}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ProcessBlock({ process }: { process: ProcessSection }) {
+  if (!process.steps?.length) return null;
+  return (
+    <section className="border-b bg-muted/30">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-2">My Process</h2>
+        <p className="text-muted-foreground mb-10">How I deliver results, step by step.</p>
+        <div className="grid md:grid-cols-2 gap-5">
+          {process.steps.map((s, i) => (
+            <div key={i} className="p-6 rounded-xl border bg-card flex gap-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                {s.step_number ?? i + 1}
+              </div>
+              <div>
+                {s.title && <h3 className="font-semibold mb-1">{s.title}</h3>}
+                {s.description && <p className="text-sm text-muted-foreground">{s.description}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ServicesBlock({ services }: { services: ServicesSection }) {
+  if (!services.services?.length) return null;
+  return (
+    <section className="border-b">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        {services.section_title && <h2 className="text-3xl md:text-4xl font-bold mb-2">{services.section_title}</h2>}
+        {services.section_subtitle && <p className="text-muted-foreground mb-10">{services.section_subtitle}</p>}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {services.services.map((s, i) => {
+            const cleanLink = s.link ? s.link.replace(/https?:\/\/(?:www\.)?usmanjatoi\.com/g, "") : null;
+            const inner = (
+              <>
+                {s.icon && <i className={`${s.icon} text-2xl text-primary mb-3 block`} aria-hidden="true" />}
+                {s.title && <h3 className="font-semibold text-lg mb-2">{s.title}</h3>}
+                {s.description && <p className="text-sm text-muted-foreground mb-3">{s.description}</p>}
+                {s.tags && s.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {s.tags.map((t, j) => (
+                      <span key={j} className="px-2 py-0.5 rounded-full bg-muted text-xs text-muted-foreground">{t}</span>
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+            return cleanLink ? (
+              <Link key={i} to={cleanLink as any} className="block p-6 rounded-xl border bg-card hover:shadow-lg hover:-translate-y-0.5 transition">
+                {inner}
+              </Link>
+            ) : (
+              <div key={i} className="p-6 rounded-xl border bg-card">{inner}</div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FaqsBlock({ faqs }: { faqs: FaqSection }) {
+  if (!faqs.faqs?.length) return null;
+  return (
+    <section className="border-b bg-muted/30">
+      <div className="max-w-4xl mx-auto px-6 py-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-2">Frequently Asked Questions</h2>
+        <p className="text-muted-foreground mb-8">Everything you need to know.</p>
+        <div className="space-y-3">
+          {faqs.faqs.map((f, i) => (
+            <details key={i} className="group rounded-xl border bg-card p-5 open:shadow-md transition">
+              <summary className="cursor-pointer list-none flex items-start justify-between gap-4 font-semibold">
+                <span>{f.question}</span>
+                <ChevronRight className="w-5 h-5 flex-shrink-0 transition-transform group-open:rotate-90" />
+              </summary>
+              {f.answer && (
+                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{f.answer}</p>
+              )}
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PromoVideoBlock({ url }: { url: string }) {
+  const embed = toYouTubeEmbed(url);
+  if (!embed) {
+    return (
+      <section className="border-b">
+        <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary font-semibold">
+            <PlayCircle className="w-6 h-6" /> Watch the promo
+          </a>
+        </div>
+      </section>
+    );
+  }
+  return (
+    <section className="border-b">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">See it in action</h2>
+        <div className="aspect-video rounded-2xl overflow-hidden border shadow-xl bg-black">
+          <iframe
+            src={embed}
+            title="Promo video"
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// -------------------- Page --------------------
+
 function DynamicPage() {
   const { post, media, children, childrenMedia } = Route.useLoaderData();
   const contentHtml = rewriteContentHtml(post.content || "");
   const heroUrl = media?.storage_url || media?.source_url || null;
   const date = post.post_date ? new Date(post.post_date) : null;
+  const structured = extractStructured(post.meta);
+  const hasStructured =
+    !!(structured.hero || structured.about || structured.process || structured.services || structured.faqs);
 
   const { data: related } = useQuery({
     queryKey: ["related", post.id, post.post_type],
@@ -252,6 +551,34 @@ function DynamicPage() {
     },
   });
 
+  // Rich structured template — used when RankMath/ACF meta sections exist.
+  if (hasStructured) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        {structured.hero && <StructuredHero hero={structured.hero} post={post} media={media} />}
+        {structured.about && <AboutBlock about={structured.about} />}
+        {structured.services && <ServicesBlock services={structured.services} />}
+        {structured.process && <ProcessBlock process={structured.process} />}
+        {structured.promoVideo && <PromoVideoBlock url={structured.promoVideo} />}
+        {structured.faqs && <FaqsBlock faqs={structured.faqs} />}
+
+        {contentHtml && contentHtml.replace(/<[^>]+>/g, "").trim().length > 40 && (
+          <article className="max-w-3xl mx-auto px-6 py-12">
+            <div
+              className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary prose-img:rounded-lg"
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
+          </article>
+        )}
+
+        {children && children.length > 0 && (
+          <ChildrenGrid title={`Explore in ${post.title}`} children={children} childrenMedia={childrenMedia} />
+        )}
+      </div>
+    );
+  }
+
+  // Fallback template — plain HTML content.
   return (
     <div className="min-h-screen bg-background text-foreground">
       <section className="relative overflow-hidden border-b">
@@ -267,12 +594,8 @@ function DynamicPage() {
               </span>
             )}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            {post.title}
-          </h1>
-          {post.excerpt && (
-            <p className="text-lg text-muted-foreground max-w-3xl">{post.excerpt}</p>
-          )}
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{post.title}</h1>
+          {post.excerpt && <p className="text-lg text-muted-foreground max-w-3xl">{post.excerpt}</p>}
         </div>
       </section>
 
@@ -294,51 +617,8 @@ function DynamicPage() {
         />
       </article>
 
-      {/* Children grid for parent/hub pages */}
       {children && children.length > 0 && (
-        <section className="border-t bg-muted/30">
-          <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">Explore in {post.title}</h2>
-            <p className="text-sm text-muted-foreground mb-8">
-              {children.length} {children.length === 1 ? "page" : "pages"} under this section.
-            </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {(children as ChildPage[]).map((c: ChildPage) => {
-                const cm = c.featured_media_id ? childrenMedia[c.featured_media_id] : null;
-                const cImg = cm?.storage_url || cm?.source_url || null;
-                return (
-                  <Link
-                    key={c.id}
-                    to={c.path as any}
-                    className="group block rounded-xl border bg-card overflow-hidden hover:shadow-lg transition"
-                  >
-                    {cImg && (
-                      <div className="aspect-[16/10] overflow-hidden bg-muted">
-                        <img
-                          src={cImg}
-                          alt={cm?.alt_text || c.title || ""}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5">
-                      <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition">
-                        {c.title}
-                      </h3>
-                      {c.excerpt && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{c.excerpt}</p>
-                      )}
-                      <span className="inline-flex items-center gap-1 text-xs text-primary mt-3">
-                        View <ChevronRight className="w-3 h-3" />
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <ChildrenGrid title={`Explore in ${post.title}`} children={children} childrenMedia={childrenMedia} />
       )}
 
       {related && related.length > 0 && (
@@ -354,9 +634,7 @@ function DynamicPage() {
                   to={(r.path || `/${r.slug}`) as any}
                   className="block p-5 rounded-lg border bg-card hover:shadow-md transition"
                 >
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                    {r.post_type}
-                  </div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{r.post_type}</div>
                   <div className="font-semibold line-clamp-2">{r.title}</div>
                 </Link>
               ))}
@@ -365,5 +643,61 @@ function DynamicPage() {
         </section>
       )}
     </div>
+  );
+}
+
+function ChildrenGrid({
+  title,
+  children,
+  childrenMedia,
+}: {
+  title: string;
+  children: ChildPage[];
+  childrenMedia: Record<number, WpMedia>;
+}) {
+  return (
+    <section className="border-t bg-muted/30">
+      <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">{title}</h2>
+        <p className="text-sm text-muted-foreground mb-8">
+          {children.length} {children.length === 1 ? "page" : "pages"} under this section.
+        </p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {children.map((c) => {
+            const cm = c.featured_media_id ? childrenMedia[c.featured_media_id] : null;
+            const cImg = cm?.storage_url || cm?.source_url || null;
+            return (
+              <Link
+                key={c.id}
+                to={c.path as any}
+                className="group block rounded-xl border bg-card overflow-hidden hover:shadow-lg transition"
+              >
+                {cImg && (
+                  <div className="aspect-[16/10] overflow-hidden bg-muted">
+                    <img
+                      src={cImg}
+                      alt={cm?.alt_text || c.title || ""}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                )}
+                <div className="p-5">
+                  <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition">
+                    {c.title}
+                  </h3>
+                  {c.excerpt && (
+                    <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{c.excerpt}</p>
+                  )}
+                  <span className="inline-flex items-center gap-1 text-xs text-primary mt-3">
+                    View <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }
