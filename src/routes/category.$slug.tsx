@@ -97,9 +97,6 @@ function CategoryPage() {
         crumbs={crumbs}
         size="lg"
       >
-        <p className="text-xs md:text-sm uppercase tracking-[0.22em] text-white/60">
-          {total} {total === 1 ? "post" : "posts"} in this category
-        </p>
       </PageHero>
 
       <div className="mx-auto max-w-6xl px-6 py-14">
