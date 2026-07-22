@@ -862,35 +862,25 @@ function CategoryArchivePage({ archive }: { archive: CategoryArchive }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-        <div className="absolute inset-0 opacity-30 pointer-events-none [background:radial-gradient(60%_60%_at_10%_10%,#a855f7_0%,transparent_60%),radial-gradient(50%_50%_at_90%_20%,#3b82f6_0%,transparent_60%),radial-gradient(50%_50%_at_50%_100%,#ec4899_0%,transparent_60%)]" />
-        <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <nav aria-label="Breadcrumb" className="text-xs text-white/70 mb-5 flex flex-wrap items-center gap-1.5">
-            <Link to="/" className="hover:text-white">Home</Link>
-            {ancestors.map((a, i) => {
-              const href = "/" + ancestors.slice(0, i + 1).map((x) => x.slug).join("/") + "/";
-              return (
-                <span key={a.id} className="inline-flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3" />
-                  <Link to={href as any} className="hover:text-white">{a.name}</Link>
-                </span>
-              );
-            })}
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-white">{category.name}</span>
-          </nav>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs uppercase tracking-wider mb-4">
-            <FolderOpen className="w-3 h-3" /> Category
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 max-w-4xl">{category.name}</h1>
-          {category.description && (
-            <p className="text-lg text-white/80 max-w-3xl">{category.description}</p>
-          )}
-          <p className="text-sm text-white/60 mt-5">
-            {total} {total === 1 ? "post" : "posts"} in this category
-          </p>
-        </div>
-      </section>
+      <PageHero
+        title={category.name}
+        eyebrow="Category"
+        description={category.description || undefined}
+        size="md"
+        crumbs={[
+          { label: "Home", href: "/" },
+          ...ancestors.map((a, i) => ({
+            label: a.name,
+            href: "/" + ancestors.slice(0, i + 1).map((x) => x.slug).join("/") + "/",
+          })),
+          { label: category.name },
+        ]}
+      >
+        <p className="text-xs text-white/60">
+          {total} {total === 1 ? "post" : "posts"} in this category
+        </p>
+      </PageHero>
+
 
       <div className="max-w-6xl mx-auto px-6 py-12">
         {children.length > 0 && (
