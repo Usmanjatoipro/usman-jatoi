@@ -5,12 +5,19 @@ import {
   backfillFeaturedImagesBatch,
   getCleanupStats,
 } from "@/lib/wp-cleanup.functions";
+import { getContentTypeStats, type ContentTypeStat } from "@/lib/wp-content-stats.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  loader: async () => await listCategoriesTree(),
+  loader: async () => {
+    const [categories, content] = await Promise.all([
+      listCategoriesTree(),
+      getContentTypeStats(),
+    ]);
+    return { ...categories, content };
+  },
   head: () => ({
     meta: [
       { title: "Admin — Usman Jatoi" },
@@ -25,8 +32,13 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 
+
 function AdminPage() {
-  const { tree, flat } = Route.useLoaderData() as Awaited<ReturnType<typeof listCategoriesTree>>;
+  const { tree, flat, content } = Route.useLoaderData() as {
+    tree: WpCategoryNode[];
+    flat: WpCategoryNode[];
+    content: Awaited<ReturnType<typeof getContentTypeStats>>;
+  };
   const [q, setQ] = useState("");
   const [expandAll, setExpandAll] = useState(false);
 
@@ -71,13 +83,34 @@ function AdminPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-8 space-y-8">
-        {/* Stats */}
+        {/* Content library totals */}
+        <section className="bg-white rounded-xl border border-neutral-200 p-6">
+          <div className="flex items-baseline justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-bold">Content Library</h2>
+              <p className="text-sm text-neutral-500 mt-1">
+                Live counts from Lovable Cloud — everything below is served from the app, not WordPress.
+              </p>
+            </div>
+            <p className="text-xs text-neutral-400 tabular-nums">
+              {content.mediaCount.toLocaleString()} media files in storage
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {content.stats.map((s: ContentTypeStat) => (
+              <ContentStat key={s.post_type} stat={s} />
+            ))}
+          </div>
+        </section>
+
+        {/* Categories stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Stat label="Total Categories" value={flat.length} />
           <Stat label="Root Categories" value={tree.length} />
-          <Stat label="Total Posts" value={totalPosts.toLocaleString()} />
+          <Stat label="Total Posts (cats)" value={totalPosts.toLocaleString()} />
           <Stat label="Deepest Level" value={maxDepth(tree)} />
         </div>
+
 
         {/* Quick actions */}
         <section className="bg-white rounded-xl border border-neutral-200 p-6">
@@ -249,6 +282,38 @@ function Stat({ label, value }: { label: string; value: string | number }) {
     </div>
   );
 }
+
+function ContentStat({ stat }: { stat: ContentTypeStat }) {
+  const inner = (
+    <>
+      <p className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">
+        {stat.label}
+      </p>
+      <p className="text-3xl font-bold text-neutral-900 mt-2 tabular-nums">
+        {stat.published.toLocaleString()}
+      </p>
+      <p className="text-[11px] text-neutral-400 mt-1">published</p>
+      {stat.sample_path && (
+        <p className="text-[11px] text-indigo-600 mt-2 truncate group-hover:underline">
+          View sample →
+        </p>
+      )}
+    </>
+  );
+  const cls =
+    "group block bg-gradient-to-br from-white to-neutral-50 rounded-xl border border-neutral-200 p-5 hover:border-indigo-600 hover:shadow-sm transition";
+  if (stat.sample_path) {
+    return (
+      <a href={stat.sample_path} target="_blank" rel="noreferrer" className={cls}>
+        {inner}
+      </a>
+    );
+  }
+  return <div className={cls}>{inner}</div>;
+}
+
+
+
 
 function maxDepth(nodes: WpCategoryNode[], d = 1): number {
   let max = nodes.length ? d : 0;
