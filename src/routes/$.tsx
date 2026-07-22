@@ -759,3 +759,129 @@ function ChildrenGrid({
     </section>
   );
 }
+
+// -------------------- Category archive template --------------------
+
+function CategoryArchivePage({ archive }: { archive: CategoryArchive }) {
+  const { category, ancestors, children, posts, page, totalPages, total } = archive;
+  const basePath = "/" + [...ancestors.map((a) => a.slug), category.slug].join("/") + "/";
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+        <div className="absolute inset-0 opacity-30 pointer-events-none [background:radial-gradient(60%_60%_at_10%_10%,#a855f7_0%,transparent_60%),radial-gradient(50%_50%_at_90%_20%,#3b82f6_0%,transparent_60%),radial-gradient(50%_50%_at_50%_100%,#ec4899_0%,transparent_60%)]" />
+        <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <nav aria-label="Breadcrumb" className="text-xs text-white/70 mb-5 flex flex-wrap items-center gap-1.5">
+            <Link to="/" className="hover:text-white">Home</Link>
+            {ancestors.map((a, i) => {
+              const href = "/" + ancestors.slice(0, i + 1).map((x) => x.slug).join("/") + "/";
+              return (
+                <span key={a.id} className="inline-flex items-center gap-1.5">
+                  <ChevronRight className="w-3 h-3" />
+                  <Link to={href as any} className="hover:text-white">{a.name}</Link>
+                </span>
+              );
+            })}
+            <ChevronRight className="w-3 h-3" />
+            <span className="text-white">{category.name}</span>
+          </nav>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs uppercase tracking-wider mb-4">
+            <FolderOpen className="w-3 h-3" /> Category
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 max-w-4xl">{category.name}</h1>
+          {category.description && (
+            <p className="text-lg text-white/80 max-w-3xl">{category.description}</p>
+          )}
+          <p className="text-sm text-white/60 mt-5">
+            {total} {total === 1 ? "post" : "posts"} in this category
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {children.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-sm uppercase tracking-widest text-muted-foreground mb-4">Browse subcategories</h2>
+            <div className="flex flex-wrap gap-2">
+              {children.map((c) => {
+                const href = basePath + c.slug + "/";
+                return (
+                  <Link
+                    key={c.id}
+                    to={href as any}
+                    className="px-4 py-2 rounded-full border border-border hover:border-foreground hover:bg-muted text-sm transition"
+                  >
+                    {c.name} <span className="text-muted-foreground">({c.count})</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {posts.length === 0 ? (
+          <p className="text-muted-foreground py-16 text-center">No posts published in this category yet.</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((p) => (
+              <Link
+                key={p.id}
+                to={(p.path || `/${p.slug}`) as any}
+                className="group rounded-xl overflow-hidden border border-border bg-card hover:shadow-lg hover:border-foreground/30 transition"
+              >
+                {p.featured_image && (
+                  <div className="aspect-[16/10] overflow-hidden bg-muted">
+                    <img
+                      src={p.featured_image}
+                      alt={p.title || ""}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                )}
+                <div className="p-5">
+                  {p.post_date && (
+                    <time className="text-xs uppercase tracking-widest text-muted-foreground">
+                      {new Date(p.post_date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                    </time>
+                  )}
+                  <h3 className="mt-2 text-lg font-semibold leading-snug group-hover:text-primary transition line-clamp-2">
+                    {p.title}
+                  </h3>
+                  {p.excerpt && (
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{p.excerpt}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-12 flex items-center justify-center gap-4">
+            {page > 1 && (
+              <Link
+                to={basePath as any}
+                search={{ page: page - 1 } as any}
+                className="px-4 py-2 rounded-full border border-border hover:bg-muted text-sm"
+              >
+                ← Previous
+              </Link>
+            )}
+            <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+            {page < totalPages && (
+              <Link
+                to={basePath as any}
+                search={{ page: page + 1 } as any}
+                className="px-4 py-2 rounded-full border border-border hover:bg-muted text-sm"
+              >
+                Next →
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
