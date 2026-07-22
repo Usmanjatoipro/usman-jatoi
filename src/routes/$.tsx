@@ -4,6 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle, FolderOpen } from "lucide-react";
 import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-category-archive";
+import { PostArticle, type PostArticleTerm } from "@/components/PostArticle";
 
 type WpPost = {
   id: number;
