@@ -654,23 +654,29 @@ function DynamicPage() {
   // Fallback template — plain HTML content.
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="relative overflow-hidden border-b">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background pointer-events-none" />
-        <div className="relative max-w-5xl mx-auto px-6 py-16 md:py-24">
-          {post.path && <Breadcrumbs path={post.path} />}
-          <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-muted-foreground mb-4">
-            <span className="px-2 py-1 rounded bg-muted">{post.post_type}</span>
-            {date && (
-              <span className="inline-flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-              </span>
-            )}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{post.title}</h1>
-          {post.excerpt && <p className="text-lg text-muted-foreground max-w-3xl">{post.excerpt}</p>}
-        </div>
-      </section>
+      <PageHero
+        title={post.title || ""}
+        eyebrow={post.post_type}
+        description={post.excerpt || undefined}
+        size="md"
+        crumbs={
+          post.path
+            ? [
+                { label: "Home", href: "/" },
+                ...post.path
+                  .replace(/^\/|\/$/g, "")
+                  .split("/")
+                  .slice(0, -1)
+                  .map((seg, i, arr) => ({
+                    label: seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+                    href: "/" + arr.slice(0, i + 1).join("/") + "/",
+                  })),
+                { label: post.title || "" },
+              ]
+            : [{ label: "Home", href: "/" }, { label: post.title || "" }]
+        }
+      />
+
 
       {heroUrl && (
         <div className="max-w-5xl mx-auto px-6 -mt-4 md:-mt-8">
