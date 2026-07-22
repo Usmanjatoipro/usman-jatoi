@@ -48,7 +48,7 @@ export async function getWpMedia(id: number | null): Promise<WpMediaItem | null>
     // Fallback to local manifest
   }
 
-  const found = (mediaData as WpMediaItem[]).find((m) => m.id === id);
+  const found = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === id);
   return found || null;
 }
 
@@ -83,7 +83,7 @@ export async function getWpPageOrPostByPath(rawPath: string): Promise<{ post: Wp
   );
 
   if (pageMatch) {
-    const media = (mediaData as WpMediaItem[]).find((m) => m.id === pageMatch.featured_media_id) || null;
+    const media = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === pageMatch.featured_media_id) || null;
     return { post: pageMatch, media };
   }
 
@@ -92,7 +92,7 @@ export async function getWpPageOrPostByPath(rawPath: string): Promise<{ post: Wp
   );
 
   if (postMatch) {
-    const media = (mediaData as WpMediaItem[]).find((m) => m.id === postMatch.featured_media_id) || null;
+    const media = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === postMatch.featured_media_id) || null;
     return { post: postMatch, media };
   }
 
@@ -120,7 +120,7 @@ export async function getWpPostBySlug(slug: string): Promise<{ post: WpPostItem;
 
   const match = (postsData as WpPostItem[]).find((p) => p.slug === slug);
   if (match) {
-    const media = (mediaData as WpMediaItem[]).find((m) => m.id === match.featured_media_id) || null;
+    const media = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === match.featured_media_id) || null;
     return { post: match, media };
   }
 
