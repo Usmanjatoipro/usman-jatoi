@@ -25,18 +25,18 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (let from = 0; from < 60000; from += pageSize) {
           const { data, error } = await supa
             .from("wp_posts")
-            .select("path, modified_date, post_type")
+            .select("path, post_modified, post_type")
             .in("post_type", ["page", "post", "product", "courses"])
             .eq("status", "publish")
             .not("path", "is", null)
             .range(from, from + pageSize - 1);
           if (error || !data || data.length === 0) break;
-          for (const row of data as Array<{ path: string; modified_date: string | null; post_type: string }>) {
+          for (const row of data as Array<{ path: string; post_modified: string | null; post_type: string }>) {
             if (!row.path) continue;
             const clean = row.path.replace(/\/+$/, "");
             urls.push({
               loc: `${SITE}${clean}`,
-              lastmod: row.modified_date ? new Date(row.modified_date).toISOString() : undefined,
+              lastmod: row.post_modified ? new Date(row.post_modified).toISOString() : undefined,
               priority: row.post_type === "page" ? "0.7" : "0.6",
             });
           }
