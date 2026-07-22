@@ -42,7 +42,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "Creativity",
-    icon: "🎨",
+    icon: "",
     title: "The Heart of Creativity: Art in Many Forms",
     paragraphs: [
       "From a very young age, creating art has been a core part of who I am. Even as a child, when I was only seven years old, my interest in making things in the digital world began. This love for art started with simple ways of putting my thoughts onto paper, then quickly moved into the digital space.",
@@ -52,7 +52,7 @@ const sections: Section[] = [
   },
   {
     tag: "Storytelling",
-    icon: "🎬",
+    icon: "",
     title: "The Lens and the Story: From Photography to Filmmaking",
     paragraphs: [
       "My interest in visuals also led me to photography. I enjoy taking pictures and capturing moments, which is a quiet way to see the world around me. This naturally flowed into a deep hobby of video creation and filmmaking. My YouTube channel, \"Usman Jatoi\" (originally \"UJTutorial,\" later \"Usman Art\"), became a place for this.",
@@ -62,7 +62,7 @@ const sections: Section[] = [
   },
   {
     tag: "Curiosity",
-    icon: "📚",
+    icon: "",
     title: "The Quest for Knowledge: Learning as a Lifestyle",
     paragraphs: [
       "For me, learning new skills is not just a job requirement; it's a core hobby and a way of life. I have always been driven by curiosity. As a kid, I tried learning everything: coding, game building, and app creation. But after a few months, I realized I didn't want to choose pure coding for my entire career. I then tried front-end website development, which includes design but also uses coding. Again, I decided to move on from just coding for my whole life.",
@@ -72,7 +72,7 @@ const sections: Section[] = [
   },
   {
     tag: "Adventure",
-    icon: "🌍",
+    icon: "",
     title: "Adventures and Explorations: Beyond the Screen",
     paragraphs: [
       "While much of my life involves screens, I also find joy in exploring the real world. My personal experiences, like a trip to Bhawalpur, show my interest in traveling and seeing new places. These experiences, though not directly tied to digital tools, help broaden my perspective and offer fresh ideas.",
@@ -81,7 +81,7 @@ const sections: Section[] = [
   },
   {
     tag: "Reflection",
-    icon: "🎮",
+    icon: "",
     title: "The Game That Taught a Lesson: What Stays and What Goes",
     paragraphs: [
       "Like many young people, I explored gaming as a hobby. I even started a second YouTube channel, \"UJGamer418,\" because my friends encouraged me to play with them and upload gaming videos. At first, it was fun, and my friends praised my content.",
@@ -91,7 +91,7 @@ const sections: Section[] = [
   },
   {
     tag: "Impact",
-    icon: "🚀",
+    icon: "",
     title: "How Hobbies Shape My Professional Self",
     paragraphs: [
       "All these hobbies, from deep creative work to trying and leaving different paths, play a big role in my professional life. The discipline I learned from daily graphic design and 3D modeling directly helps my work ethic. The storytelling and detailed planning from filmmaking carry over into how I approach professional projects.",

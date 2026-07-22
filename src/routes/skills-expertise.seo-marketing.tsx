@@ -47,7 +47,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "Keyword Research",
-    icon: "🔍",
+    icon: "",
     title: "Understanding how people search",
     paragraphs: [
       "The first step in getting a business found is understanding what people actually type into Google. Keyword research is finding that secret language your customers already speak.",
@@ -57,7 +57,7 @@ const sections: Section[] = [
   },
   {
     tag: "Content Strategy",
-    icon: "🗺️",
+    icon: "",
     title: "Planning what to say",
     paragraphs: [
       "Once I know the keywords, the next step is deciding what content to make — topics, page types, and questions to answer.",
@@ -67,7 +67,7 @@ const sections: Section[] = [
   },
   {
     tag: "On-Page SEO",
-    icon: "⚙️",
+    icon: "",
     title: "Making pages search-engine friendly",
     paragraphs: [
       "On-page SEO is about placing keywords in the right spots — titles, headings, meta descriptions — and making sure the site loads fast and works great on mobile.",
@@ -77,7 +77,7 @@ const sections: Section[] = [
   },
   {
     tag: "Backlinks",
-    icon: "🔗",
+    icon: "",
     title: "Building trust online",
     paragraphs: [
       "Backlinks are votes of confidence from other websites. When a trusted site links to yours, Google sees your site as more credible — and rankings move.",
@@ -86,7 +86,7 @@ const sections: Section[] = [
   },
   {
     tag: "PR & Growth",
-    icon: "📣",
+    icon: "",
     title: "Getting the word out",
     paragraphs: [
       "SEO isn't the whole picture. PR campaigns put a business into articles, blogs, and media outlets — expanding reach and adding trust that pure search can't.",

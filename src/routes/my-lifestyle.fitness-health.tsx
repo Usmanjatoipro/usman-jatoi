@@ -46,7 +46,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "The Beginning",
-    icon: "🌱",
+    icon: "",
     title: "Where the story starts",
     paragraphs: [
       "I was born on April 18, 2006, in Jeddah, Saudi Arabia. When I was two, my family moved back to Khanpur District, Pakistan — where I grew up.",
@@ -55,7 +55,7 @@ const sections: Section[] = [
   },
   {
     tag: "Early Digital Life",
-    icon: "💻",
+    icon: "",
     title: "How screens shaped my body",
     paragraphs: [
       "As a kid I was obsessed with coding, making games, and building apps. Then came graphic design, 3D modeling, and video editing. Each new passion pulled me deeper into the chair.",
@@ -65,7 +65,7 @@ const sections: Section[] = [
   },
   {
     tag: "Business & Health",
-    icon: "🚀",
+    icon: "",
     title: "Redsglow, Pearl Lemon, and long nights",
     paragraphs: [
       "Building Redsglow — first hand-coded, later rebuilt in WordPress — took months of focused work. Setting up the agency across every social platform meant more long sitting sessions.",
@@ -75,7 +75,7 @@ const sections: Section[] = [
   },
   {
     tag: "The Honest Truth",
-    icon: "🩺",
+    icon: "",
     title: "What my body is telling me",
     paragraphs: [
       "I'll be honest. Sleep hasn't been on time. Meals haven't been on schedule. I've had stomach issues, small ear problems, pimples on my chest, and a black mark on my leg. These are signs — not disasters, but signs.",
@@ -85,7 +85,7 @@ const sections: Section[] = [
   },
   {
     tag: "The Work",
-    icon: "🧠",
+    icon: "",
     title: "Why my career demands better health",
     paragraphs: [
       "I've shipped 300+ graphic design projects, 190+ websites, and built 1,000+ small converter plugins. I make AI videos, Chrome extensions, and manage teams across ventures.",
@@ -95,7 +95,7 @@ const sections: Section[] = [
   },
   {
     tag: "The Plan",
-    icon: "🎯",
+    icon: "",
     title: "Making health non-negotiable",
     paragraphs: [
       "Going forward, fitness and health aren't a \"someday\" project. They're the foundation everything else runs on.",

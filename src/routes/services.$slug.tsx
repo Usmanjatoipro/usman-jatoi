@@ -249,10 +249,10 @@ const process = [
 ];
 
 const delays = [
-  { icon: "👨‍👩‍👧", t: "Family events", d: "Weddings, births, family emergencies." },
-  { icon: "🩺", t: "Health issues", d: "Personal or immediate family health matters." },
-  { icon: "🌍", t: "Public holidays", d: "Regional and international observances." },
-  { icon: "⚡", t: "Technical issues", d: "Hosting, connectivity, or third-party outages." },
+  { icon: "", t: "Family events", d: "Weddings, births, family emergencies." },
+  { icon: "", t: "Health issues", d: "Personal or immediate family health matters." },
+  { icon: "", t: "Public holidays", d: "Regional and international observances." },
+  { icon: "", t: "Technical issues", d: "Hosting, connectivity, or third-party outages." },
 ];
 
 const awards = [
@@ -262,12 +262,12 @@ const awards = [
 ];
 
 const globalTeams = [
-  { flag: "🇵🇰", country: "Pakistan", note: "HQ — strategy, delivery" },
-  { flag: "🇺🇸", country: "USA", note: "Client success" },
-  { flag: "🇬🇧", country: "UK", note: "Partnerships" },
-  { flag: "🇦🇪", country: "UAE", note: "Growth & sales" },
-  { flag: "🇮🇳", country: "India", note: "Engineering" },
-  { flag: "🇵🇭", country: "Philippines", note: "Content ops" },
+  { flag: "", country: "Pakistan", note: "HQ — strategy, delivery" },
+  { flag: "", country: "USA", note: "Client success" },
+  { flag: "", country: "UK", note: "Partnerships" },
+  { flag: "", country: "UAE", note: "Growth & sales" },
+  { flag: "", country: "India", note: "Engineering" },
+  { flag: "", country: "Philippines", note: "Content ops" },
 ];
 
 const faqs = [
@@ -391,7 +391,7 @@ function ServiceDetail() {
         <Reveal>
           <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-gradient-to-br from-fuchsia-500/30 via-purple-500/20 to-cyan-400/30 border border-white/10">
             <div className="absolute inset-0 flex items-center justify-center text-8xl">
-              ✨
+              
             </div>
           </div>
         </Reveal>
@@ -444,7 +444,7 @@ function ServiceDetail() {
               </div>
               <span>4.9/5 (127 Reviews)</span>
               <span className="mx-1">•</span>
-              <span>🏆 Featured Best Web Designer</span>
+              <span> Featured Best Web Designer</span>
             </div>
           </Reveal>
         </div>
@@ -512,7 +512,7 @@ function ServiceDetail() {
         </div>
         <Reveal className="order-1 md:order-2">
           <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-tr from-cyan-500/30 via-blue-500/20 to-fuchsia-500/30 border border-white/10 flex items-center justify-center text-8xl">
-            🚀
+            
           </div>
         </Reveal>
       </section>
@@ -687,7 +687,7 @@ function ServiceDetail() {
             <Reveal key={`${tab}-${n}`} delay={i * 80}>
               <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-white/5 to-white/0 hover:scale-[1.02] transition">
                 <div className="h-full flex items-center justify-center text-4xl">
-                  {tab === "web" ? "🌐" : tab === "brand" ? "🎨" : "📸"}
+                  {tab === "web" ? "" : tab === "brand" ? "" : ""}
                 </div>
               </div>
             </Reveal>

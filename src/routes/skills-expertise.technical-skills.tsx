@@ -47,7 +47,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "Web Dev",
-    icon: "💻",
+    icon: "",
     title: "Web development & custom coding",
     paragraphs: [
       "I build websites from the ground up in core web languages — HTML for structure, CSS for style, JavaScript for behavior. For more involved apps, I use React.",
@@ -57,7 +57,7 @@ const sections: Section[] = [
   },
   {
     tag: "WordPress",
-    icon: "🧩",
+    icon: "",
     title: "WordPress builds & custom plugins",
     paragraphs: [
       "WordPress is powerful when you push it. I build with Elementor (and Elementor Pro), Divi, Oxygen, StoneConcrete, Breakdance, and Bricks — matching the builder to what the site actually needs.",
@@ -67,7 +67,7 @@ const sections: Section[] = [
   },
   {
     tag: "E-commerce",
-    icon: "🛒",
+    icon: "",
     title: "E-commerce & platform-specific work",
     paragraphs: [
       "For online stores I build on Shopify — themes, Liquid, and JSON — so the storefront actually converts, not just looks nice.",
@@ -76,7 +76,7 @@ const sections: Section[] = [
   },
   {
     tag: "Automation",
-    icon: "🤖",
+    icon: "",
     title: "Automation & bot creation",
     paragraphs: [
       "Repetitive work is a tax. I remove it with Python + Selenium, Make, and n8n.",
@@ -86,7 +86,7 @@ const sections: Section[] = [
   },
   {
     tag: "Extensions & Software",
-    icon: "🧠",
+    icon: "",
     title: "Chrome extensions & software tools",
     paragraphs: [
       "I've built multiple Chrome extensions: SEO Researcher Pro (headings, links, images, meta, broken-image detection), a Leads Scraping extension, a Volume Booster, a Notesaver, and a Design Consistency Analyzer that audits websites for visual issues.",
@@ -95,7 +95,7 @@ const sections: Section[] = [
   },
   {
     tag: "Booking & PWAs",
-    icon: "🚀",
+    icon: "",
     title: "Specialized development",
     paragraphs: [
       "A big current project: a full booking plugin (75% complete). It handles flight searches, pet info, add-on services, payment processing, admin panel, bookings, tickets, waitlists — with Mailchimp, Stripe, and DocuSign integrations.",
@@ -104,7 +104,7 @@ const sections: Section[] = [
   },
   {
     tag: "Visual & 3D",
-    icon: "🎨",
+    icon: "",
     title: "Graphic design & 3D work",
     paragraphs: [
       "Technical skill extends into visual work. I've delivered 300+ graphic design projects in Adobe Photoshop for websites and creative assets.",

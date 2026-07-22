@@ -55,7 +55,7 @@ const dataset = [
 
 const services: { icon: string; tag: string; title: string; body: string; bullets: string[] }[] = [
   {
-    icon: "🧭",
+    icon: "",
     tag: "Advisory",
     title: "What I help with",
     body:
@@ -67,7 +67,7 @@ const services: { icon: string; tag: string; title: string; body: string; bullet
     ],
   },
   {
-    icon: "🧪",
+    icon: "",
     tag: "Model tuning",
     title: "Making AI models work better",
     body:
@@ -79,7 +79,7 @@ const services: { icon: string; tag: string; title: string; body: string; bullet
     ],
   },
   {
-    icon: "🔌",
+    icon: "",
     tag: "Integration",
     title: "Integrating AI into daily work",
     body:
@@ -91,7 +91,7 @@ const services: { icon: string; tag: string; title: string; body: string; bullet
     ],
   },
   {
-    icon: "🔬",
+    icon: "",
     tag: "Research",
     title: "Doing the research for you",
     body:
@@ -103,7 +103,7 @@ const services: { icon: string; tag: string; title: string; body: string; bullet
     ],
   },
   {
-    icon: "🗺️",
+    icon: "",
     tag: "Strategy",
     title: "Building a real AI plan",
     body:
@@ -175,7 +175,7 @@ function AIResearchPage() {
 
         <article className="mb-10 rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-50 text-xl">🧠</div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-50 text-xl"></div>
             <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">The Personal Dataset</span>
           </div>
           <h2 className="mt-4 text-2xl font-semibold sm:text-3xl">A local offline chatbot that understands my life</h2>
@@ -205,7 +205,7 @@ function AIResearchPage() {
 
         <article className="mb-10 rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-50 text-xl">⚙️</div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-50 text-xl"></div>
             <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">Automation In Practice</span>
           </div>
           <h2 className="mt-4 text-2xl font-semibold sm:text-3xl">Why this matters to you</h2>
@@ -243,7 +243,7 @@ function AIResearchPage() {
 
         <article className="mb-14 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 sm:p-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-xl">🎯</div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-xl"></div>
             <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">Where I Come In</span>
           </div>
           <h2 className="mt-4 text-2xl font-semibold sm:text-3xl">Grounded, not hyped</h2>

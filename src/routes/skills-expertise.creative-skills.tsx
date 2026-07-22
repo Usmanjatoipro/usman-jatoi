@@ -48,7 +48,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "Branding",
-    icon: "✨",
+    icon: "",
     title: "Giving a voice to ideas",
     paragraphs: [
       "Branding is how people recognize and remember something. I handle the full stack — logo, motion graphics, color, typography, and mockups that show how it all lives in the real world.",
@@ -62,7 +62,7 @@ const sections: Section[] = [
   },
   {
     tag: "Thumbnails",
-    icon: "🖼️",
+    icon: "",
     title: "Thumbnail designs",
     paragraphs: [
       "I've designed 100+ thumbnails for Fiverr gigs, documentaries, and YouTube videos.",
@@ -71,7 +71,7 @@ const sections: Section[] = [
   },
   {
     tag: "Social Media",
-    icon: "📣",
+    icon: "",
     title: "Social media posters",
     paragraphs: [
       "Social is often the first place people meet your brand. Posters have to grab attention fast and land the message clearly.",
@@ -80,7 +80,7 @@ const sections: Section[] = [
   },
   {
     tag: "Mascots",
-    icon: "🎭",
+    icon: "",
     title: "Mascot logo work",
     paragraphs: [
       "I started making mascot logos in 2021, mostly for Twitch streamers and small creators. Early on, the work was simpler — more experimentation than polish.",
@@ -89,7 +89,7 @@ const sections: Section[] = [
   },
   {
     tag: "Graphic Design",
-    icon: "🎨",
+    icon: "",
     title: "Turning ideas into pictures",
     paragraphs: [
       "Graphic design is where thoughts become clear, eye-catching visuals. I use Adobe Illustrator for vector work and logos, Photoshop for photo editing and detailed compositions, and Canva for quick social pieces. 3+ years hands-on.",
@@ -107,7 +107,7 @@ const sections: Section[] = [
   },
   {
     tag: "Video Editing",
-    icon: "🎬",
+    icon: "",
     title: "Making stories move",
     paragraphs: [
       "Video editing is how I tell longer stories — cutting, color, sound, effects, and pacing. The goal is engaging and memorable, not just polished.",
@@ -122,7 +122,7 @@ const sections: Section[] = [
   },
   {
     tag: "3D",
-    icon: "🧱",
+    icon: "",
     title: "3D modeling — worlds & objects",
     paragraphs: [
       "3D lets me build objects and environments in three-dimensional space — for games, animation, product visuals, or architectural mockups.",
@@ -142,7 +142,7 @@ const sections: Section[] = [
   },
   {
     tag: "The Journey",
-    icon: "🌱",
+    icon: "",
     title: "Learning, failing, growing",
     paragraphs: [
       "Not every experiment worked. Early YouTube videos didn't fly. I left a graphic design job because the pay didn't match the effort. Projects stalled, tools broke, deadlines bit back.",

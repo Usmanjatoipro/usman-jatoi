@@ -44,7 +44,7 @@ type Service = {
 const services: Service[] = [
   {
     n: "01",
-    icon: "🤖",
+    icon: "",
     title: "AI Automation",
     tagline: "Cut the busywork. Keep the judgment.",
     body:
@@ -59,7 +59,7 @@ const services: Service[] = [
   },
   {
     n: "02",
-    icon: "🗂️",
+    icon: "",
     title: "Bulk Publishing",
     tagline: "Ship 100s of pages without cutting corners.",
     body:
@@ -74,7 +74,7 @@ const services: Service[] = [
   },
   {
     n: "03",
-    icon: "🎨",
+    icon: "",
     title: "Creative Projects",
     tagline: "Design, video, and 3D that actually lands.",
     body:
@@ -89,7 +89,7 @@ const services: Service[] = [
   },
   {
     n: "04",
-    icon: "📈",
+    icon: "",
     title: "Marketing",
     tagline: "SEO, content, and outreach that compound.",
     body:
@@ -104,7 +104,7 @@ const services: Service[] = [
   },
   {
     n: "05",
-    icon: "🌐",
+    icon: "",
     title: "Website Design & Development",
     tagline: "Fast, custom, and built to be maintained.",
     body:
@@ -318,13 +318,13 @@ function ServicesPage() {
 }
 
 const ICONS: Record<string, string> = {
-  ai: "🤖", "bulk-publishing": "📚", consulting: "🧭", content: "✍️",
-  conversion: "🎯", creative: "🎨", digital: "💻", dubbing: "🎙️",
-  game: "🎮", investment: "📈", "lead-generaton": "🧲", legal: "⚖️",
-  management: "🗂️", marketing: "📣", monetization: "💰", operations: "⚙️",
-  pr: "📰", product: "📦", researching: "🔬", security: "🛡️",
-  "social-media": "🌐", startup: "🚀", supports: "🤝",
-  "technical-skills": "🛠️", training: "🎓", web: "🕸️", web3: "⛓️",
+  ai: "", "bulk-publishing": "", consulting: "", content: "",
+  conversion: "", creative: "", digital: "", dubbing: "",
+  game: "", investment: "", "lead-generaton": "", legal: "",
+  management: "", marketing: "", monetization: "", operations: "",
+  pr: "", product: "", researching: "", security: "",
+  "social-media": "", startup: "", supports: "",
+  "technical-skills": "", training: "", web: "", web3: "",
 };
 
 function decodeHtml(s: string) {
@@ -430,7 +430,7 @@ function ServiceDirectory() {
               className="group relative flex items-start gap-3 overflow-hidden rounded-2xl border border-neutral-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-neutral-900 hover:shadow-lg"
             >
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-50 to-neutral-100 text-xl">
-                {ICONS[s.slug] || "✨"}
+                {ICONS[s.slug] || ""}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">

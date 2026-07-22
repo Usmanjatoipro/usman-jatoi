@@ -189,10 +189,10 @@ function PressReleasePage() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
           <a href="/media-kit" className="pr-pill">
-            📦 Media Kit
+             Media Kit
           </a>
           <a href="/contact-me" className="pr-pill">
-            ✉️ Press Inquiries
+             Press Inquiries
           </a>
         </div>
       </section>

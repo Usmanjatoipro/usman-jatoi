@@ -28,32 +28,32 @@ type Benefit = { title: string; desc: string };
 
 const services: Service[] = [
   {
-    icon: "🎨",
+    icon: "",
     title: "Branding & Identity",
     desc: "Logos, brand systems, guidelines, and visual identity — production-ready under your name.",
   },
   {
-    icon: "🌐",
+    icon: "",
     title: "Web Design & Development",
     desc: "Marketing sites, landing pages, e-commerce, custom apps — WordPress, Shopify, React, and modern stacks.",
   },
   {
-    icon: "⚙️",
+    icon: "",
     title: "Automation & Workflows",
     desc: "Make, n8n, Zapier, and custom automations that plug into your clients' operations.",
   },
   {
-    icon: "🤖",
+    icon: "",
     title: "AI Solutions",
     desc: "Chatbots, agents, custom GPTs, and AI-powered workflows tailored to your client base.",
   },
   {
-    icon: "📈",
+    icon: "",
     title: "SEO & Content",
     desc: "On-page SEO, technical audits, and long-form content — invisible to your client, credited to your agency.",
   },
   {
-    icon: "🎬",
+    icon: "",
     title: "Video & Motion",
     desc: "Short-form edits, motion graphics, product videos, and social content on repeat.",
   },

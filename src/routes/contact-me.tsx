@@ -144,7 +144,7 @@ function ContactPage() {
         <div className="ct-card">
           {status === "sent" ? (
             <div className="text-center py-10">
-              <div className="text-5xl mb-4">✨</div>
+              <div className="text-5xl mb-4"></div>
               <h2 className="text-3xl font-bold mb-3">Message sent</h2>
               <p className="text-neutral-600 max-w-md mx-auto">
                 Thanks for reaching out. I'll get back to you at your email within

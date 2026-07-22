@@ -42,14 +42,14 @@ type Skill = {
 const skills: Skill[] = [
   {
     n: "01",
-    icon: "🧭",
+    icon: "",
     title: "Leadership & Project Management",
     body:
       "Led digital projects and a team of 19+ as Head of Department for 1.5+ years at a UK-based company. End-to-end workflows — flowcharts, strategies, prototypes — plus meetings and team training for smooth delivery.",
   },
   {
     n: "02",
-    icon: "🎨",
+    icon: "",
     title: "Creative Skills",
     body:
       "Expert in graphic design, UI/UX, video editing, and 3D. 500+ visuals — logos, social posts, thumbnails, ads, 3D models. Photoshop, Illustrator, Blender, Premiere, After Effects, Canva, CapCut, plus AI tools like Imagen, Gemini, RunwayML, Pika, Leonardo, D-ID, ElevenLabs.",
@@ -57,14 +57,14 @@ const skills: Skill[] = [
   },
   {
     n: "03",
-    icon: "🌐",
+    icon: "",
     title: "Web Design & Dev",
     body:
       "Responsive websites in HTML, CSS, JS, and WordPress (Elementor, Divi, Oxygen, Breakdance). Shopify (Liquid, JSON), Webflow, Wix, and Leadpages. Custom solutions from scratch.",
   },
   {
     n: "04",
-    icon: "🛠️",
+    icon: "",
     title: "Technical Skills",
     body:
       "Solve tech problems with clean code. Automation with Python Selenium, Make & N8N (700+ pages). Chrome extensions, 1,000+ WordPress plugins in PHP, and software like FxSound and Finest Browser. Skilled in \"Vibe Coding.\"",
@@ -72,7 +72,7 @@ const skills: Skill[] = [
   },
   {
     n: "05",
-    icon: "📈",
+    icon: "",
     title: "SEO & Marketing",
     body:
       "Visibility through keyword research, content strategy, on-page SEO, and backlinks. RankMath, Ahrefs, Semrush, Microsoft Clarity. PR campaigns, SEO listicles, and growth-focused content strategies.",
@@ -80,7 +80,7 @@ const skills: Skill[] = [
   },
   {
     n: "06",
-    icon: "🤖",
+    icon: "",
     title: "AI Research & Innovation",
     body:
       "Build AI-powered tools, sites, and systems using 10+ full-stack AI tools. AI games, chatbots, automated content systems, PWAs, and React sites. Founded AI startup Build On Vibe.",
@@ -88,42 +88,42 @@ const skills: Skill[] = [
   },
   {
     n: "07",
-    icon: "📱",
+    icon: "",
     title: "Social Media Management",
     body:
       "Managed 7+ brand accounts. Content, reels, and scheduling across Instagram, YouTube, Facebook, Twitter, TikTok, LinkedIn, and Discord — focused on growth and real engagement.",
   },
   {
     n: "08",
-    icon: "🚀",
+    icon: "",
     title: "Digital Business Establishment",
     body:
       "Launch and set up online businesses from idea to full operation — strategy, website, online presence, and early growth systems.",
   },
   {
     n: "09",
-    icon: "🎯",
+    icon: "",
     title: "Lead Generation & Digital Outreach",
     body:
       "Find and connect with buyers via lead scraping (60,000+ leads) and targeted outreach across email, WhatsApp, Instagram, and LinkedIn.",
   },
   {
     n: "10",
-    icon: "🧩",
+    icon: "",
     title: "General Problem Solving & Resourcefulness",
     body:
       "Beyond specific skills — quick to learn new tools, spot how systems connect, and find working solutions with limited resources. Critical thinking, multiple angles, no bloat.",
   },
   {
     n: "11",
-    icon: "💬",
+    icon: "",
     title: "Communication & Teamwork",
     body:
       "Worked with diverse teams including Pearl Lemon, trained team members, and kept groups aligned via daily reports and progress recordings. Real feedback from Kaushal, Ali Yasin, Deepak Shukla, Lydia, and others shaped how I communicate.",
   },
   {
     n: "12",
-    icon: "💡",
+    icon: "",
     title: "Business Ideas & Research",
     body:
       "Generated 250+ business ideas and researched deeply into markets, tools, and opportunities. Turns curiosity into concrete direction.",
