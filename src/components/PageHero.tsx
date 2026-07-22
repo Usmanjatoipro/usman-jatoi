@@ -17,9 +17,9 @@ type Props = {
 };
 
 const SIZE = {
-  sm: "pt-28 pb-10 md:pt-32 md:pb-12",
-  md: "pt-32 pb-14 md:pt-40 md:pb-20",
-  lg: "pt-36 pb-20 md:pt-44 md:pb-28",
+  sm: "pt-36 pb-10 md:pt-40 md:pb-12",
+  md: "pt-40 pb-14 md:pt-48 md:pb-20",
+  lg: "pt-44 pb-20 md:pt-52 md:pb-28",
 };
 
 /**
