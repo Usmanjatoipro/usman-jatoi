@@ -7,11 +7,8 @@ export type Crumb = { label: string; href?: string };
 type Props = {
   title: string;
   crumbs?: Crumb[];
-  /** Optional eyebrow above the title (e.g. "Category") */
   eyebrow?: string;
-  /** Optional short description under the title */
   description?: string;
-  /** Vertical rhythm — defaults to comfortable article hero */
   size?: "sm" | "md" | "lg";
   children?: React.ReactNode;
 };
@@ -22,9 +19,11 @@ const SIZE = {
   lg: "pt-44 pb-20 md:pt-52 md:pb-28",
 };
 
+const SITE_ORIGIN = "https://usmanjatoi.lovable.app";
+
 /**
- * Global dark hero used across posts, category archives, and content pages.
- * Silky black background image + dark gradient overlay + centered title & breadcrumb.
+ * Global dark hero used across every non-home route.
+ * Emits BreadcrumbList JSON-LD when crumbs are provided.
  */
 export default function PageHero({
   title,
@@ -34,6 +33,20 @@ export default function PageHero({
   size = "md",
   children,
 }: Props) {
+  const breadcrumbSchema =
+    crumbs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: crumbs.map((c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: c.label,
+            ...(c.href ? { item: `${SITE_ORIGIN}${c.href}` } : {}),
+          })),
+        }
+      : null;
+
   return (
     <header
       className={`relative overflow-hidden text-white ${SIZE[size]}`}
@@ -45,8 +58,12 @@ export default function PageHero({
         backgroundColor: "#050505",
       }}
     >
-      {/* Dark gradient overlay — fades to pure black on the edges,
-          keeps the silky highlights readable in the middle. */}
+      {breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+      )}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -55,7 +72,6 @@ export default function PageHero({
             "linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.85) 100%), radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%)",
         }}
       />
-      {/* Subtle vignette bottom for smooth fade into white body */}
       <div
         aria-hidden
         className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
@@ -75,7 +91,7 @@ export default function PageHero({
           {title}
         </h1>
         {description && (
-          <p className="mt-4 text-sm md:text-base text-white/70 max-w-2xl mx-auto leading-relaxed line-clamp-3">
+          <p className="mt-4 text-sm md:text-base text-white/70 max-w-2xl mx-auto leading-relaxed">
             {description}
           </p>
         )}

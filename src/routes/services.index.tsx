@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import PageHero from "@/components/PageHero";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -44,7 +45,7 @@ type Service = {
 const services: Service[] = [
   {
     n: "01",
-    icon: "🤖",
+    icon: "",
     title: "AI Automation",
     tagline: "Cut the busywork. Keep the judgment.",
     body:
@@ -59,7 +60,7 @@ const services: Service[] = [
   },
   {
     n: "02",
-    icon: "🗂️",
+    icon: "",
     title: "Bulk Publishing",
     tagline: "Ship 100s of pages without cutting corners.",
     body:
@@ -74,7 +75,7 @@ const services: Service[] = [
   },
   {
     n: "03",
-    icon: "🎨",
+    icon: "",
     title: "Creative Projects",
     tagline: "Design, video, and 3D that actually lands.",
     body:
@@ -89,7 +90,7 @@ const services: Service[] = [
   },
   {
     n: "04",
-    icon: "📈",
+    icon: "",
     title: "Marketing",
     tagline: "SEO, content, and outreach that compound.",
     body:
@@ -104,7 +105,7 @@ const services: Service[] = [
   },
   {
     n: "05",
-    icon: "🌐",
+    icon: "",
     title: "Website Design & Development",
     tagline: "Fast, custom, and built to be maintained.",
     body:
@@ -168,41 +169,21 @@ const faqs = [
 function ServicesPage() {
   return (
     <main className="min-h-screen bg-white text-neutral-900">
-      <section className="mx-auto max-w-5xl px-6 pb-20 pt-28 sm:pt-32">
-        <nav className="mb-8 text-sm text-neutral-500">
-          <Link to="/" className="hover:text-neutral-900">Home</Link>
-          <span className="mx-2">/</span>
-          <span className="text-neutral-900">Services</span>
-        </nav>
-
-        <header className="mb-14">
-          <span className="inline-block rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium uppercase tracking-widest text-neutral-600">
-            Services · Full-stack digital
-          </span>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight sm:text-5xl">
-            <span className="bg-[linear-gradient(90deg,#ff2d55,#ff9500,#ffcc00,#34c759,#5ac8fa,#af52de,#ff2d55)] bg-[length:300%_100%] bg-clip-text text-transparent animate-[gradient_8s_linear_infinite]">
-              Ideas, built into working systems.
-            </span>
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-neutral-600">
-            Five focused services — automation, publishing, creative, marketing,
-            and web. Delivered end-to-end, without hype and without hand-off gaps.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              to="/contact-me"
-              className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800"
-            >
-              Start a project
-            </Link>
-            <Link
-              to="/white-label-partnership"
-              className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-100"
-            >
-              White-label partnership
-            </Link>
-          </div>
-        </header>
+      <PageHero
+        eyebrow="Services · Full-stack digital"
+        title="Ideas, built into working systems."
+        description="Five focused service lines — automation, publishing, creative, marketing, and web. Delivered end-to-end, without hype and without hand-off gaps."
+        crumbs={[{ label: "Home", href: "/" }, { label: "Services" }]}
+      />
+      <section className="mx-auto max-w-5xl px-6 pb-20 pt-16">
+        <div className="mb-10 flex flex-wrap gap-3">
+          <Link to="/contact-me" className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800">
+            Start a project
+          </Link>
+          <Link to="/white-label-partnership" className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-100">
+            White-label partnership
+          </Link>
+        </div>
 
         <div className="space-y-6">
           {services.map((s) => (
@@ -318,13 +299,13 @@ function ServicesPage() {
 }
 
 const ICONS: Record<string, string> = {
-  ai: "🤖", "bulk-publishing": "📚", consulting: "🧭", content: "✍️",
-  conversion: "🎯", creative: "🎨", digital: "💻", dubbing: "🎙️",
-  game: "🎮", investment: "📈", "lead-generaton": "🧲", legal: "⚖️",
-  management: "🗂️", marketing: "📣", monetization: "💰", operations: "⚙️",
-  pr: "📰", product: "📦", researching: "🔬", security: "🛡️",
-  "social-media": "🌐", startup: "🚀", supports: "🤝",
-  "technical-skills": "🛠️", training: "🎓", web: "🕸️", web3: "⛓️",
+  ai: "", "bulk-publishing": "", consulting: "", content: "",
+  conversion: "", creative: "", digital: "", dubbing: "",
+  game: "", investment: "", "lead-generaton": "", legal: "",
+  management: "", marketing: "", monetization: "", operations: "",
+  pr: "", product: "", researching: "", security: "",
+  "social-media": "", startup: "", supports: "",
+  "technical-skills": "", training: "", web: "", web3: "",
 };
 
 function decodeHtml(s: string) {
@@ -430,7 +411,7 @@ function ServiceDirectory() {
               className="group relative flex items-start gap-3 overflow-hidden rounded-2xl border border-neutral-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-neutral-900 hover:shadow-lg"
             >
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-50 to-neutral-100 text-xl">
-                {ICONS[s.slug] || "✨"}
+                {ICONS[s.slug] || ""}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">

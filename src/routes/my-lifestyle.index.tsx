@@ -43,7 +43,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "Daily Routine",
-    icon: "🧭",
+    icon: "",
     title: "Discipline with flexibility",
     paragraphs: [
       "Discipline matters to me, but it doesn't mean being rigid. It means having a clear plan to get things done while leaving room for rest and other interests.",
@@ -53,7 +53,7 @@ const sections: Section[] = [
   },
   {
     tag: "Always Learning",
-    icon: "📚",
+    icon: "",
     title: "Staying curious",
     paragraphs: [
       "Learning is a huge part of my life — not just for work, but because I like it. I've always been curious and tried many different skills, even ones I later dropped.",
@@ -62,7 +62,7 @@ const sections: Section[] = [
   },
   {
     tag: "Honest Health",
-    icon: "🩺",
+    icon: "",
     title: "An honest look",
     paragraphs: [
       "I'm open about my health because it's part of my real life. Physically, I rate myself around 7/10. I'm skinny, my beard gets messy, and I'm not perfect — that's fine.",
@@ -71,7 +71,7 @@ const sections: Section[] = [
   },
   {
     tag: "Hobbies",
-    icon: "🎨",
+    icon: "",
     title: "What I do beyond work",
     paragraphs: [
       "Art, photography, and filmmaking have been with me since I was young. Projects like the Khanpur Katora documentary come from that love of telling stories.",
@@ -80,7 +80,7 @@ const sections: Section[] = [
   },
   {
     tag: "Physical Health",
-    icon: "💪",
+    icon: "",
     title: "The base of everything",
     paragraphs: [
       "Taking care of my body is a priority because it supports everything else. Even with the challenges, I work to stay active. A strong body means a clearer mind and steadier output.",
@@ -89,7 +89,7 @@ const sections: Section[] = [
   },
   {
     tag: "My Outlook",
-    icon: "🔥",
+    icon: "",
     title: "Staying true and moving forward",
     paragraphs: [
       "I motivate myself by focusing on what actually matters, especially when things get tough. I remind myself not to quit because of what others might think.",
@@ -103,19 +103,19 @@ const pillars: { title: string; to: string; description: string; emoji: string }
     title: "Hobbies",
     to: "/my-lifestyle/hobbies",
     description: "Art, storytelling, curiosity, adventure, reflection, impact.",
-    emoji: "🎨",
+    emoji: "",
   },
   {
     title: "Fitness & Health",
     to: "/my-lifestyle/fitness-health",
     description: "The honest health story and the plan forward.",
-    emoji: "🩺",
+    emoji: "",
   },
   {
     title: "Gaming Life",
     to: "/my-lifestyle/gaming-life",
     description: "Fun, friendship, and why I moved on.",
-    emoji: "🎮",
+    emoji: "",
   },
 ];
 

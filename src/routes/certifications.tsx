@@ -1,4 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  Award,
+  BadgeCheck,
+  Bot,
+  Briefcase,
+  Code2,
+  Globe,
+  LineChart,
+  Megaphone,
+  Palette,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
+import PageHero from "@/components/PageHero";
 
 export const Route = createFileRoute("/certifications")({
   head: () => ({
@@ -28,7 +46,7 @@ type Cert = {
   issuer: string;
   category: string;
   desc: string;
-  icon: string;
+  Icon: LucideIcon;
   credentialId?: string;
 };
 
@@ -39,7 +57,7 @@ const certifications: Cert[] = [
     issuer: "DeepLearning.AI",
     category: "AI",
     desc: "Advanced techniques for designing, evaluating, and shipping production-grade LLM prompts and agents.",
-    icon: "🤖",
+    Icon: Bot,
     credentialId: "DLAI-2026-PE",
   },
   {
@@ -48,7 +66,7 @@ const certifications: Cert[] = [
     issuer: "Google",
     category: "Marketing",
     desc: "Certified in creating, managing, and optimizing Google Search advertising campaigns.",
-    icon: "🔍",
+    Icon: Search,
     credentialId: "GOOG-ADS-25",
   },
   {
@@ -57,7 +75,7 @@ const certifications: Cert[] = [
     issuer: "Meta",
     category: "Marketing",
     desc: "Advanced ads buying and optimization across Facebook, Instagram, and Messenger.",
-    icon: "📣",
+    Icon: Megaphone,
     credentialId: "META-MBP-25",
   },
   {
@@ -66,7 +84,7 @@ const certifications: Cert[] = [
     issuer: "HubSpot Academy",
     category: "Marketing",
     desc: "Full-funnel inbound strategy across content, SEO, email, and marketing automation.",
-    icon: "📈",
+    Icon: LineChart,
   },
   {
     year: "2024",
@@ -74,7 +92,7 @@ const certifications: Cert[] = [
     issuer: "Make (Integromat)",
     category: "Automation",
     desc: "Advanced no-code automation across APIs, webhooks, and multi-scenario workflows.",
-    icon: "⚙️",
+    Icon: Workflow,
   },
   {
     year: "2024",
@@ -82,7 +100,7 @@ const certifications: Cert[] = [
     issuer: "n8n Academy",
     category: "Automation",
     desc: "Building self-hosted, complex automation flows with custom nodes and integrations.",
-    icon: "🔗",
+    Icon: Workflow,
   },
   {
     year: "2024",
@@ -90,7 +108,7 @@ const certifications: Cert[] = [
     issuer: "Meta / Coursera",
     category: "Development",
     desc: "Production-grade React, hooks, state management, and modern build tooling.",
-    icon: "⚛️",
+    Icon: Code2,
   },
   {
     year: "2024",
@@ -98,7 +116,7 @@ const certifications: Cert[] = [
     issuer: "Google",
     category: "Design",
     desc: "End-to-end UX research, wireframing, prototyping, and usability testing.",
-    icon: "🎨",
+    Icon: Palette,
   },
   {
     year: "2023",
@@ -106,7 +124,7 @@ const certifications: Cert[] = [
     issuer: "Shopify",
     category: "E-commerce",
     desc: "Store setup, theme customization, app integration, and merchant success workflows.",
-    icon: "🛍️",
+    Icon: ShoppingBag,
   },
   {
     year: "2023",
@@ -114,7 +132,7 @@ const certifications: Cert[] = [
     issuer: "SEMrush Academy",
     category: "SEO",
     desc: "On-page, off-page, and technical SEO — including audits, crawlability, and Core Web Vitals.",
-    icon: "🌐",
+    Icon: Globe,
   },
   {
     year: "2023",
@@ -122,7 +140,7 @@ const certifications: Cert[] = [
     issuer: "Elementor Academy",
     category: "Development",
     desc: "Advanced WordPress theming, custom widgets, and page-builder-driven site delivery.",
-    icon: "📝",
+    Icon: Code2,
   },
   {
     year: "2022",
@@ -130,7 +148,7 @@ const certifications: Cert[] = [
     issuer: "Wharton Online",
     category: "Business",
     desc: "Foundations of running a modern business — finance, operations, and go-to-market.",
-    icon: "💼",
+    Icon: Briefcase,
   },
 ];
 
@@ -142,162 +160,42 @@ const stats = [
 ];
 
 const categories = [
-  "AI",
-  "Marketing",
-  "Automation",
-  "Development",
-  "Design",
-  "E-commerce",
-  "SEO",
-  "Business",
+  { label: "AI", Icon: Bot },
+  { label: "Marketing", Icon: Megaphone },
+  { label: "Automation", Icon: Workflow },
+  { label: "Development", Icon: Code2 },
+  { label: "Design", Icon: Palette },
+  { label: "E-commerce", Icon: ShoppingBag },
+  { label: "SEO", Icon: Globe },
+  { label: "Business", Icon: Briefcase },
 ];
 
 function CertificationsPage() {
   return (
     <div className="min-h-screen bg-white text-neutral-900">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes cGradient {
-          0%,100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .c-gradient-text {
-          background: linear-gradient(90deg,#ff5f6d,#ffc371,#47e0a0,#4facfe,#a06cff,#ff5f6d);
-          background-size: 300% 300%;
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          animation: cGradient 8s ease infinite;
-        }
-        .c-pill {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px 24px;
-          border-radius: 999px;
-          background: #fff;
-          color: #111;
-          font-weight: 600;
-          font-size: 14px;
-          text-decoration: none;
-        }
-        .c-pill.dark { background:#111; color:#fff; }
-        .c-pill.dark::before { display:none; }
-        .c-pill::before {
-          content:"";
-          position:absolute; inset:0;
-          padding:2px; border-radius:999px;
-          background: linear-gradient(90deg,#ff5f6d,#ffc371,#47e0a0,#4facfe,#a06cff,#ff5f6d);
-          background-size:300% 300%;
-          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor; mask-composite: exclude;
-          animation: cGradient 8s ease infinite;
-          pointer-events:none;
-        }
-        .c-card {
-          position:relative;
-          border-radius: 24px;
-          background:#fff;
-          padding: 28px;
-          height: 100%;
-          transition: transform .3s ease;
-        }
-        .c-card:hover { transform: translateY(-4px); }
-        .c-card::before {
-          content:"";
-          position:absolute; inset:0;
-          padding:1.5px; border-radius:24px;
-          background: linear-gradient(120deg,#ff5f6d,#ffc371,#47e0a0,#4facfe,#a06cff);
-          background-size:300% 300%;
-          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor; mask-composite: exclude;
-          animation: cGradient 10s ease infinite;
-          pointer-events:none;
-        }
-        .c-tag {
-          display:inline-block;
-          font-size: 11px;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          padding: 4px 10px;
-          border-radius: 999px;
-          background: #111;
-          color: #fff;
-          font-weight: 600;
-        }
-        .c-chip {
-          display:inline-flex;
-          align-items:center;
-          padding: 8px 14px;
-          border-radius: 999px;
-          background: #f5f5f5;
-          color: #111;
-          font-weight: 600;
-          font-size: 13px;
-        }
-        .c-stat-value {
-          font-size: 40px;
-          font-weight: 900;
-          line-height: 1;
-          background: linear-gradient(120deg,#ff5f6d,#ffc371,#47e0a0,#4facfe,#a06cff);
-          background-size:300% 300%;
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          animation: cGradient 8s ease infinite;
-        }
-        .c-badge {
-          width:56px; height:56px;
-          border-radius:16px;
-          display:inline-flex;
-          align-items:center;
-          justify-content:center;
-          font-size:26px;
-          background: linear-gradient(135deg,#eef4ff,#dceafd);
-          box-shadow: 0 8px 24px -12px rgba(79,172,254,.4);
-          flex-shrink:0;
-        }
-        .c-verified {
-          display:inline-flex;
-          align-items:center;
-          gap:4px;
-          font-size:11px;
-          font-weight:700;
-          color:#0a7c46;
-          background:#e6f7ee;
-          padding:3px 8px;
-          border-radius:999px;
-        }
-      `,
-        }}
+      <PageHero
+        eyebrow="Certifications"
+        title="Verified skills. Real credentials."
+        description="A curated list of professional certifications earned across marketing, design, engineering, automation, and AI — from issuers the industry actually trusts."
+        crumbs={[
+          { label: "Home", href: "/" },
+          { label: "Certifications" },
+        ]}
+        size="md"
       />
 
-      {/* Hero */}
-      <section className="pt-32 pb-16 px-6 md:px-10 max-w-6xl mx-auto text-center">
-        <span className="c-tag mb-6">Certifications</span>
-        <h1 className="mt-6 text-5xl md:text-7xl font-black tracking-tight leading-[1.05]">
-          Verified skills.
-          <br />
-          <span className="c-gradient-text">Real credentials</span>.
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-          A curated list of professional certifications — earned across
-          marketing, design, engineering, automation, and AI — from issuers
-          the industry actually trusts.
-        </p>
-      </section>
-
       {/* Stats */}
-      <section className="px-6 md:px-10 max-w-6xl mx-auto pb-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className="px-6 md:px-10 max-w-6xl mx-auto pt-16 pb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((s) => (
-            <div key={s.label} className="c-card text-center">
-              <div className="c-stat-value">{s.value}</div>
-              <div className="mt-3 text-sm text-neutral-600 uppercase tracking-wider">
+            <div
+              key={s.label}
+              className="rounded-2xl border border-neutral-200 bg-white p-6 text-center"
+            >
+              <div className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900">
+                {s.value}
+              </div>
+              <div className="mt-2 text-xs font-medium text-neutral-500 uppercase tracking-[0.14em]">
                 {s.label}
               </div>
             </div>
@@ -306,82 +204,111 @@ function CertificationsPage() {
       </section>
 
       {/* Categories */}
-      <section className="px-6 md:px-10 max-w-5xl mx-auto pb-16 text-center">
-        <span className="c-tag mb-4">Disciplines</span>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          {categories.map((c) => (
-            <span key={c} className="c-chip">{c}</span>
+      <section className="px-6 md:px-10 max-w-5xl mx-auto pb-16">
+        <div className="text-center mb-8">
+          <span className="inline-block text-[11px] font-semibold tracking-[0.18em] uppercase text-neutral-500 border border-neutral-200 rounded-full px-3 py-1">
+            Disciplines
+          </span>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2.5">
+          {categories.map(({ label, Icon }) => (
+            <span
+              key={label}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-200 bg-neutral-50 text-sm font-medium text-neutral-800"
+            >
+              <Icon className="h-4 w-4 text-neutral-500" aria-hidden />
+              {label}
+            </span>
           ))}
         </div>
       </section>
 
       {/* Grid */}
       <section className="px-6 md:px-10 max-w-6xl mx-auto pb-24">
-        <div className="text-center mb-12">
-          <span className="c-tag mb-4">Credentials</span>
-          <h2 className="mt-4 text-4xl md:text-5xl font-black tracking-tight">
-            Every certificate, <span className="c-gradient-text">verified</span>
+        <div className="text-center mb-10">
+          <span className="inline-block text-[11px] font-semibold tracking-[0.18em] uppercase text-neutral-500 border border-neutral-200 rounded-full px-3 py-1">
+            Credentials
+          </span>
+          <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
+            Every certificate, verified
           </h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {certifications.map((c, i) => (
-            <article key={i} className="c-card">
-              <div className="flex items-start gap-4">
-                <span className="c-badge">{c.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="c-tag">{c.category}</span>
-                    <span className="text-sm text-neutral-500 font-mono">
-                      {c.year}
-                    </span>
-                    <span className="c-verified">✓ Verified</span>
-                  </div>
-                  <h3 className="text-xl font-bold tracking-tight leading-snug">
-                    {c.title}
-                  </h3>
-                  <p className="mt-1 text-sm font-semibold text-neutral-600">
-                    {c.issuer}
-                  </p>
-                  <p className="mt-3 text-neutral-600 leading-relaxed">
-                    {c.desc}
-                  </p>
-                  {c.credentialId && (
-                    <p className="mt-3 text-xs font-mono text-neutral-400">
-                      ID: {c.credentialId}
+        <div className="grid gap-4 md:grid-cols-2">
+          {certifications.map((c, i) => {
+            const Icon = c.Icon;
+            return (
+              <article
+                key={i}
+                className="group rounded-2xl border border-neutral-200 bg-white p-6 transition hover:border-neutral-900 hover:shadow-lg"
+              >
+                <div className="flex items-start gap-4">
+                  <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-neutral-900 text-white">
+                    <Icon className="h-6 w-6" aria-hidden />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="inline-block text-[10px] font-semibold tracking-[0.14em] uppercase bg-neutral-900 text-white rounded-full px-2.5 py-0.5">
+                        {c.category}
+                      </span>
+                      <span className="text-xs text-neutral-500 font-mono">
+                        {c.year}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-0.5">
+                        <BadgeCheck className="h-3 w-3" aria-hidden />
+                        Verified
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-semibold tracking-tight leading-snug">
+                      {c.title}
+                    </h3>
+                    <p className="mt-1 text-sm font-medium text-neutral-600">
+                      {c.issuer}
                     </p>
-                  )}
+                    <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                      {c.desc}
+                    </p>
+                    {c.credentialId && (
+                      <p className="mt-3 text-[11px] font-mono text-neutral-400">
+                        Credential ID: {c.credentialId}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </section>
 
       {/* CTA */}
       <section className="px-6 md:px-10 max-w-4xl mx-auto pb-32">
-        <div className="c-card text-center">
-          <span className="c-tag mb-4">Put it to work</span>
-          <h3 className="mt-4 text-3xl md:text-4xl font-bold tracking-tight">
-            Skills on paper, <span className="c-gradient-text">proven in projects</span>
+        <div className="rounded-3xl border border-neutral-200 bg-neutral-50 p-10 text-center">
+          <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] uppercase text-neutral-500 border border-neutral-200 bg-white rounded-full px-3 py-1">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            Put it to work
+          </span>
+          <h3 className="mt-5 text-2xl md:text-3xl font-semibold tracking-tight">
+            Skills on paper, proven in projects
           </h3>
-          <p className="mt-4 text-neutral-600 max-w-xl mx-auto">
-            Certifications are cool. Shipping is cooler. Let's put every one
-            of these to work on your next launch.
+          <p className="mt-3 text-neutral-600 max-w-xl mx-auto">
+            Certifications are one thing. Shipping is another. Let's put every
+            one of these to work on your next launch.
           </p>
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
-            <a href="/contact-me" className="c-pill dark">
-              Start a project →
-            </a>
-            <a href="/awards" className="c-pill">
+            <Link
+              to="/contact-me"
+              className="inline-flex items-center gap-2 rounded-full bg-neutral-900 text-white px-5 py-2.5 text-sm font-semibold hover:bg-neutral-800 transition"
+            >
+              Start a project
+            </Link>
+            <Link
+              to="/awards"
+              className="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white text-neutral-900 px-5 py-2.5 text-sm font-semibold hover:border-neutral-900 transition"
+            >
+              <Award className="h-4 w-4" aria-hidden />
               See awards
-            </a>
+            </Link>
           </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <a href="/" className="text-neutral-600 hover:text-neutral-900 font-medium">
-            ← Back to home
-          </a>
         </div>
       </section>
     </div>

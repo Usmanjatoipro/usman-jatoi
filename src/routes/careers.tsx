@@ -91,12 +91,12 @@ const ROLES = [
 ];
 
 const PERKS = [
-  { icon: "🌍", title: "Fully remote", body: "Work from anywhere. Overlap 4 hours with the core team." },
-  { icon: "🗓️", title: "Flexible time", body: "Unlimited PTO with a 20-day minimum. Take real breaks." },
-  { icon: "💻", title: "Gear budget", body: "$1,500 setup + $500/yr refresh. Whatever helps you ship." },
-  { icon: "📚", title: "Learning stipend", body: "$1,000/yr for books, courses, conferences." },
-  { icon: "🚀", title: "Product upside", body: "Bonus tied to shipped launches and revenue you helped move." },
-  { icon: "🫂", title: "Real onboarding", body: "Two weeks paired with a senior. No cold starts." },
+  { icon: "", title: "Fully remote", body: "Work from anywhere. Overlap 4 hours with the core team." },
+  { icon: "", title: "Flexible time", body: "Unlimited PTO with a 20-day minimum. Take real breaks." },
+  { icon: "", title: "Gear budget", body: "$1,500 setup + $500/yr refresh. Whatever helps you ship." },
+  { icon: "", title: "Learning stipend", body: "$1,000/yr for books, courses, conferences." },
+  { icon: "", title: "Product upside", body: "Bonus tied to shipped launches and revenue you helped move." },
+  { icon: "", title: "Real onboarding", body: "Two weeks paired with a senior. No cold starts." },
 ];
 
 const HIRING_STEPS = [

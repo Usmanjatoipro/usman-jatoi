@@ -46,7 +46,7 @@ type Section = {
 const sections: Section[] = [
   {
     tag: "The Social Side",
-    icon: "🎮",
+    icon: "",
     title: "Playing with friends",
     paragraphs: [
       "Like many young people, I spent time playing video games. It started as a way to connect and share moments with friends. We played a mix of mobile and PC games together.",
@@ -56,7 +56,7 @@ const sections: Section[] = [
   },
   {
     tag: "Alone Mode",
-    icon: "😵‍💫",
+    icon: "",
     title: "A different experience solo",
     paragraphs: [
       "Playing games by myself never truly felt fun. In fact, trying to play alone — especially first-person titles — often led to nausea, headaches, and boredom.",
@@ -66,7 +66,7 @@ const sections: Section[] = [
   },
   {
     tag: "The Shift",
-    icon: "🧭",
+    icon: "",
     title: "Understanding what actually matters",
     paragraphs: [
       "Over time, I learned to listen to what truly held my interest and what simply filled time. Gaming was a social outlet — the joy was in the people, not the activity itself.",
@@ -76,7 +76,7 @@ const sections: Section[] = [
   },
   {
     tag: "Takeaways",
-    icon: "💡",
+    icon: "",
     title: "Lessons from my gaming days",
     paragraphs: [
       "Friendship value: how much I value time and shared experiences with people I care about.",
@@ -89,12 +89,12 @@ const sections: Section[] = [
 const games: { label: string; group: string; items: string[] }[] = [
   {
     label: "Mobile",
-    group: "📱",
+    group: "",
     items: ["Free Fire", "PUBG Mobile", "Subway Surfers"],
   },
   {
     label: "PC",
-    group: "🖥️",
+    group: "",
     items: [
       "Call of Duty",
       "IGI",
