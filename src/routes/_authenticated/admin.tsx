@@ -83,13 +83,34 @@ function AdminPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-8 space-y-8">
-        {/* Stats */}
+        {/* Content library totals */}
+        <section className="bg-white rounded-xl border border-neutral-200 p-6">
+          <div className="flex items-baseline justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-bold">Content Library</h2>
+              <p className="text-sm text-neutral-500 mt-1">
+                Live counts from Lovable Cloud — everything below is served from the app, not WordPress.
+              </p>
+            </div>
+            <p className="text-xs text-neutral-400 tabular-nums">
+              {content.mediaCount.toLocaleString()} media files in storage
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {content.stats.map((s: ContentTypeStat) => (
+              <ContentStat key={s.post_type} stat={s} />
+            ))}
+          </div>
+        </section>
+
+        {/* Categories stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Stat label="Total Categories" value={flat.length} />
           <Stat label="Root Categories" value={tree.length} />
-          <Stat label="Total Posts" value={totalPosts.toLocaleString()} />
+          <Stat label="Total Posts (cats)" value={totalPosts.toLocaleString()} />
           <Stat label="Deepest Level" value={maxDepth(tree)} />
         </div>
+
 
         {/* Quick actions */}
         <section className="bg-white rounded-xl border border-neutral-200 p-6">
