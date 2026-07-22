@@ -667,8 +667,8 @@ function DynamicPage() {
                   .replace(/^\/|\/$/g, "")
                   .split("/")
                   .slice(0, -1)
-                  .map((seg, i, arr) => ({
-                    label: seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+                  .map((seg: string, i: number, arr: string[]) => ({
+                    label: seg.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
                     href: "/" + arr.slice(0, i + 1).join("/") + "/",
                   })),
                 { label: post.title || "" },
