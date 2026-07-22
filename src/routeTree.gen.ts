@@ -62,6 +62,7 @@ import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social
 import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
 import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
+import { Route as AuthenticatedCmsRouteImport } from './routes/_authenticated/cms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
@@ -335,6 +336,11 @@ const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   path: '/import',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCmsRoute = AuthenticatedCmsRouteImport.update({
+  id: '/cms',
+  path: '/cms',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/cms': typeof AuthenticatedCmsRoute
   '/import': typeof AuthenticatedImportRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/cms': typeof AuthenticatedCmsRoute
   '/import': typeof AuthenticatedImportRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
@@ -482,6 +490,7 @@ export interface FileRoutesById {
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/cms': typeof AuthenticatedCmsRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
@@ -539,6 +548,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/white-label-partnership'
     | '/admin'
+    | '/cms'
     | '/import'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
@@ -594,6 +604,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/white-label-partnership'
     | '/admin'
+    | '/cms'
     | '/import'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
@@ -650,6 +661,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/white-label-partnership'
     | '/_authenticated/admin'
+    | '/_authenticated/cms'
     | '/_authenticated/import'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
@@ -1094,6 +1106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cms': {
+      id: '/_authenticated/cms'
+      path: '/cms'
+      fullPath: '/cms'
+      preLoaderRoute: typeof AuthenticatedCmsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -1106,11 +1125,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCmsRoute: typeof AuthenticatedCmsRoute
   AuthenticatedImportRoute: typeof AuthenticatedImportRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCmsRoute: AuthenticatedCmsRoute,
   AuthenticatedImportRoute: AuthenticatedImportRoute,
 }
 

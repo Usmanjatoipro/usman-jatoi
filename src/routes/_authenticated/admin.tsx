@@ -101,6 +101,22 @@ function AdminPage() {
               <ContentStat key={s.post_type} stat={s} />
             ))}
           </div>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            <Link
+              to="/cms"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-900 text-white hover:bg-neutral-700 transition"
+            >
+              Browse all content in CMS →
+            </Link>
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-200 hover:border-neutral-900 transition"
+            >
+              View sitemap.xml
+            </a>
+          </div>
         </section>
 
         {/* Categories stats */}
