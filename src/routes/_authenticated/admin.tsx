@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { listCategoriesTree, type WpCategoryNode } from "@/lib/wp-categories.functions";
-import { useMemo, useState } from "react";
+import {
+  rewriteInlineMediaBatch,
+  backfillFeaturedImagesBatch,
+  getCleanupStats,
+} from "@/lib/wp-cleanup.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useState, useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   loader: async () => await listCategoriesTree(),
