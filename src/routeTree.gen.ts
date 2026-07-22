@@ -32,6 +32,7 @@ import { Route as CertificationsRouteImport } from './routes/certifications'
 import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessesRouteImport } from './routes/businesses'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutMeRouteImport } from './routes/about-me'
@@ -182,6 +183,11 @@ const BusinessesRoute = BusinessesRouteImport.update({
   path: '/businesses',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AwardsRoute = AwardsRouteImport.update({
   id: '/awards',
   path: '/awards',
@@ -227,9 +233,9 @@ const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => BlogRoute,
 } as any)
 const SkillsExpertiseTechnicalSkillsRoute =
   SkillsExpertiseTechnicalSkillsRouteImport.update({
@@ -319,9 +325,9 @@ const CategorySlugRoute = CategorySlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
-  getParentRoute: () => rootRouteImport,
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
   id: '/vision-values',
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
+  '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRoute
@@ -483,6 +490,7 @@ export interface FileRoutesById {
   '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
+  '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRoute
@@ -543,6 +551,7 @@ export interface FileRouteTypes {
     | '/about-me'
     | '/auth'
     | '/awards'
+    | '/blog'
     | '/businesses'
     | '/careers'
     | '/case-studies'
@@ -660,6 +669,7 @@ export interface FileRouteTypes {
     | '/about-me'
     | '/auth'
     | '/awards'
+    | '/blog'
     | '/businesses'
     | '/careers'
     | '/case-studies'
@@ -720,6 +730,7 @@ export interface RootRouteChildren {
   AboutMeRoute: typeof AboutMeRouteWithChildren
   AuthRoute: typeof AuthRoute
   AwardsRoute: typeof AwardsRoute
+  BlogRoute: typeof BlogRouteWithChildren
   BusinessesRoute: typeof BusinessesRoute
   CareersRoute: typeof CareersRoute
   CaseStudiesRoute: typeof CaseStudiesRoute
@@ -743,7 +754,6 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
-  BlogSlugRoute: typeof BlogSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
@@ -754,7 +764,6 @@ export interface RootRouteChildren {
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
   SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
-  BlogIndexRoute: typeof BlogIndexRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   SkillsExpertiseIndexRoute: typeof SkillsExpertiseIndexRoute
@@ -923,6 +932,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/awards': {
       id: '/awards'
       path: '/awards'
@@ -988,10 +1004,10 @@ declare module '@tanstack/react-router' {
     }
     '/blog/': {
       id: '/blog/'
-      path: '/blog'
+      path: '/'
       fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/skills-expertise/technical-skills': {
       id: '/skills-expertise/technical-skills'
@@ -1107,10 +1123,10 @@ declare module '@tanstack/react-router' {
     }
     '/blog/$slug': {
       id: '/blog/$slug'
-      path: '/blog/$slug'
+      path: '/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/about-me/vision-values': {
       id: '/about-me/vision-values'
@@ -1196,6 +1212,18 @@ const AboutMeRouteChildren: AboutMeRouteChildren = {
 const AboutMeRouteWithChildren =
   AboutMeRoute._addFileChildren(AboutMeRouteChildren)
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 interface LegalRouteChildren {
   LegalOurTermsRoute: typeof LegalOurTermsRoute
   LegalPrivacyPolicyRoute: typeof LegalPrivacyPolicyRoute
@@ -1233,6 +1261,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutMeRoute: AboutMeRouteWithChildren,
   AuthRoute: AuthRoute,
   AwardsRoute: AwardsRoute,
+  BlogRoute: BlogRouteWithChildren,
   BusinessesRoute: BusinessesRoute,
   CareersRoute: CareersRoute,
   CaseStudiesRoute: CaseStudiesRoute,
@@ -1256,7 +1285,6 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
-  BlogSlugRoute: BlogSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
@@ -1268,7 +1296,6 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsExpertiseCreativeSkillsRoute: SkillsExpertiseCreativeSkillsRoute,
   SkillsExpertiseSeoMarketingRoute: SkillsExpertiseSeoMarketingRoute,
   SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
-  BlogIndexRoute: BlogIndexRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   SkillsExpertiseIndexRoute: SkillsExpertiseIndexRoute,
@@ -1276,3 +1303,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
