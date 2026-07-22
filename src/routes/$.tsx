@@ -303,7 +303,7 @@ function DynamicPage() {
               {children.length} {children.length === 1 ? "page" : "pages"} under this section.
             </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {children.map((c) => {
+              {(children as ChildPage[]).map((c: ChildPage) => {
                 const cm = c.featured_media_id ? childrenMedia[c.featured_media_id] : null;
                 const cImg = cm?.storage_url || cm?.source_url || null;
                 return (
