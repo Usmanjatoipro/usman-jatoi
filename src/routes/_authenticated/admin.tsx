@@ -4,6 +4,8 @@ import {
   rewriteInlineMediaBatch,
   backfillFeaturedImagesBatch,
   getCleanupStats,
+  getBackfillStats,
+  backfillThinPostsBatch,
 } from "@/lib/wp-cleanup.functions";
 import { getContentTypeStats, type ContentTypeStat } from "@/lib/wp-content-stats.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -158,6 +160,8 @@ function AdminPage() {
             </Link>
           </div>
         </section>
+
+        <BackfillPanel />
 
         <CleanupPanel />
 
@@ -471,6 +475,137 @@ function CleanupPanel() {
         >
           {running === "backfill" ? "Backfilling…" : "Backfill featured images"}
         </button>
+      </div>
+
+      {log.length > 0 && (
+        <pre className="mt-5 max-h-64 overflow-auto text-xs bg-neutral-950 text-neutral-100 rounded-md p-4 font-mono whitespace-pre-wrap">
+{log.join("\n")}
+        </pre>
+      )}
+    </section>
+  );
+}
+
+function BackfillPanel() {
+  const stats = useServerFn(getBackfillStats);
+  const runBatch = useServerFn(backfillThinPostsBatch);
+
+  const [info, setInfo] = useState<{
+    thinContent: number;
+    noSeo: number;
+    noExcerpt: number;
+    noHero: number;
+    totalPosts: number;
+  } | null>(null);
+  const [log, setLog] = useState<string[]>([]);
+  const [running, setRunning] = useState(false);
+  const [stopFlag, setStopFlag] = useState(false);
+
+  const refresh = async () => {
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) return;
+      const s = await stats();
+      setInfo(s);
+    } catch (e: any) {
+      setLog((l) => [...l, `Stats error: ${e?.message ?? String(e)}`]);
+    }
+  };
+
+  useEffect(() => {
+    refresh();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") {
+        refresh();
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const run = async () => {
+    setRunning(true);
+    setStopFlag(false);
+    setLog(["Starting content + SEO backfill from WordPress…"]);
+    let totalUpdated = 0;
+    let totalFailed = 0;
+    let emptyStreak = 0;
+    try {
+      for (let i = 0; i < 5000; i++) {
+        if (stopFlag) {
+          setLog((l) => [...l, "Stopped by user."]);
+          break;
+        }
+        const r = await runBatch({ data: { limit: 10 } });
+        totalUpdated += r.updated;
+        totalFailed += r.failed;
+        setLog((l) => [
+          ...l,
+          `Batch ${i + 1}: processed ${r.processed}, updated ${r.updated}, failed ${r.failed}`,
+        ]);
+        if (r.processed === 0) {
+          emptyStreak++;
+          if (emptyStreak >= 2) break;
+        } else {
+          emptyStreak = 0;
+        }
+      }
+      setLog((l) => [
+        ...l,
+        `✓ Done. Refilled ${totalUpdated} posts (${totalFailed} failed to fetch).`,
+      ]);
+      await refresh();
+    } catch (e: any) {
+      setLog((l) => [...l, `Error: ${e.message}`]);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <section className="bg-white rounded-xl border border-neutral-200 p-6">
+      <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
+        <div>
+          <h2 className="text-lg font-bold">Post Content + SEO Backfill</h2>
+          <p className="text-sm text-neutral-500 mt-1">
+            Refetches full content, excerpts, SEO title/description, and featured images from
+            the connected WordPress site for posts that were imported as stubs.
+          </p>
+        </div>
+        <button
+          onClick={refresh}
+          className="text-sm px-3 py-1.5 rounded-md border border-neutral-200 hover:border-neutral-900 transition"
+        >
+          Refresh stats
+        </button>
+      </div>
+
+      {info && (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+          <Stat label="Total Posts" value={info.totalPosts.toLocaleString()} />
+          <Stat label="Empty content" value={info.thinContent.toLocaleString()} />
+          <Stat label="Missing SEO" value={info.noSeo.toLocaleString()} />
+          <Stat label="Missing excerpt" value={info.noExcerpt.toLocaleString()} />
+          <Stat label="Missing hero" value={info.noHero.toLocaleString()} />
+        </div>
+      )}
+
+      <div className="flex gap-3 flex-wrap">
+        <button
+          onClick={run}
+          disabled={running}
+          className="rounded-md bg-emerald-600 text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-emerald-700 transition"
+        >
+          {running ? "Backfilling…" : "Backfill missing post data"}
+        </button>
+        {running && (
+          <button
+            onClick={() => setStopFlag(true)}
+            className="rounded-md border border-neutral-300 px-4 py-2 text-sm font-semibold hover:bg-neutral-50 transition"
+          >
+            Stop
+          </button>
+        )}
       </div>
 
       {log.length > 0 && (
