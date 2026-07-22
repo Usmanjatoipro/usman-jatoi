@@ -161,6 +161,8 @@ function AdminPage() {
           </div>
         </section>
 
+        <BackfillPanel />
+
         <CleanupPanel />
 
         {/* Categories */}
