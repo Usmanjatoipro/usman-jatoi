@@ -15,6 +15,7 @@ import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapNameDotxmlRouteImport } from './routes/sitemap-$name[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SeoStudioRouteImport } from './routes/seo-studio'
 import { Route as PressReleaseRouteImport } from './routes/press-release'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
@@ -94,6 +95,11 @@ const SitemapNameDotxmlRoute = SitemapNameDotxmlRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeoStudioRoute = SeoStudioRouteImport.update({
+  id: '/seo-studio',
+  path: '/seo-studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PressReleaseRoute = PressReleaseRouteImport.update({
@@ -376,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/my-testimonials': typeof MyTestimonialsRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/press-release': typeof PressReleaseRoute
+  '/seo-studio': typeof SeoStudioRoute
   '/shop': typeof ShopRoute
   '/sitemap-$name.xml': typeof SitemapNameDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -433,6 +440,7 @@ export interface FileRoutesByTo {
   '/my-testimonials': typeof MyTestimonialsRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/press-release': typeof PressReleaseRoute
+  '/seo-studio': typeof SeoStudioRoute
   '/shop': typeof ShopRoute
   '/sitemap-$name.xml': typeof SitemapNameDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -492,6 +500,7 @@ export interface FileRoutesById {
   '/my-testimonials': typeof MyTestimonialsRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/press-release': typeof PressReleaseRoute
+  '/seo-studio': typeof SeoStudioRoute
   '/shop': typeof ShopRoute
   '/sitemap-$name.xml': typeof SitemapNameDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -551,6 +560,7 @@ export interface FileRouteTypes {
     | '/my-testimonials'
     | '/portfolio'
     | '/press-release'
+    | '/seo-studio'
     | '/shop'
     | '/sitemap-$name.xml'
     | '/sitemap.xml'
@@ -608,6 +618,7 @@ export interface FileRouteTypes {
     | '/my-testimonials'
     | '/portfolio'
     | '/press-release'
+    | '/seo-studio'
     | '/shop'
     | '/sitemap-$name.xml'
     | '/sitemap.xml'
@@ -666,6 +677,7 @@ export interface FileRouteTypes {
     | '/my-testimonials'
     | '/portfolio'
     | '/press-release'
+    | '/seo-studio'
     | '/shop'
     | '/sitemap-$name.xml'
     | '/sitemap.xml'
@@ -725,6 +737,7 @@ export interface RootRouteChildren {
   MyTestimonialsRoute: typeof MyTestimonialsRoute
   PortfolioRoute: typeof PortfolioRouteWithChildren
   PressReleaseRoute: typeof PressReleaseRoute
+  SeoStudioRoute: typeof SeoStudioRoute
   ShopRoute: typeof ShopRoute
   SitemapNameDotxmlRoute: typeof SitemapNameDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -788,6 +801,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seo-studio': {
+      id: '/seo-studio'
+      path: '/seo-studio'
+      fullPath: '/seo-studio'
+      preLoaderRoute: typeof SeoStudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/press-release': {
@@ -1239,6 +1259,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyTestimonialsRoute: MyTestimonialsRoute,
   PortfolioRoute: PortfolioRouteWithChildren,
   PressReleaseRoute: PressReleaseRoute,
+  SeoStudioRoute: SeoStudioRoute,
   ShopRoute: ShopRoute,
   SitemapNameDotxmlRoute: SitemapNameDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
