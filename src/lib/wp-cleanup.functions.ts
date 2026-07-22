@@ -382,7 +382,7 @@ export const backfillThinPostsBatch = createServerFn({ method: "POST" })
         };
         const { error } = await supabaseAdmin
           .from("wp_posts")
-          .update(patch)
+          .update(patch as any)
           .eq("id", row.id);
         if (error) {
           failed++;
