@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /import
+Disallow: /auth
+Disallow: /_authenticated/
+
+Sitemap: https://usmanjatoi.lovable.app/sitemap.xml
