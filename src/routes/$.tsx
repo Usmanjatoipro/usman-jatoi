@@ -717,6 +717,85 @@ function DynamicPage() {
   );
 }
 
+// -------------------- Post template wrapper --------------------
+
+function PostArticleFromWp({
+  post,
+  heroUrl,
+  related,
+}: {
+  post: WpPost;
+  heroUrl: string | null;
+  related?: any[];
+}) {
+  const catIds: number[] = Array.isArray((post as any).raw?.categories)
+    ? (post as any).raw.categories
+    : [];
+  const tagIds: number[] = Array.isArray((post as any).raw?.tags)
+    ? (post as any).raw.tags
+    : [];
+
+  const { data: taxonomies } = useQuery({
+    queryKey: ["post-terms", post.id, catIds.join(","), tagIds.join(",")],
+    queryFn: async () => {
+      const ids = [...catIds, ...tagIds];
+      if (!ids.length) return { categories: [] as PostArticleTerm[], tags: [] as PostArticleTerm[] };
+      const { data } = await supabase
+        .from("wp_terms")
+        .select("id,name,slug,parent_id,taxonomy")
+        .in("id", ids);
+      const rows = (data || []) as PostArticleTerm[];
+      return {
+        categories: rows.filter((r) => catIds.includes(r.id)),
+        tags: rows.filter((r) => tagIds.includes(r.id)),
+      };
+    },
+  });
+
+  // Reuse the fetched `related` list to hydrate the sidebar so we do not
+  // double-fetch inside PostArticle when the splat route already knows the
+  // sibling set.
+  const primaryChildren = (related || [])
+    .filter((r) => r?.path)
+    .slice(0, 8)
+    .map((r) => ({
+      title: (r.title || "Untitled").replace(/<[^>]+>/g, ""),
+      href: r.path as string,
+    }));
+
+  // Build the archive path for the primary category from the current post path.
+  let archivePath: string | null = null;
+  if (post.path) {
+    const parts = post.path.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean);
+    if (parts.length > 1) {
+      archivePath = "/" + parts.slice(0, -1).join("/") + "/";
+    }
+  }
+
+  return (
+    <PostArticle
+      post={{
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt,
+        post_date: post.post_date,
+        post_modified: (post as any).post_modified ?? null,
+        path: post.path,
+        seo_title: post.seo_title,
+        seo_description: post.seo_description,
+        raw: (post as any).raw,
+      }}
+      heroUrl={heroUrl}
+      categories={taxonomies?.categories ?? []}
+      tags={taxonomies?.tags ?? []}
+      categoryArchivePath={archivePath}
+      primaryCategoryChildren={primaryChildren}
+    />
+  );
+}
+
 function ChildrenGrid({
   title,
   children,
