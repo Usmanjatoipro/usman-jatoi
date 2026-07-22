@@ -275,15 +275,28 @@ function CleanupPanel() {
 
   const refresh = async () => {
     try {
+      // Wait for the Supabase session so the bearer attacher can add the Authorization header.
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        setLog((l) => [...l, "Waiting for session…"]);
+        return;
+      }
       const s = await stats();
       setInfo(s);
     } catch (e: any) {
-      setLog((l) => [...l, `Stats error: ${e.message}`]);
+      setLog((l) => [...l, `Stats error: ${e?.message ?? String(e)}`]);
     }
   };
 
   useEffect(() => {
     refresh();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") {
+        refresh();
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const runRewrite = async () => {
