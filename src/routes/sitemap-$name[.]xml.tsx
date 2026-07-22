@@ -63,7 +63,7 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const name = params.name;
+        const name = (params as Record<string, string>).name ?? (params as Record<string, string>)["name.xml"];
 
         if (name === "static") {
           return respond(
