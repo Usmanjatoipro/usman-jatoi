@@ -192,12 +192,21 @@ function rewriteContentHtml(html: string): string {
 // -------------------- Route --------------------
 
 export const Route = createFileRoute("/$")({
-  loader: async ({ params }) => {
+  validateSearch: z.object({ page: z.number().int().min(1).max(500).optional() }).parse,
+  loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
+  loader: async ({ params, deps }) => {
     const splat = (params as { _splat?: string })._splat ?? "";
     if (!splat) throw notFound();
-    const result = await loadPage(splat);
-    if (result) return result;
 
+    // 1) Try wp_posts (page/post/product/course)
+    const result = await loadPage(splat);
+    if (result) return { kind: "post" as const, ...result };
+
+    // 2) Try category archive (matches /websites/, /websites/web-innovations/, etc.)
+    const archive = await loadCategoryArchiveByPath(splat, deps.page);
+    if (archive) return { kind: "category" as const, archive };
+
+    // 3) Redirects table
     const p = "/" + splat.replace(/^\/+|\/+$/g, "");
     const { data: rd } = await supabase
       .from("redirects")
@@ -210,19 +219,55 @@ export const Route = createFileRoute("/$")({
   },
   head: ({ loaderData, params }) => {
     if (!loaderData) return { meta: [{ title: "Page not found — Usman Jatoi" }, { name: "robots", content: "noindex" }] };
-    const { post, media } = loaderData;
+
+    const splat = (params as { _splat?: string })._splat ?? "";
+    const url = `https://usmanjatoi.lovable.app/${splat}`;
     const truncate = (s: string, n: number) => {
-      const c = s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+      const c = (s || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
       return c.length > n ? c.slice(0, n - 1).trimEnd() + "…" : c;
     };
+
+    if (loaderData.kind === "category") {
+      const { category, total } = loaderData.archive;
+      const title = truncate(`${category.name} — Articles & Resources | Usman Jatoi`, 60);
+      const desc = truncate(
+        category.description ||
+          `Browse ${total} posts in the ${category.name} category — expert articles, guides and resources by Usman Jatoi.`,
+        158,
+      );
+      return {
+        meta: [
+          { title },
+          { name: "description", content: desc },
+          { property: "og:title", content: title },
+          { property: "og:description", content: desc },
+          { property: "og:type", content: "website" },
+          { property: "og:url", content: url },
+          { name: "twitter:card", content: "summary_large_image" },
+        ],
+        links: [{ rel: "canonical", href: url }],
+        scripts: [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: category.name,
+              description: desc,
+              url,
+            }),
+          },
+        ],
+      };
+    }
+
+    const { post, media } = loaderData;
     const rawTitle = post.seo_title || post.title || "Usman Jatoi";
     const title = truncate(`${rawTitle} — Usman Jatoi`, 60);
     const desc = truncate(
       post.seo_description || post.excerpt || `${post.title} — Usman Jatoi`,
       158,
     );
-    const splat = (params as { _splat?: string })._splat ?? "";
-    const url = `https://usmanjatoi.lovable.app/${splat}`;
     const image = media?.storage_url || media?.source_url || undefined;
 
     const structured = extractStructured(post.meta);
@@ -291,6 +336,7 @@ export const Route = createFileRoute("/$")({
     </div>
   ),
 });
+
 
 function NotFoundPage() {
   return (
