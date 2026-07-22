@@ -31,6 +31,8 @@ import {
   Award,
   Rss,
 } from "lucide-react";
+import PageHero from "@/components/PageHero";
+
 
 export type PostArticleData = {
   id: number;
