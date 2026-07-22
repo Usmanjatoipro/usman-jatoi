@@ -581,7 +581,11 @@ function PromoVideoBlock({ url }: { url: string }) {
 // -------------------- Page --------------------
 
 function DynamicPage() {
-  const { post, media, children, childrenMedia } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  if (loaderData.kind === "category") {
+    return <CategoryArchivePage archive={loaderData.archive} />;
+  }
+  const { post, media, children, childrenMedia } = loaderData;
   const contentHtml = rewriteContentHtml(post.content || "");
   const heroUrl = media?.storage_url || media?.source_url || null;
   const date = post.post_date ? new Date(post.post_date) : null;
