@@ -21,8 +21,6 @@ import {
   QrCode,
   ExternalLink,
   X,
-  CheckCircle2,
-  XCircle,
   Send,
   Github,
   Instagram,
