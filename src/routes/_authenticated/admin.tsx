@@ -283,6 +283,35 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
+function ContentStat({ stat }: { stat: ContentTypeStat }) {
+  const inner = (
+    <>
+      <p className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">
+        {stat.label}
+      </p>
+      <p className="text-3xl font-bold text-neutral-900 mt-2 tabular-nums">
+        {stat.published.toLocaleString()}
+      </p>
+      <p className="text-[11px] text-neutral-400 mt-1">published</p>
+      {stat.sample_path && (
+        <p className="text-[11px] text-indigo-600 mt-2 truncate group-hover:underline">
+          View sample →
+        </p>
+      )}
+    </>
+  );
+  const cls =
+    "group block bg-gradient-to-br from-white to-neutral-50 rounded-xl border border-neutral-200 p-5 hover:border-indigo-600 hover:shadow-sm transition";
+  if (stat.sample_path) {
+    return (
+      <a href={stat.sample_path} target="_blank" rel="noreferrer" className={cls}>
+        {inner}
+      </a>
+    );
+  }
+  return <div className={cls}>{inner}</div>;
+
+
 function maxDepth(nodes: WpCategoryNode[], d = 1): number {
   let max = nodes.length ? d : 0;
   for (const n of nodes) {
