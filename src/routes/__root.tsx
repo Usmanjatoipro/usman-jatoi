@@ -13,6 +13,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "../components/SiteChrome";
+import favicon32 from "../assets/favicon-32.webp.asset.json";
+import favicon192 from "../assets/favicon-192.webp.asset.json";
+import faviconApple from "../assets/apple-touch-icon.webp.asset.json";
 
 function NotFoundComponent() {
   return (
