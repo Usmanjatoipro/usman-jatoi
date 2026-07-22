@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      broken_links: {
+        Row: {
+          checked_at: string
+          path: string
+          source_post_id: number | null
+          suggested: string | null
+        }
+        Insert: {
+          checked_at?: string
+          path: string
+          source_post_id?: number | null
+          suggested?: string | null
+        }
+        Update: {
+          checked_at?: string
+          path?: string
+          source_post_id?: number | null
+          suggested?: string | null
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -44,6 +65,24 @@ export type Database = {
           name?: string
           phone?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      redirects: {
+        Row: {
+          created_at: string
+          from_path: string
+          to_path: string
+        }
+        Insert: {
+          created_at?: string
+          from_path: string
+          to_path: string
+        }
+        Update: {
+          created_at?: string
+          from_path?: string
+          to_path?: string
         }
         Relationships: []
       }
