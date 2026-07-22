@@ -27,6 +27,7 @@ import {
   Rss,
 } from "lucide-react";
 import heroBg from "@/assets/hero-bg.webp.asset.json";
+import PageHero from "@/components/PageHero";
 
 export type PostArticleData = {
   id: number;
