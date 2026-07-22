@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle, FolderOpen } from "lucide-react";
+import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-category-archive";
 
 type WpPost = {
   id: number;
@@ -190,12 +192,21 @@ function rewriteContentHtml(html: string): string {
 // -------------------- Route --------------------
 
 export const Route = createFileRoute("/$")({
-  loader: async ({ params }) => {
+  validateSearch: z.object({ page: z.number().int().min(1).max(500).optional() }).parse,
+  loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
+  loader: async ({ params, deps }) => {
     const splat = (params as { _splat?: string })._splat ?? "";
     if (!splat) throw notFound();
-    const result = await loadPage(splat);
-    if (result) return result;
 
+    // 1) Try wp_posts (page/post/product/course)
+    const result = await loadPage(splat);
+    if (result) return { kind: "post" as const, ...result };
+
+    // 2) Try category archive (matches /websites/, /websites/web-innovations/, etc.)
+    const archive = await loadCategoryArchiveByPath(splat, deps.page);
+    if (archive) return { kind: "category" as const, archive };
+
+    // 3) Redirects table
     const p = "/" + splat.replace(/^\/+|\/+$/g, "");
     const { data: rd } = await supabase
       .from("redirects")
@@ -208,19 +219,55 @@ export const Route = createFileRoute("/$")({
   },
   head: ({ loaderData, params }) => {
     if (!loaderData) return { meta: [{ title: "Page not found — Usman Jatoi" }, { name: "robots", content: "noindex" }] };
-    const { post, media } = loaderData;
+
+    const splat = (params as { _splat?: string })._splat ?? "";
+    const url = `https://usmanjatoi.lovable.app/${splat}`;
     const truncate = (s: string, n: number) => {
-      const c = s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+      const c = (s || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
       return c.length > n ? c.slice(0, n - 1).trimEnd() + "…" : c;
     };
+
+    if (loaderData.kind === "category") {
+      const { category, total } = loaderData.archive;
+      const title = truncate(`${category.name} — Articles & Resources | Usman Jatoi`, 60);
+      const desc = truncate(
+        category.description ||
+          `Browse ${total} posts in the ${category.name} category — expert articles, guides and resources by Usman Jatoi.`,
+        158,
+      );
+      return {
+        meta: [
+          { title },
+          { name: "description", content: desc },
+          { property: "og:title", content: title },
+          { property: "og:description", content: desc },
+          { property: "og:type", content: "website" },
+          { property: "og:url", content: url },
+          { name: "twitter:card", content: "summary_large_image" },
+        ],
+        links: [{ rel: "canonical", href: url }],
+        scripts: [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: category.name,
+              description: desc,
+              url,
+            }),
+          },
+        ],
+      };
+    }
+
+    const { post, media } = loaderData;
     const rawTitle = post.seo_title || post.title || "Usman Jatoi";
     const title = truncate(`${rawTitle} — Usman Jatoi`, 60);
     const desc = truncate(
       post.seo_description || post.excerpt || `${post.title} — Usman Jatoi`,
       158,
     );
-    const splat = (params as { _splat?: string })._splat ?? "";
-    const url = `https://usmanjatoi.lovable.app/${splat}`;
     const image = media?.storage_url || media?.source_url || undefined;
 
     const structured = extractStructured(post.meta);
@@ -289,6 +336,7 @@ export const Route = createFileRoute("/$")({
     </div>
   ),
 });
+
 
 function NotFoundPage() {
   return (
@@ -533,7 +581,11 @@ function PromoVideoBlock({ url }: { url: string }) {
 // -------------------- Page --------------------
 
 function DynamicPage() {
-  const { post, media, children, childrenMedia } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  if (loaderData.kind === "category") {
+    return <CategoryArchivePage archive={loaderData.archive} />;
+  }
+  const { post, media, children, childrenMedia } = loaderData;
   const contentHtml = rewriteContentHtml(post.content || "");
   const heroUrl = media?.storage_url || media?.source_url || null;
   const date = post.post_date ? new Date(post.post_date) : null;
@@ -707,3 +759,129 @@ function ChildrenGrid({
     </section>
   );
 }
+
+// -------------------- Category archive template --------------------
+
+function CategoryArchivePage({ archive }: { archive: CategoryArchive }) {
+  const { category, ancestors, children, posts, page, totalPages, total } = archive;
+  const basePath = "/" + [...ancestors.map((a) => a.slug), category.slug].join("/") + "/";
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+        <div className="absolute inset-0 opacity-30 pointer-events-none [background:radial-gradient(60%_60%_at_10%_10%,#a855f7_0%,transparent_60%),radial-gradient(50%_50%_at_90%_20%,#3b82f6_0%,transparent_60%),radial-gradient(50%_50%_at_50%_100%,#ec4899_0%,transparent_60%)]" />
+        <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <nav aria-label="Breadcrumb" className="text-xs text-white/70 mb-5 flex flex-wrap items-center gap-1.5">
+            <Link to="/" className="hover:text-white">Home</Link>
+            {ancestors.map((a, i) => {
+              const href = "/" + ancestors.slice(0, i + 1).map((x) => x.slug).join("/") + "/";
+              return (
+                <span key={a.id} className="inline-flex items-center gap-1.5">
+                  <ChevronRight className="w-3 h-3" />
+                  <Link to={href as any} className="hover:text-white">{a.name}</Link>
+                </span>
+              );
+            })}
+            <ChevronRight className="w-3 h-3" />
+            <span className="text-white">{category.name}</span>
+          </nav>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs uppercase tracking-wider mb-4">
+            <FolderOpen className="w-3 h-3" /> Category
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 max-w-4xl">{category.name}</h1>
+          {category.description && (
+            <p className="text-lg text-white/80 max-w-3xl">{category.description}</p>
+          )}
+          <p className="text-sm text-white/60 mt-5">
+            {total} {total === 1 ? "post" : "posts"} in this category
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {children.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-sm uppercase tracking-widest text-muted-foreground mb-4">Browse subcategories</h2>
+            <div className="flex flex-wrap gap-2">
+              {children.map((c) => {
+                const href = basePath + c.slug + "/";
+                return (
+                  <Link
+                    key={c.id}
+                    to={href as any}
+                    className="px-4 py-2 rounded-full border border-border hover:border-foreground hover:bg-muted text-sm transition"
+                  >
+                    {c.name} <span className="text-muted-foreground">({c.count})</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {posts.length === 0 ? (
+          <p className="text-muted-foreground py-16 text-center">No posts published in this category yet.</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((p) => (
+              <Link
+                key={p.id}
+                to={(p.path || `/${p.slug}`) as any}
+                className="group rounded-xl overflow-hidden border border-border bg-card hover:shadow-lg hover:border-foreground/30 transition"
+              >
+                {p.featured_image && (
+                  <div className="aspect-[16/10] overflow-hidden bg-muted">
+                    <img
+                      src={p.featured_image}
+                      alt={p.title || ""}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                )}
+                <div className="p-5">
+                  {p.post_date && (
+                    <time className="text-xs uppercase tracking-widest text-muted-foreground">
+                      {new Date(p.post_date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                    </time>
+                  )}
+                  <h3 className="mt-2 text-lg font-semibold leading-snug group-hover:text-primary transition line-clamp-2">
+                    {p.title}
+                  </h3>
+                  {p.excerpt && (
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{p.excerpt}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-12 flex items-center justify-center gap-4">
+            {page > 1 && (
+              <Link
+                to={basePath as any}
+                search={{ page: page - 1 } as any}
+                className="px-4 py-2 rounded-full border border-border hover:bg-muted text-sm"
+              >
+                ← Previous
+              </Link>
+            )}
+            <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+            {page < totalPages && (
+              <Link
+                to={basePath as any}
+                search={{ page: page + 1 } as any}
+                className="px-4 py-2 rounded-full border border-border hover:bg-muted text-sm"
+              >
+                Next →
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+

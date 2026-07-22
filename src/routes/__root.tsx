@@ -13,6 +13,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "../components/SiteChrome";
+import favicon32 from "../assets/favicon-32.webp.asset.json";
+import favicon192 from "../assets/favicon-192.webp.asset.json";
+import faviconApple from "../assets/apple-touch-icon.webp.asset.json";
 
 function NotFoundComponent() {
   return (
@@ -105,11 +108,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/webp", sizes: "32x32", href: favicon32.url },
+      { rel: "icon", type: "image/webp", sizes: "192x192", href: favicon192.url },
+      { rel: "apple-touch-icon", sizes: "180x180", href: faviconApple.url },
+      { rel: "shortcut icon", href: favicon32.url },
     ],
   }),
   shellComponent: RootShell,
