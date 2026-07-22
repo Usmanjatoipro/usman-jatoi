@@ -3,36 +3,30 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Eye,
-  Clock,
   Calendar,
   MessageSquare,
   Star,
-  Share2,
   ChevronRight,
-  BookOpen,
-  Coffee,
+  ChevronLeft,
+  ChevronDown,
   ArrowRight,
   ArrowUp,
-  Copy,
+  ArrowUpRight,
   Check,
   Twitter,
   Facebook,
   Linkedin,
   Link2,
-  Mail,
-  Hash,
-  ListTree,
-  Sparkles,
-  Newspaper,
-  Bookmark,
-  TrendingUp,
+  MessageCircle,
+  QrCode,
+  ExternalLink,
+  X,
   Send,
-  User as UserIcon,
-  Award,
+  Github,
+  Instagram,
   Rss,
 } from "lucide-react";
-import PageHero from "@/components/PageHero";
-
+import heroBg from "@/assets/hero-bg.webp.asset.json";
 
 export type PostArticleData = {
   id: number;
@@ -55,6 +49,8 @@ export type PostArticleTerm = {
   parent_id: number | null;
   taxonomy?: string | null;
 };
+
+/* ------------------------- helpers ------------------------- */
 
 function stripHtml(html: string | null | undefined) {
   if (!html) return "";
@@ -91,11 +87,34 @@ function slugify(s: string) {
 }
 
 type Heading = { id: string; text: string; level: 2 | 3 };
+type SourceLink = { url: string; host: string; label: string };
 
-/**
- * Enhanced post template modeled after usmanjatoi.com with a rich sticky sidebar:
- * TOC · author · newsletter · share rail · related · tag cloud · back-to-top
- */
+/* Extract external outbound links as "sources". */
+function extractSources(html: string): SourceLink[] {
+  if (!html) return [];
+  const out: SourceLink[] = [];
+  const seen = new Set<string>();
+  const re = /<a\s+[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    const url = m[1];
+    if (!/^https?:\/\//i.test(url)) continue;
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes("usmanjatoi")) continue;
+      const key = u.hostname + u.pathname;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const label = decodeEntities(stripHtml(m[2])).slice(0, 120) || u.hostname;
+      out.push({ url, host: u.hostname.replace(/^www\./, ""), label });
+      if (out.length >= 20) break;
+    } catch {}
+  }
+  return out;
+}
+
+/* ------------------------- component ------------------------- */
+
 export function PostArticle({
   post,
   heroUrl,
@@ -113,25 +132,31 @@ export function PostArticle({
 }) {
   const [rating, setRating] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [activeId, setActiveId] = useState<string>("");
+  const [activeId, setActiveId] = useState("");
   const [showTop, setShowTop] = useState(false);
+  const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [siblings, setSiblings] = useState<{ title: string; href: string }[]>(
     primaryCategoryChildren
   );
+  const [related, setRelated] = useState<
+    { title: string; href: string; date: string | null; image: string | null }[]
+  >([]);
+  const [subcats, setSubcats] = useState<{ name: string; href: string }[]>([]);
+  const [allCats, setAllCats] = useState<{ name: string; href: string }[]>([]);
+  const [prevNext, setPrevNext] = useState<{
+    prev: { title: string; href: string } | null;
+    next: { title: string; href: string } | null;
+  }>({ prev: null, next: null });
 
   const title = decodeEntities(stripHtml(post.title) || "Untitled");
   const excerpt = decodeEntities(stripHtml(post.excerpt || ""));
   const rt = useMemo(() => readingTime(post.content), [post.content]);
-  const wordCount = useMemo(
-    () => stripHtml(post.content || "").split(/\s+/).filter(Boolean).length,
-    [post.content]
-  );
-  const views = useMemo(() => 100 + ((post.id * 37) % 5000), [post.id]);
-  const responses = useMemo(() => (post.id * 7) % 40, [post.id]);
-  const coffees = useMemo(() => Math.max(1, Math.round(rt / 5)), [rt]);
+  const views = useMemo(() => 40 + ((post.id * 37) % 400), [post.id]);
+  const responses = useMemo(() => (post.id * 7) % 30, [post.id]);
+  const totalVotes = useMemo(() => (post.id * 3) % 15, [post.id]);
 
   const primaryCategory = categories[0];
   const primaryCategoryName = primaryCategory?.name || "Article";
@@ -139,8 +164,8 @@ export function PostArticle({
     categoryArchivePath ||
     (primaryCategory ? `/category/${primaryCategory.slug}` : "/blog");
 
-  // Enrich HTML with heading anchors + extract TOC.
-  const { enrichedHtml, headings, keyTakeaways } = useMemo(() => {
+  /* Enrich HTML with heading anchors + extract TOC. */
+  const { enrichedHtml, headings, sources } = useMemo(() => {
     const raw = post.content || "";
     const hs: Heading[] = [];
     const used = new Set<string>();
@@ -158,22 +183,24 @@ export function PostArticle({
         return `<h${lvl}${attrs} id="${id}">${inner}</h${lvl}>`;
       }
     );
-    // Pull first ~4 headings as key takeaways.
-    const takeaways = hs.filter((h) => h.level === 2).slice(0, 5).map((h) => h.text);
-    return { enrichedHtml: enriched, headings: hs, keyTakeaways: takeaways };
+    return {
+      enrichedHtml: enriched,
+      headings: hs,
+      sources: extractSources(raw),
+    };
   }, [post.content]);
 
-  // Reading progress + active heading + back-to-top visibility.
+  /* Reading progress + active heading + back-to-top. */
   useEffect(() => {
     const onScroll = () => {
       const el = bodyRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
-      const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
-      setProgress(Math.min(100, (scrolled / Math.max(total, 1)) * 100));
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const total = rect.height - window.innerHeight;
+        const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
+        setProgress(Math.min(100, (scrolled / Math.max(total, 1)) * 100));
+      }
       setShowTop(window.scrollY > 600);
-      // Active heading
       let current = "";
       for (const h of headings) {
         const node = document.getElementById(h.id);
@@ -187,41 +214,175 @@ export function PostArticle({
     return () => window.removeEventListener("scroll", onScroll);
   }, [headings]);
 
-  // Fetch a few sibling posts under the same primary category.
+  /* Fetch data: siblings, related, subcats, all-cats, prev/next. */
   useEffect(() => {
-    if (!primaryCategory || siblings.length > 0) return;
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from("wp_posts")
-        .select("id, title, path, slug, post_type")
-        .eq("status", "publish")
-        .contains("raw", { categories: [primaryCategory.id] })
-        .neq("id", post.id)
-        .order("post_date", { ascending: false })
-        .limit(8);
-      if (cancelled || !data) return;
-      setSiblings(
-        (data as any[]).map((r) => ({
-          title: decodeEntities(stripHtml(r.title) || "Untitled"),
-          href: (r.path as string) || `/blog/${r.slug}`,
-        }))
-      );
+      // Subcategories under primary category
+      if (primaryCategory) {
+        const { data: subs } = await supabase
+          .from("wp_terms")
+          .select("id,name,slug,parent_id")
+          .eq("parent_id", primaryCategory.id)
+          .limit(12);
+        if (!cancelled && subs) {
+          setSubcats(
+            (subs as any[]).map((s) => ({
+              name: s.name,
+              href: `/category/${s.slug}`,
+            }))
+          );
+        }
+
+        if (siblings.length === 0) {
+          const { data: sib } = await supabase
+            .from("wp_posts")
+            .select("id,title,path,slug,post_type,featured_media_id,post_date")
+            .eq("status", "publish")
+            .contains("raw", { categories: [primaryCategory.id] })
+            .neq("id", post.id)
+            .order("post_date", { ascending: false })
+            .limit(12);
+          if (!cancelled && sib) {
+            const list = (sib as any[]).map((r) => ({
+              title: decodeEntities(stripHtml(r.title) || "Untitled"),
+              href: (r.path as string) || `/blog/${r.slug}`,
+            }));
+            setSiblings(list);
+          }
+        }
+
+        // Related posts with images (bento + explore-more)
+        const { data: rel } = await supabase
+          .from("wp_posts")
+          .select("id,title,path,slug,featured_media_id,post_date")
+          .eq("status", "publish")
+          .eq("post_type", "post")
+          .contains("raw", { categories: [primaryCategory.id] })
+          .neq("id", post.id)
+          .order("post_date", { ascending: false })
+          .limit(6);
+        if (!cancelled && rel) {
+          const withMedia = await Promise.all(
+            (rel as any[]).map(async (r) => {
+              let image: string | null = null;
+              if (r.featured_media_id) {
+                const { data: m } = await supabase
+                  .from("wp_media")
+                  .select("storage_url,source_url")
+                  .eq("id", r.featured_media_id)
+                  .maybeSingle();
+                image =
+                  (m as any)?.storage_url || (m as any)?.source_url || null;
+              }
+              return {
+                title: decodeEntities(stripHtml(r.title) || "Untitled"),
+                href: (r.path as string) || `/blog/${r.slug}`,
+                date: r.post_date,
+                image,
+              };
+            })
+          );
+          if (!cancelled) setRelated(withMedia);
+        }
+      }
+
+      // All top-level categories
+      const { data: allC } = await supabase
+        .from("wp_terms")
+        .select("id,name,slug,parent_id,taxonomy")
+        .eq("taxonomy", "category")
+        .is("parent_id", null)
+        .limit(32);
+      if (!cancelled && allC) {
+        setAllCats(
+          (allC as any[])
+            .filter((c) => c.name && c.name.toLowerCase() !== "uncategorized")
+            .map((c) => ({ name: c.name, href: `/category/${c.slug}` }))
+        );
+      }
+
+      // Prev / Next post by date
+      if (post.post_date) {
+        const [prevR, nextR] = await Promise.all([
+          supabase
+            .from("wp_posts")
+            .select("title,slug,path")
+            .eq("status", "publish")
+            .eq("post_type", "post")
+            .lt("post_date", post.post_date)
+            .order("post_date", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from("wp_posts")
+            .select("title,slug,path")
+            .eq("status", "publish")
+            .eq("post_type", "post")
+            .gt("post_date", post.post_date)
+            .order("post_date", { ascending: true })
+            .limit(1)
+            .maybeSingle(),
+        ]);
+        if (!cancelled) {
+          setPrevNext({
+            prev: prevR.data
+              ? {
+                  title: decodeEntities(
+                    stripHtml((prevR.data as any).title) || "Previous"
+                  ),
+                  href:
+                    (prevR.data as any).path ||
+                    `/blog/${(prevR.data as any).slug}`,
+                }
+              : null,
+            next: nextR.data
+              ? {
+                  title: decodeEntities(
+                    stripHtml((nextR.data as any).title) || "Next"
+                  ),
+                  href:
+                    (nextR.data as any).path ||
+                    `/blog/${(nextR.data as any).slug}`,
+                }
+              : null,
+          });
+        }
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, [primaryCategory?.id, post.id, siblings.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [primaryCategory?.id, post.id]);
 
   const shareUrl =
-    typeof window !== "undefined" ? window.location.href : `https://usmanjatoi.lovable.app${post.path || `/blog/${post.slug}`}`;
+    typeof window !== "undefined"
+      ? window.location.href
+      : `https://usmanjatoi.lovable.app${post.path || `/blog/${post.slug}`}`;
   const shareText = encodeURIComponent(title);
   const enc = encodeURIComponent(shareUrl);
   const shares = [
-    { label: "Share on Twitter", Icon: Twitter, href: `https://twitter.com/intent/tweet?text=${shareText}&url=${enc}` },
-    { label: "Share on LinkedIn", Icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc}` },
-    { label: "Share on Facebook", Icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${enc}` },
-    { label: "Share via Email", Icon: Mail, href: `mailto:?subject=${shareText}&body=${enc}` },
+    {
+      label: "Facebook",
+      Icon: Facebook,
+      href: `https://www.facebook.com/sharer/sharer.php?u=${enc}`,
+    },
+    {
+      label: "Twitter",
+      Icon: Twitter,
+      href: `https://twitter.com/intent/tweet?text=${shareText}&url=${enc}`,
+    },
+    {
+      label: "LinkedIn",
+      Icon: Linkedin,
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc}`,
+    },
+    {
+      label: "WhatsApp",
+      Icon: MessageCircle,
+      href: `https://api.whatsapp.com/send?text=${shareText}%20${enc}`,
+    },
   ];
 
   const copyLink = async () => {
@@ -232,9 +393,11 @@ export function PostArticle({
     } catch {}
   };
 
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${enc}`;
+
   return (
     <article className="bg-white text-neutral-900 relative">
-      {/* Reading progress bar */}
+      {/* Reading progress */}
       <div
         className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent"
         aria-hidden
@@ -245,279 +408,291 @@ export function PostArticle({
         />
       </div>
 
-      {/* ================= Dark hero (silky bg + gradient overlay) ================= */}
-      <PageHero
-        title={title}
-        eyebrow={primaryCategoryName || undefined}
-        size="md"
-        crumbs={[
-          { label: "Home", href: "/" },
-          ...(primaryCategory
-            ? [{ label: primaryCategoryName!, href: archiveHref }]
-            : []),
-          { label: title },
-        ]}
-      />
+      {/* Top spacer so hero card clears the transparent header */}
+      <div className="h-24 md:h-28" />
 
-
-      {/* ================= 70/30 body ================= */}
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 grid lg:grid-cols-[minmax(0,1fr)_340px] gap-10 relative">
-        {/* Vertical share rail (desktop only) */}
-        <div className="hidden xl:flex flex-col items-center gap-2 fixed left-6 top-1/2 -translate-y-1/2 z-40">
-          {shares.map(({ label, Icon, href }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="h-10 w-10 rounded-full bg-white border border-neutral-200 shadow-sm flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition"
-            >
-              <Icon className="h-4 w-4" />
-            </a>
-          ))}
-          <button
-            type="button"
-            onClick={copyLink}
-            aria-label="Copy link"
-            className="h-10 w-10 rounded-full bg-white border border-neutral-200 shadow-sm flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition"
-          >
-            {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Link2 className="h-4 w-4" />}
-          </button>
-        </div>
-
+      {/* ================= 70/30 ================= */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
         {/* ---------- MAIN ---------- */}
         <main className="min-w-0">
-          {/* Meta bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-neutral-200">
-            <div className="flex flex-wrap items-center gap-5 text-sm text-neutral-600">
+          {/* HERO CARD — dark silky background, title, excerpt, category pills */}
+          <section
+            className="relative overflow-hidden rounded-3xl border border-neutral-200/60 shadow-sm text-white"
+            style={{
+              backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%), url(${heroUrl || heroBg.url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundColor: "#050505",
+            }}
+          >
+            <div className="p-6 md:p-10 lg:p-14 min-h-[340px] md:min-h-[420px] flex flex-col justify-end">
+              <h1 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight max-w-3xl">
+                {title}
+              </h1>
+              {excerpt && (
+                <p className="mt-5 max-w-2xl text-sm md:text-base text-white/75 leading-relaxed line-clamp-3">
+                  {excerpt}
+                </p>
+              )}
+              {categories.length > 0 && (
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {categories.slice(0, 4).map((c) => (
+                    <Link
+                      key={c.id}
+                      to={"/category/$slug" as any}
+                      params={{ slug: c.slug } as any}
+                      className="text-xs md:text-sm rounded-full border border-white/25 bg-white/5 backdrop-blur px-3.5 py-1.5 text-white/90 hover:bg-white/10 transition"
+                    >
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {/* small author avatar */}
+              <div
+                className="absolute bottom-4 right-4 h-9 w-9 rounded-full bg-gradient-to-br from-amber-400 to-rose-500 border-2 border-white/40 flex items-center justify-center text-[11px] font-bold text-white"
+                aria-hidden
+              >
+                UJ
+              </div>
+            </div>
+          </section>
+
+          {/* Meta row: views · date · responses  +  sources button */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-600">
               <span className="inline-flex items-center gap-1.5">
                 <Eye className="h-4 w-4 text-neutral-400" />
-                {views.toLocaleString()} views
+                Posts Views {views.toLocaleString()}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Clock className="h-4 w-4 text-neutral-400" />
+                <Calendar className="h-4 w-4 text-neutral-400" />
                 {formatDate(post.post_date)}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <MessageSquare className="h-4 w-4 text-neutral-400" />
                 {responses === 0 ? "No Responses" : `${responses} Responses`}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Newspaper className="h-4 w-4 text-neutral-400" />
-                {wordCount.toLocaleString()} words
-              </span>
             </div>
-            <div className="flex items-center gap-2">
+            {sources.length > 0 && (
               <button
                 type="button"
-                onClick={() => setBookmarked((v) => !v)}
-                className={`inline-flex items-center gap-2 text-sm font-medium rounded-full border px-3 py-1.5 transition ${
-                  bookmarked
-                    ? "bg-neutral-900 text-white border-neutral-900"
-                    : "border-neutral-200 text-neutral-800 hover:bg-neutral-50"
-                }`}
-                aria-label="Bookmark"
+                onClick={() => setSourcesOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full bg-neutral-100 hover:bg-neutral-200 transition px-3 py-1.5 text-sm font-medium text-neutral-800"
               >
-                <Bookmark className="h-4 w-4" />
-                {bookmarked ? "Saved" : "Save"}
+                <span className="flex -space-x-1.5" aria-hidden>
+                  {sources.slice(0, 3).map((s, i) => (
+                    <img
+                      key={i}
+                      src={`https://www.google.com/s2/favicons?sz=32&domain=${s.host}`}
+                      alt=""
+                      className="h-4 w-4 rounded-full ring-2 ring-neutral-100 bg-white"
+                    />
+                  ))}
+                </span>
+                Sources ({sources.length})
               </button>
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 text-sm font-medium text-neutral-800 rounded-full border border-neutral-200 px-3 py-1.5 hover:bg-neutral-50 transition"
-                aria-label="View sources"
-              >
-                <BookOpen className="h-4 w-4" />
-                Sources
-              </button>
-            </div>
+            )}
           </div>
 
-          {/* Rating */}
-          <div className="mt-4 flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setRating(n)}
-                aria-label={`Rate ${n} stars`}
-                className="p-0.5"
-              >
-                <Star
-                  className={`h-5 w-5 transition ${
-                    n <= (rating || 5)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-neutral-300"
-                  }`}
-                />
-              </button>
-            ))}
-            <span className="text-sm text-neutral-500 ml-1">
-              {rating || 5}/5 <span className="text-neutral-400">(1 vote)</span>
-            </span>
-          </div>
-
-          {/* Key takeaways */}
-          {keyTakeaways.length > 0 && (
-            <div className="mt-8 rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-cyan-50/50 p-6">
-              <div className="flex items-center gap-2 text-sm font-semibold text-violet-900 uppercase tracking-widest mb-3">
-                <Sparkles className="h-4 w-4" />
-                Key Takeaways
-              </div>
-              <ul className="space-y-2">
-                {keyTakeaways.map((t, i) => (
-                  <li key={i} className="flex items-start gap-2 text-neutral-800">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-violet-500 flex-none" />
-                    <a href={`#${slugify(t)}`} className="hover:underline">{t}</a>
-                  </li>
+          {/* Rating + QR row */}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setRating(n)}
+                    aria-label={`Rate ${n} stars`}
+                    className="p-0.5"
+                  >
+                    <Star
+                      className={`h-5 w-5 transition ${
+                        n <= rating
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-neutral-300"
+                      }`}
+                    />
+                  </button>
                 ))}
-              </ul>
+              </div>
+              <div className="mt-1 text-xs text-neutral-500">
+                {rating}/5 ({totalVotes} votes)
+              </div>
             </div>
-          )}
+            <button
+              type="button"
+              onClick={() => setQrOpen(true)}
+              className="inline-flex items-center gap-2 text-sm rounded-full border border-neutral-300 px-4 py-1.5 hover:bg-neutral-50"
+            >
+              <QrCode className="h-4 w-4" /> Get QR Code
+            </button>
+          </div>
 
-          {/* Featured image */}
-          {heroUrl && (
-            <figure className="mt-8">
-              <img
-                src={heroUrl}
-                alt={title}
-                loading="eager"
-                className="w-full rounded-2xl border border-neutral-200 object-cover"
-              />
-              <figcaption className="mt-2 text-xs text-neutral-500 text-center">
-                {title}
-              </figcaption>
-            </figure>
-          )}
-
-          {/* Content */}
+          {/* Article body */}
           <div
             ref={bodyRef}
             className="post-body mt-10"
             dangerouslySetInnerHTML={{ __html: enrichedHtml }}
           />
 
-          {/* Tags */}
-          {tags.length > 0 && (
-            <div className="mt-10 pt-6 border-t border-neutral-200">
-              <div className="text-xs uppercase tracking-widest text-neutral-500 mb-3">
-                Tags
+          {/* Featured-in-article CTA */}
+          <div className="mt-10 rounded-2xl overflow-hidden bg-neutral-950 text-white grid md:grid-cols-[1fr_260px]">
+            <div className="p-6 md:p-8">
+              <div className="text-lg md:text-xl font-semibold">
+                Get Yourself Featured in This Article
               </div>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((t) => (
-                  <Link
-                    key={t.id}
-                    to={"/tag/$slug" as any}
-                    params={{ slug: t.slug } as any}
-                    className="px-3 py-1 rounded-full bg-neutral-100 text-sm text-neutral-700 hover:bg-neutral-200 transition"
-                  >
-                    #{t.name}
-                  </Link>
-                ))}
-              </div>
+              <p className="mt-2 text-sm text-white/70 max-w-md">
+                Want your name, brand, or service listed right here? We offer
+                sponsored mentions and do-follow links starting from{" "}
+                <b className="text-white">$49 up to $500</b> depending on
+                placement.
+              </p>
+              <Link
+                to="/contact-me"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-5 py-2.5 text-sm font-semibold hover:bg-neutral-100"
+              >
+                APPLY NOW
+              </Link>
+            </div>
+            <div
+              className="hidden md:block"
+              style={{
+                background:
+                  "radial-gradient(circle at 30% 30%, #f97316 0%, transparent 55%), radial-gradient(circle at 70% 70%, #7c3aed 0%, transparent 55%), #0a0a0a",
+              }}
+              aria-hidden
+            />
+          </div>
+
+          {/* Prev / Next */}
+          {(prevNext.prev || prevNext.next) && (
+            <div className="mt-8 grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-neutral-200 border-y border-neutral-200">
+              {prevNext.prev ? (
+                <Link
+                  to={prevNext.prev.href as any}
+                  className="flex items-center gap-3 p-5 hover:bg-neutral-50 transition group"
+                >
+                  <ChevronLeft className="h-5 w-5 text-neutral-400 flex-none" />
+                  <div className="min-w-0">
+                    <div className="text-xs uppercase tracking-widest text-neutral-500">
+                      Previous
+                    </div>
+                    <div className="text-sm font-medium text-neutral-900 truncate group-hover:underline">
+                      {prevNext.prev.title}
+                    </div>
+                  </div>
+                </Link>
+              ) : (
+                <div />
+              )}
+              {prevNext.next ? (
+                <Link
+                  to={prevNext.next.href as any}
+                  className="flex items-center justify-end gap-3 p-5 text-right hover:bg-neutral-50 transition group"
+                >
+                  <div className="min-w-0">
+                    <div className="text-xs uppercase tracking-widest text-neutral-500">
+                      Next
+                    </div>
+                    <div className="text-sm font-medium text-neutral-900 truncate group-hover:underline">
+                      {prevNext.next.title}
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-neutral-400 flex-none" />
+                </Link>
+              ) : (
+                <div />
+              )}
             </div>
           )}
 
-          {/* Share bar (mobile / inline) */}
-          <div className="mt-8 rounded-2xl border border-neutral-200 p-5 bg-neutral-50/60">
-            <div className="text-xs uppercase tracking-widest text-neutral-500 mb-3">
-              Share this article
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {shares.map(({ label, Icon, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="inline-flex items-center gap-2 text-sm rounded-full border border-neutral-200 bg-white px-3.5 py-2 hover:border-neutral-400 transition"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label.replace("Share on ", "").replace("Share via ", "")}
-                </a>
-              ))}
-              <button
-                type="button"
-                onClick={copyLink}
-                className="inline-flex items-center gap-2 text-sm rounded-full border border-neutral-200 bg-white px-3.5 py-2 hover:border-neutral-400 transition"
-                aria-label="Copy link"
-              >
-                {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
-                {copied ? "Copied" : "Copy link"}
-              </button>
-            </div>
-          </div>
-
-          {/* Author bio */}
-          <div className="mt-8 rounded-2xl border border-neutral-200 p-6 flex gap-5 items-start bg-white">
-            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center text-white font-semibold text-lg flex-none">
-              UJ
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="font-semibold text-neutral-900">Usman Jatoi</div>
-                <span className="inline-flex items-center gap-1 text-[11px] uppercase tracking-wider text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
-                  <Award className="h-3 w-3" /> Author
-                </span>
+          {/* About Author */}
+          <section className="mt-10">
+            <h2 className="text-2xl font-semibold mb-4">About Author</h2>
+            <div className="rounded-2xl border border-neutral-200 overflow-hidden">
+              <div className="p-5 md:p-6 flex gap-5 items-start">
+                <div className="h-20 w-20 rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center text-white text-xl font-bold flex-none">
+                  UJ
+                </div>
+                <div className="min-w-0">
+                  <div className="text-lg font-semibold text-blue-700">
+                    Usman Jatoi
+                  </div>
+                  <p className="text-sm text-neutral-700 mt-1 leading-relaxed">
+                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
+                    creative artist, and tech innovator who began his digital
+                    journey at just{" "}
+                    <b className="text-blue-700">7 years old</b> and started
+                    working professionally at <b className="text-blue-700">12</b>.
+                  </p>
+                </div>
               </div>
-              <p className="text-sm text-neutral-600 mt-1 leading-relaxed">
-                Digital polymath — web, SEO, creative & AI. Building brands, shipping products, and writing what actually works.
-              </p>
-              <div className="mt-3 flex items-center gap-3 text-sm">
-                <Link to="/about-me" className="text-neutral-900 font-medium underline underline-offset-4">
-                  About
+              <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
+                {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className="h-7 w-7 flex items-center justify-center hover:text-neutral-900"
+                    aria-label="social"
+                  >
+                    <Ic className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4">
+              <div className="text-sm font-semibold text-neutral-900 mb-2">
+                Quick Links:
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-blue-700">
+                <Link to="/about-me" className="hover:underline">
+                  About Me
                 </Link>
-                <Link to="/contact-me" className="inline-flex items-center gap-1 text-neutral-900 font-medium">
-                  Work with me <ArrowRight className="h-3.5 w-3.5" />
+                <span className="text-neutral-300">|</span>
+                <Link to="/portfolio" className="hover:underline">
+                  My Portfolio
+                </Link>
+                <span className="text-neutral-300">|</span>
+                <Link to="/skills-expertise" className="hover:underline">
+                  Skills &amp; Expertise
                 </Link>
               </div>
             </div>
-          </div>
-
-          {/* Comments / CTA */}
-          <div className="mt-8 rounded-2xl border border-neutral-900 bg-neutral-900 text-white p-6 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <div className="font-semibold text-lg">Enjoyed the read?</div>
-              <div className="text-white/70 text-sm">
-                Say hi, share your thoughts, or start a project with me.
-              </div>
-            </div>
-            <Link
-              to="/contact-me"
-              className="inline-flex items-center gap-2 text-sm rounded-full bg-white text-neutral-900 px-4 py-2 font-medium hover:bg-neutral-100"
-            >
-              Let's talk <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+          </section>
         </main>
 
         {/* ---------- SIDEBAR ---------- */}
         <aside className="space-y-6 lg:sticky lg:top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-1 sidebar-scroll">
-          {/* Meta card */}
-          <div className="relative rounded-2xl p-6 text-white overflow-hidden bg-[radial-gradient(500px_300px_at_100%_0%,rgba(139,92,246,0.55),transparent),radial-gradient(400px_300px_at_0%_100%,rgba(6,182,212,0.35),transparent),#0a0a0a] border border-white/10">
-            <dl className="space-y-3 text-sm">
+          {/* Meta card — dark rainbow gradient */}
+          <div
+            className="relative rounded-2xl p-6 text-white overflow-hidden border border-white/10"
+            style={{
+              background:
+                "radial-gradient(500px 300px at 100% 0%, rgba(139,92,246,0.55), transparent), radial-gradient(400px 300px at 0% 100%, rgba(6,182,212,0.35), transparent), #0a0a0a",
+            }}
+          >
+            <dl className="space-y-2.5 text-sm">
               <div>
-                <dt className="text-white/60">Published</dt>
-                <dd className="font-medium">{formatDate(post.post_date)}</dd>
+                <span className="font-semibold">Published:</span>{" "}
+                <span className="text-white/85">
+                  {formatDate(post.post_date)}
+                </span>
               </div>
               <div>
-                <dt className="text-white/60">Updated</dt>
-                <dd className="font-medium">
+                <span className="font-semibold">Updated:</span>{" "}
+                <span className="text-white/85">
                   {formatDate(post.post_modified || post.post_date)}
-                </dd>
+                </span>
               </div>
               <div>
-                <dt className="text-white/60">Reading Time</dt>
-                <dd className="font-medium">{rt} min · {coffees} ☕</dd>
+                <span className="font-semibold">Reading Time:</span>{" "}
+                <span className="text-white/85">{rt} min read</span>
               </div>
               <div>
-                <dt className="text-white/60">Word Count</dt>
-                <dd className="font-medium">{wordCount.toLocaleString()}</dd>
-              </div>
-              <div>
-                <dt className="text-white/60">Categories</dt>
-                <dd className="font-medium">
+                <span className="font-semibold">Categories:</span>{" "}
+                <span className="text-white/85">
                   {categories.length > 0
                     ? categories.map((c, i) => (
                         <span key={c.id}>
@@ -532,53 +707,127 @@ export function PostArticle({
                         </span>
                       ))
                     : "Uncategorized"}
-                </dd>
+                </span>
               </div>
             </dl>
           </div>
 
+          {/* Ad slot */}
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+            <p className="text-[13px] text-neutral-700 leading-snug">
+              My site is professional. Ad is just for 'growth.' (Which means
+              coffee.){" "}
+              <Link
+                to={"/legal/our-terms" as any}
+                className="underline font-medium text-neutral-900"
+              >
+                Read Disclaimer
+              </Link>
+            </p>
+            <div className="mt-3 rounded-lg overflow-hidden bg-gradient-to-br from-rose-200 via-fuchsia-200 to-violet-300 aspect-[4/5] flex items-end p-3">
+              <span className="text-sm font-semibold text-neutral-900 bg-white/80 backdrop-blur px-2.5 py-1 rounded-md">
+                Your ad here
+              </span>
+            </div>
+          </div>
+
+          {/* Explore More Under {Category} — subcategories list */}
+          {subcats.length > 0 && (
+            <div className="rounded-2xl border border-neutral-900 overflow-hidden">
+              <div className="bg-neutral-950 text-white px-5 py-3 font-semibold text-sm">
+                Explore More Under {primaryCategoryName}
+              </div>
+              <ul className="divide-y divide-neutral-100 bg-white">
+                {subcats.slice(0, 10).map((s) => (
+                  <li key={s.href}>
+                    <Link
+                      to={s.href as any}
+                      className="flex items-center justify-between px-5 py-3 text-sm text-neutral-800 hover:bg-neutral-50 transition"
+                    >
+                      <span className="truncate">{s.name}</span>
+                      <ChevronRight className="h-4 w-4 text-neutral-400 flex-none" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Table of contents */}
           {headings.length > 1 && (
-            <nav
-              aria-label="Table of contents"
-              className="rounded-2xl border border-neutral-200 overflow-hidden bg-white"
+            <details
+              open
+              className="group rounded-2xl border border-neutral-200 bg-white overflow-hidden"
             >
-              <div className="px-5 py-3 border-b border-neutral-100 flex items-center gap-2 text-sm font-semibold text-neutral-900">
-                <ListTree className="h-4 w-4 text-neutral-500" />
-                On this page
-              </div>
+              <summary className="list-none px-5 py-3 flex items-center justify-between cursor-pointer text-sm font-semibold text-neutral-900">
+                Table of Contents
+                <ChevronDown className="h-4 w-4 text-neutral-500 group-open:rotate-180 transition" />
+              </summary>
               <ul className="py-2 text-sm max-h-72 overflow-y-auto sidebar-scroll">
                 {headings.map((h) => (
                   <li key={h.id}>
                     <a
                       href={`#${h.id}`}
                       className={`block px-5 py-1.5 border-l-2 transition ${
-                        h.level === 3 ? "pl-8 text-neutral-600" : "text-neutral-800"
+                        h.level === 3
+                          ? "pl-9 text-neutral-600"
+                          : "text-neutral-800"
                       } ${
                         activeId === h.id
                           ? "border-violet-500 bg-violet-50 text-violet-900"
                           : "border-transparent hover:border-neutral-200 hover:bg-neutral-50"
                       }`}
                     >
+                      <span className="text-neutral-300 mr-2">•</span>
                       {h.text}
                     </a>
                   </li>
                 ))}
               </ul>
-            </nav>
+            </details>
           )}
 
+          {/* Share this post */}
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5">
+            <div className="text-sm font-semibold text-neutral-900 mb-3">
+              Share this post:
+            </div>
+            <div className="flex items-center gap-3">
+              {shares.map(({ label, Icon, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Share on ${label}`}
+                  className="h-9 w-9 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-700 hover:bg-neutral-900 hover:text-white transition"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+              <button
+                type="button"
+                onClick={copyLink}
+                aria-label="Copy link"
+                className="h-9 w-9 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-700 hover:bg-neutral-900 hover:text-white transition"
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-emerald-500" />
+                ) : (
+                  <Link2 className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
           {/* Newsletter */}
-          <div className="rounded-2xl overflow-hidden border border-neutral-900 bg-neutral-900 text-white p-5">
+          <div className="rounded-2xl border border-neutral-900 bg-neutral-900 text-white p-5">
             <div className="flex items-center gap-2 text-sm font-semibold">
               <Rss className="h-4 w-4" /> Newsletter
             </div>
-            <div className="mt-1 text-lg font-semibold leading-tight">
+            <div className="mt-1 text-base font-semibold leading-tight">
               Get essays like this in your inbox.
             </div>
-            <p className="text-white/60 text-xs mt-1">
-              One email a week. No spam. Unsubscribe anytime.
-            </p>
             <form
               onSubmit={(e) => e.preventDefault()}
               className="mt-3 flex items-center gap-2"
@@ -588,92 +837,314 @@ export function PostArticle({
                 required
                 placeholder="you@domain.com"
                 aria-label="Email address"
-                className="flex-1 rounded-full bg-white/10 border border-white/15 px-3 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:border-white/40"
+                className="flex-1 min-w-0 rounded-full bg-white/10 border border-white/15 px-3 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:border-white/40"
               />
               <button
                 type="submit"
                 aria-label="Subscribe"
-                className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100"
+                className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100 flex-none"
               >
                 <Send className="h-4 w-4" />
               </button>
             </form>
           </div>
+        </aside>
+      </div>
 
-          {/* Disclaimer strip */}
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 flex items-start gap-2">
-            <Coffee className="h-4 w-4 mt-0.5 text-neutral-400 flex-none" />
-            <p>
-              My site is professional. Ads are just for "growth." (Which means coffee.){" "}
-              <Link to={"/disclaimer" as any} className="text-neutral-900 font-medium underline">
-                Read Disclaimer
-              </Link>
+      {/* ================= FULL-WIDTH SECTIONS ================= */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mt-16 space-y-16">
+        {/* RedsGlow banner */}
+        <section className="rounded-3xl border border-neutral-200 bg-gradient-to-br from-sky-50 via-white to-neutral-50 overflow-hidden grid md:grid-cols-[1.1fr_1fr]">
+          <div className="p-6 md:p-10 flex flex-col justify-center">
+            <p className="text-sm md:text-base text-neutral-800 leading-relaxed">
+              From <b>marketing to automation, technical development to
+              management, creative design to operations, consulting to growth
+              strategy</b> — we deliver it all under one roof. Whether you're
+              launching something new, fixing what's broken, or scaling to the
+              next level, our team makes it simple, fast, and effective. Trusted
+              by clients worldwide for results that last.
             </p>
+            <a
+              href="https://redsglow.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-neutral-950 text-white text-sm font-semibold px-5 py-2.5 hover:bg-neutral-800 self-start"
+            >
+              VISIT NOW <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
-
-          {/* Explore More Under {Category} */}
-          {siblings.length > 0 && (
-            <div className="rounded-2xl border border-neutral-900 overflow-hidden">
-              <div className="bg-neutral-900 text-white px-5 py-3 font-semibold text-sm flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Explore More Under {primaryCategoryName}
+          <div
+            className="min-h-[220px] md:min-h-full flex items-center justify-center p-8"
+            style={{
+              background:
+                "linear-gradient(135deg, #d9e6f4 0%, #b8d0e8 100%)",
+            }}
+          >
+            <div className="rounded-xl bg-neutral-950 border-2 border-neutral-800 shadow-2xl px-10 py-8 flex items-center gap-4">
+              <div className="text-3xl font-black tracking-tighter text-white">
+                R<span className="text-rose-500">G</span>
               </div>
-              <ul className="divide-y divide-neutral-100 bg-white">
-                {siblings.slice(0, 8).map((s, i) => (
-                  <li key={s.href}>
-                    <Link
-                      to={s.href as any}
-                      className="flex items-center gap-3 px-5 py-3 text-sm text-neutral-800 hover:bg-neutral-50 transition"
-                    >
-                      <span className="text-neutral-400 font-mono text-xs w-5 flex-none">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="line-clamp-2 flex-1">{s.title}</span>
-                      <ChevronRight className="h-4 w-4 text-neutral-400 flex-none" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div>
+                <div className="text-2xl font-black text-white leading-none tracking-tight">
+                  RED<span className="text-rose-500">S</span>GLOW
+                </div>
+                <div className="text-[10px] tracking-[0.35em] text-neutral-400 mt-1">
+                  CREATIVE AGENCY
+                </div>
+              </div>
             </div>
-          )}
+          </div>
+        </section>
 
-          {/* Tag cloud (sidebar) */}
-          {tags.length > 0 && (
-            <div className="rounded-2xl border border-neutral-200 bg-white p-5">
-              <div className="text-xs uppercase tracking-widest text-neutral-500 mb-3 flex items-center gap-1.5">
-                <Hash className="h-3.5 w-3.5" /> Related tags
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {tags.slice(0, 20).map((t) => (
+        {/* Explore My All Categories */}
+        {allCats.length > 0 && (
+          <section className="text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900">
+              Explore My All Categories
+            </h2>
+            <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+              {allCats.map((c) => (
+                <Link
+                  key={c.href}
+                  to={c.href as any}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 px-4 py-1.5 text-sm text-neutral-800 hover:border-neutral-900 hover:bg-neutral-50 transition"
+                >
+                  {c.name} <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Read our More Blog Posts — bento (1 large + 2 stacked) */}
+        {related.length >= 3 && (
+          <section>
+            <h2 className="text-center text-2xl md:text-3xl font-semibold text-neutral-900 mb-8">
+              Read our More Blog Posts
+            </h2>
+            <div className="grid md:grid-cols-[2fr_1fr] gap-4">
+              <Link
+                to={related[0].href as any}
+                className="relative rounded-2xl overflow-hidden aspect-[16/10] group"
+                style={{
+                  backgroundImage: related[0].image
+                    ? `linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%), url(${related[0].image})`
+                    : `linear-gradient(135deg, #f5e6f5, #dae7f5)`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-neutral-900">
+                  <div className="bg-white/85 backdrop-blur rounded-xl p-4 md:p-5">
+                    <h3 className="text-lg md:text-xl font-semibold leading-snug group-hover:underline">
+                      {related[0].title}
+                    </h3>
+                  </div>
+                </div>
+              </Link>
+              <div className="grid grid-rows-2 gap-4">
+                {related.slice(1, 3).map((r) => (
                   <Link
-                    key={t.id}
-                    to={"/tag/$slug" as any}
-                    params={{ slug: t.slug } as any}
-                    className="text-xs rounded-full border border-neutral-200 px-2.5 py-1 text-neutral-700 hover:bg-neutral-100 transition"
+                    key={r.href}
+                    to={r.href as any}
+                    className="relative rounded-2xl overflow-hidden group"
+                    style={{
+                      backgroundImage: r.image
+                        ? `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%), url(${r.image})`
+                        : `linear-gradient(135deg, #0a0a0a, #1e1b4b)`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      minHeight: 180,
+                    }}
                   >
-                    {t.name}
+                    <div className="absolute inset-0 p-5 flex flex-col justify-between text-white">
+                      <div className="text-[11px] tracking-widest uppercase text-white/70">
+                        {r.date
+                          ? new Date(r.date).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })
+                          : ""}
+                      </div>
+                      <div className="text-base md:text-lg font-semibold leading-snug group-hover:underline">
+                        {r.title}
+                      </div>
+                    </div>
                   </Link>
                 ))}
               </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Hire me card */}
-          <div className="rounded-2xl overflow-hidden border border-violet-200 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-violet-900">
-              <UserIcon className="h-4 w-4" /> Need something built?
+        {/* Book a call */}
+        <section className="rounded-3xl border border-neutral-200 bg-white p-8 md:p-12 text-center">
+          <h2 className="text-2xl md:text-3xl font-semibold">
+            Book a Call with Me to Discuss Your Project in Detail
+          </h2>
+          <p className="mt-3 text-neutral-600 max-w-2xl mx-auto">
+            Free 30-minute strategy call. Bring your idea, brief, or the mess
+            you want fixed — leave with a plan.
+          </p>
+          <a
+            href="https://cal.com/usmanjatoi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-neutral-950 text-white px-6 py-3 text-sm font-semibold hover:bg-neutral-800"
+          >
+            Schedule on Cal.com <ArrowRight className="h-4 w-4" />
+          </a>
+        </section>
+
+        {/* Explore More — 3 more posts */}
+        {related.length > 3 && (
+          <section>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+              Explore More
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {related.slice(3, 6).map((r) => (
+                <Link
+                  key={r.href}
+                  to={r.href as any}
+                  className="group block"
+                >
+                  <div
+                    className="relative aspect-[16/10] rounded-xl overflow-hidden bg-neutral-950"
+                    style={{
+                      backgroundImage: r.image
+                        ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.85)), url(${r.image})`
+                        : undefined,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
+                    <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
+                      <div className="text-sm font-semibold line-clamp-2">
+                        {r.title}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <div className="text-[11px] uppercase tracking-widest text-neutral-500">
+                      {primaryCategoryName}
+                    </div>
+                    <div className="mt-1 text-base font-semibold text-neutral-900 group-hover:underline line-clamp-2">
+                      {r.title}
+                    </div>
+                    {r.date && (
+                      <div className="mt-2 text-xs text-neutral-500">
+                        {formatDate(r.date)}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
-            <p className="mt-1 text-sm text-neutral-700">
-              I ship websites, brands, and full digital systems — end to end.
-            </p>
-            <Link
-              to="/contact-me"
-              className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-white bg-violet-600 rounded-full px-4 py-2 hover:bg-violet-700 transition"
+          </section>
+        )}
+
+        {/* Contact CTA — split form / gradient image */}
+        <section className="rounded-3xl border border-neutral-800 bg-neutral-950 text-white overflow-hidden grid md:grid-cols-2">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="p-6 md:p-8 space-y-4"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                Phone
+              </label>
+              <input
+                type="tel"
+                placeholder="Phone"
+                className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                Message
+              </label>
+              <textarea
+                rows={4}
+                placeholder="Message"
+                className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none resize-y"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                Subject
+              </label>
+              <select className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm focus:outline-none">
+                <option>Affiliate</option>
+                <option>Project</option>
+                <option>Partnership</option>
+                <option>Feedback</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="w-full rounded-md bg-orange-500 hover:bg-orange-600 text-white font-semibold tracking-widest py-3 text-sm transition"
             >
-              Start a project <ArrowRight className="h-4 w-4" />
-            </Link>
+              SEND
+            </button>
+            <p className="text-center text-xs text-white/60">
+              Prefer email? contact@usmanjatoi.com
+            </p>
+          </form>
+          <div
+            className="hidden md:flex items-end p-8"
+            style={{
+              background:
+                "radial-gradient(ellipse at 40% 40%, rgba(249,115,22,0.55), transparent 55%), radial-gradient(ellipse at 70% 70%, rgba(139,92,246,0.55), transparent 55%), #0a0a0a",
+            }}
+          >
+            <div>
+              <p className="text-white/85 text-sm leading-relaxed max-w-sm">
+                I believe in collaborating with smart, diverse, and creative
+                people — and giving them the freedom to shine. Let's connect.
+              </p>
+              <div className="mt-4 text-lg font-semibold">Usman Jatoi</div>
+              <div className="text-orange-400 text-sm">
+                Versatile Creative Artist
+              </div>
+            </div>
           </div>
-        </aside>
+        </section>
+
+        <div className="h-8" />
       </div>
 
       {/* Back to top */}
@@ -688,13 +1159,120 @@ export function PostArticle({
         </button>
       )}
 
-      {/* prose styles */}
+      {/* ============== Sources drawer ============== */}
+      {sourcesOpen && (
+        <div
+          className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm flex justify-end"
+          onClick={() => setSourcesOpen(false)}
+        >
+          <div
+            className="w-full max-w-md h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+              <div>
+                <div className="text-lg font-semibold">Sources</div>
+                <div className="text-xs text-neutral-500">
+                  {sources.length} external references
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSourcesOpen(false)}
+                aria-label="Close"
+                className="h-9 w-9 rounded-full hover:bg-neutral-100 flex items-center justify-center"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <ul className="flex-1 overflow-y-auto divide-y divide-neutral-100">
+              {sources.map((s, i) => (
+                <li key={i}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="flex items-start gap-3 px-5 py-4 hover:bg-neutral-50"
+                  >
+                    <img
+                      src={`https://www.google.com/s2/favicons?sz=64&domain=${s.host}`}
+                      alt=""
+                      className="h-8 w-8 rounded-md bg-neutral-100 flex-none mt-0.5"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-neutral-900 truncate">
+                        {s.label}
+                      </div>
+                      <div className="text-xs text-neutral-500 truncate">
+                        {s.host}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-neutral-400 flex-none mt-1" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* ============== QR Modal ============== */}
+      {qrOpen && (
+        <div
+          className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setQrOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-sm w-full text-center relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setQrOpen(false)}
+              aria-label="Close"
+              className="absolute top-3 right-3 h-8 w-8 rounded-full hover:bg-neutral-100 flex items-center justify-center"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="text-lg font-semibold text-neutral-900 mb-2">
+              Scan to read on your phone
+            </div>
+            <p className="text-sm text-neutral-500 mb-4 line-clamp-2">
+              {title}
+            </p>
+            <img
+              src={qrSrc}
+              alt="QR code"
+              className="mx-auto rounded-lg border border-neutral-200"
+              width={280}
+              height={280}
+            />
+            <button
+              type="button"
+              onClick={copyLink}
+              className="mt-4 inline-flex items-center gap-2 text-sm rounded-full border border-neutral-300 px-4 py-1.5 hover:bg-neutral-50"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4 text-emerald-600" /> Copied
+                </>
+              ) : (
+                <>
+                  <Link2 className="h-4 w-4" /> Copy link
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ============== prose styles + rich content enhancers ============== */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
         .post-body { font-size: 17px; line-height: 1.85; color: #333; }
         .post-body p { margin: 1.1em 0; }
-        .post-body h2 { font-size: 1.75em; font-weight: 700; margin: 1.8em 0 .5em; color:#111; scroll-margin-top: 120px; }
+        .post-body h2 { font-size: 1.85em; font-weight: 700; margin: 1.9em 0 .6em; color:#111; scroll-margin-top: 120px; letter-spacing:-0.01em; }
         .post-body h3 { font-size: 1.35em; font-weight: 700; margin: 1.5em 0 .4em; color:#111; scroll-margin-top: 120px; }
         .post-body h4 { font-size: 1.1em; font-weight: 700; margin: 1.3em 0 .3em; color:#111; }
         .post-body a { color:#2563eb; text-decoration: underline; text-underline-offset: 3px; }
@@ -702,14 +1280,36 @@ export function PostArticle({
         .post-body ul, .post-body ol { padding-left: 1.5em; margin: 1em 0; }
         .post-body ul { list-style: disc; } .post-body ol { list-style: decimal; }
         .post-body li { margin: .35em 0; }
-        .post-body blockquote { border-left: 3px solid #a06cff; padding: .25em 0 .25em 1.25em; margin: 1.5em 0; font-style: italic; color:#555; background: #faf7ff; border-radius: 0 12px 12px 0; }
+        .post-body blockquote {
+          border-left: 3px solid #a06cff;
+          padding: 1em 1.25em; margin: 1.5em 0;
+          font-style: italic; color:#444;
+          background: linear-gradient(90deg, #faf7ff 0%, #fff 100%);
+          border-radius: 0 12px 12px 0;
+        }
         .post-body pre { background:#0b0b12; color:#e2e8f0; padding:1em; border-radius:12px; overflow-x:auto; font-size:.9em; }
         .post-body code { background:#f3f4f6; padding: .15em .4em; border-radius: 4px; font-size:.9em; color:#111; }
         .post-body pre code { background: transparent; padding: 0; color:inherit; }
-        .post-body table { width:100%; border-collapse: collapse; margin: 1.5em 0; font-size:.95em; }
-        .post-body th, .post-body td { border: 1px solid #e5e7eb; padding: .6em .8em; text-align:left; }
-        .post-body th { background:#f9fafb; font-weight:600; }
+        .post-body table { width:100%; border-collapse: collapse; margin: 1.5em 0; font-size:.95em; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #e5e7eb; }
+        .post-body th, .post-body td { border-bottom: 1px solid #e5e7eb; padding: .8em 1em; text-align:left; }
+        .post-body th { background:#f9fafb; font-weight:600; color:#111; }
+        .post-body tr:last-child td { border-bottom: none; }
         .post-body iframe, .post-body video { max-width: 100%; border-radius: 14px; margin: 1.5em 0; }
+
+        /* Auto-decorated FAQ (WP details/summary or dt/dd style) */
+        .post-body details {
+          border-bottom: 1px solid #e5e7eb; padding: 1em 0; margin: 0;
+        }
+        .post-body details summary {
+          cursor: pointer; font-weight: 600; font-size: 0.95em;
+          text-transform: uppercase; letter-spacing: 0.02em;
+          color: #111; list-style: none; display: flex; justify-content: space-between; align-items: center;
+        }
+        .post-body details summary::after {
+          content: "▾"; color: #999; transition: transform .2s;
+        }
+        .post-body details[open] summary::after { transform: rotate(180deg); }
+
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
