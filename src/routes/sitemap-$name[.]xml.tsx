@@ -1,0 +1,118 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { createClient } from "@supabase/supabase-js";
+
+const SITE = "https://usmanjatoi.lovable.app";
+const CHUNK = 5000;
+
+const TYPE_MAP: Record<string, string[]> = {
+  pages: ["page"],
+  posts: ["post"],
+  products: ["product"],
+  courses: ["courses"],
+};
+
+const STATIC_URLS = [
+  { path: "/", priority: "1.0" },
+  { path: "/services", priority: "0.9" },
+  { path: "/blog", priority: "0.9" },
+  { path: "/about-me", priority: "0.8" },
+  { path: "/contact-me", priority: "0.8" },
+  { path: "/media-kit", priority: "0.6" },
+  { path: "/careers", priority: "0.6" },
+  { path: "/businesses", priority: "0.6" },
+  { path: "/press-release", priority: "0.6" },
+  { path: "/testimonials", priority: "0.6" },
+  { path: "/awards", priority: "0.6" },
+  { path: "/certifications", priority: "0.6" },
+  { path: "/white-label-partnership", priority: "0.6" },
+];
+
+function xmlEscape(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function respond(body: string, status = 200) {
+  return new Response(body, {
+    status,
+    headers: {
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, max-age=3600",
+    },
+  });
+}
+
+function wrap(urls: Array<{ loc: string; lastmod?: string; priority?: string }>) {
+  return (
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls
+      .map(
+        (u) =>
+          `  <url><loc>${xmlEscape(u.loc)}</loc>` +
+          (u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : "") +
+          (u.priority ? `<priority>${u.priority}</priority>` : "") +
+          `</url>`,
+      )
+      .join("\n") +
+    `\n</urlset>\n`
+  );
+}
+
+export const Route = createFileRoute("/sitemap-$name.xml")({
+  server: {
+    handlers: {
+      GET: async ({ params }) => {
+        const name = params.name;
+
+        if (name === "static") {
+          return respond(
+            wrap(
+              STATIC_URLS.map((u) => ({
+                loc: `${SITE}${u.path}`,
+                priority: u.priority,
+                lastmod: new Date().toISOString(),
+              })),
+            ),
+          );
+        }
+
+        const m = name.match(/^([a-z]+)-(\d+)$/);
+        if (!m) return respond(wrap([]), 404);
+        const group = m[1];
+        const page = parseInt(m[2], 10);
+        const types = TYPE_MAP[group];
+        if (!types || page < 1) return respond(wrap([]), 404);
+
+        const url = process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL;
+        const key =
+          process.env.SUPABASE_PUBLISHABLE_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+        const supa = createClient(url!, key!, { auth: { persistSession: false } });
+
+        const from = (page - 1) * CHUNK;
+        const to = from + CHUNK - 1;
+
+        const { data, error } = await supa
+          .from("wp_posts")
+          .select("path, post_modified, post_type")
+          .in("post_type", types)
+          .eq("status", "publish")
+          .not("path", "is", null)
+          .order("id", { ascending: true })
+          .range(from, to);
+
+        if (error || !data) return respond(wrap([]));
+
+        const urls = (data as Array<{ path: string; post_modified: string | null; post_type: string }>)
+          .filter((r) => r.path)
+          .map((r) => ({
+            loc: `${SITE}${r.path.replace(/\/+$/, "")}`,
+            lastmod: r.post_modified ? new Date(r.post_modified).toISOString() : undefined,
+            priority: r.post_type === "page" ? "0.7" : "0.6",
+          }));
+
+        return respond(wrap(urls));
+      },
+    },
+  },
+});
