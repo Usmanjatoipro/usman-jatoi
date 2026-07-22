@@ -298,7 +298,7 @@ function CleanupPanel() {
         totalUploaded += r.uploaded;
         setLog((l) => [
           ...l,
-          `Batch ${offset}: processed ${r.processed}, updated ${r.updated}, uploaded ${r.uploaded} (total posts left ~${Math.max(0, r.total - (r.nextOffset ?? r.processed))})`,
+          `Batch ${offset}: processed ${r.processed}, updated ${r.updated}, uploaded ${r.uploaded} (total posts left ~${Math.max(0, r.total - ((r as any).nextOffset ?? r.processed))})`,
         ]);
         if (r.done) break;
         offset = (r as any).nextOffset ?? offset + r.processed;
