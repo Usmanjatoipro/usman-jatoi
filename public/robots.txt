@@ -1,9 +1,28 @@
 User-agent: *
 Allow: /
-
 Disallow: /admin
+Disallow: /cms
 Disallow: /import
 Disallow: /auth
 Disallow: /_authenticated/
+
+# AI crawlers — explicitly allowed to index and cite content
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /cms
+Disallow: /_authenticated/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /cms
+Disallow: /_authenticated/
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: https://usmanjatoi.lovable.app/sitemap.xml

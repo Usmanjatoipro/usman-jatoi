@@ -27,7 +27,90 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+const SITE = "https://usmanjatoi.lovable.app";
+
+async function loadPostHead(slug: string) {
+  const { data } = await supabase
+    .from("wp_posts")
+    .select("id,title,excerpt,seo_title,seo_description,featured_media_id,post_date")
+    .eq("post_type", "post")
+    .eq("status", "publish")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!data) return null;
+  let image: string | null = null;
+  if ((data as any).featured_media_id) {
+    const { data: m } = await supabase
+      .from("wp_media")
+      .select("storage_url,source_url")
+      .eq("id", (data as any).featured_media_id)
+      .maybeSingle();
+    image = (m as any)?.storage_url || (m as any)?.source_url || null;
+  }
+  return { ...(data as any), image } as {
+    title: string | null; excerpt: string | null; seo_title: string | null;
+    seo_description: string | null; post_date: string | null; image: string | null;
+  };
+}
+
+function truncate(s: string, n: number) {
+  const clean = s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  return clean.length > n ? clean.slice(0, n - 1).trimEnd() + "…" : clean;
+}
+
 export const Route = createFileRoute("/blog/$slug")({
+  loader: ({ params }) => loadPostHead(params.slug),
+  head: ({ loaderData, params }) => {
+    const url = `${SITE}/blog/${params.slug}`;
+    if (!loaderData) {
+      return {
+        meta: [
+          { title: "Post not found — Usman Jatoi" },
+          { name: "robots", content: "noindex" },
+        ],
+        links: [{ rel: "canonical", href: url }],
+      };
+    }
+    const rawTitle = loaderData.seo_title || loaderData.title || "Blog";
+    const title = truncate(`${rawTitle} — Usman Jatoi`, 60);
+    const desc = truncate(
+      loaderData.seo_description || loaderData.excerpt || rawTitle,
+      158,
+    );
+    const image = loaderData.image || undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+        { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: truncate(rawTitle, 110),
+            datePublished: loaderData.post_date,
+            image: image ? [image] : undefined,
+            author: { "@type": "Person", name: "Usman Jatoi" },
+            mainEntityOfPage: url,
+          }),
+        },
+      ],
+    };
+  },
   component: PostPage,
 });
 

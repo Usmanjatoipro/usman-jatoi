@@ -207,12 +207,18 @@ export const Route = createFileRoute("/$")({
     throw notFound();
   },
   head: ({ loaderData, params }) => {
-    if (!loaderData) return { meta: [{ title: "Page — Usman Jatoi" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData) return { meta: [{ title: "Page not found — Usman Jatoi" }, { name: "robots", content: "noindex" }] };
     const { post, media } = loaderData;
-    const title = post.seo_title || post.title || "Usman Jatoi";
-    const desc =
-      post.seo_description ||
-      (post.excerpt ? post.excerpt.slice(0, 158) : `${post.title} — Usman Jatoi`);
+    const truncate = (s: string, n: number) => {
+      const c = s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+      return c.length > n ? c.slice(0, n - 1).trimEnd() + "…" : c;
+    };
+    const rawTitle = post.seo_title || post.title || "Usman Jatoi";
+    const title = truncate(`${rawTitle} — Usman Jatoi`, 60);
+    const desc = truncate(
+      post.seo_description || post.excerpt || `${post.title} — Usman Jatoi`,
+      158,
+    );
     const splat = (params as { _splat?: string })._splat ?? "";
     const url = `https://usmanjatoi.lovable.app/${splat}`;
     const image = media?.storage_url || media?.source_url || undefined;
@@ -256,9 +262,9 @@ export const Route = createFileRoute("/$")({
     return {
       meta: [
         { title },
-        { name: "description", content: (desc || "").slice(0, 158) },
+        { name: "description", content: desc },
         { property: "og:title", content: title },
-        { property: "og:description", content: (desc || "").slice(0, 158) },
+        { property: "og:description", content: desc },
         { property: "og:type", content: post.post_type === "post" ? "article" : "website" },
         { property: "og:url", content: url },
         ...(image ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
