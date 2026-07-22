@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
 import { getCategoryBySlug } from "@/lib/wp-categories.functions";
+import PageHero, { type Crumb } from "@/components/PageHero";
 
 const SITE = "https://usman-connects-us.lovable.app";
 
