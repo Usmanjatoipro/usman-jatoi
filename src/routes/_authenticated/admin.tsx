@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 
 function AdminPage() {
-  const { tree, flat } = Route.useLoaderData() as Awaited<ReturnType<typeof listCategoriesTree>>;
+  const { tree, flat, content } = Route.useLoaderData() as Awaited<ReturnType<typeof loadAll>>;
   const [q, setQ] = useState("");
   const [expandAll, setExpandAll] = useState(false);
 
