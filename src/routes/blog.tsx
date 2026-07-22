@@ -1,19 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { z } from "zod";
-import { serverGetPostsList } from "@/lib/wp-data.server";
-import type { PostSummary, MediaItem } from "@/lib/wp-data.server";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/blog")({
-  validateSearch: z.object({
-    page: z.number().int().min(0).optional(),
-    q: z.string().optional(),
-  }).parse,
-  loaderDeps: ({ search }) => ({ page: search.page ?? 0, q: search.q ?? "" }),
-  loader: async ({ deps }) => {
-    const result = await serverGetPostsList(deps.page, 24, deps.q);
-    return { ...result, page: deps.page, search: deps.q };
-  },
   head: () => ({
     meta: [
       { title: "Blog — Usman Jatoi" },
@@ -35,21 +24,22 @@ export const Route = createFileRoute("/blog")({
   component: BlogPage,
 });
 
+type Post = {
+  id: number;
+  slug: string;
+  title: string | null;
+  excerpt: string | null;
+  post_date: string | null;
+  featured_media_id: number | null;
+};
+
+type Media = { id: number; storage_url: string | null; source_url: string | null; alt_text: string | null };
+
 const PAGE_SIZE = 24;
 
 function stripHtml(html: string | null | undefined) {
   if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8216;/g, "'")
-    .replace(/&#8220;/g, '"')
-    .replace(/&#8221;/g, '"')
-    .replace(/&hellip;/g, "…")
-    .replace(/\s+/g, " ")
-    .trim();
+  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#8217;/g, "'").replace(/&#8216;/g, "'").replace(/&#8220;/g, '"').replace(/&#8221;/g, '"').replace(/&hellip;/g, "…").replace(/\s+/g, " ").trim();
 }
 
 function formatDate(iso: string | null) {
@@ -59,23 +49,64 @@ function formatDate(iso: string | null) {
 }
 
 function BlogPage() {
-  const loaderData = Route.useLoaderData();
-  const navigate = Route.useNavigate();
-  const search = loaderData.search || "";
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [media, setMedia] = useState<Record<number, Media>>({});
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const posts: PostSummary[] = loaderData.posts;
-  const total: number = loaderData.total;
-  const page: number = loaderData.page;
-  const mediaMap: Record<number, MediaItem> = loaderData.mediaMap || {};
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
-  const [searchInput, setSearchInput] = useState(search);
+  useEffect(() => {
+    setPage(0);
+  }, [debounced]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      let q = supabase
+        .from("wp_posts")
+        .select("id,slug,title,excerpt,post_date,featured_media_id", { count: "exact" })
+        .eq("post_type", "post")
+        .eq("status", "publish")
+        .order("post_date", { ascending: false })
+        .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
+      if (debounced) q = q.ilike("title", `%${debounced}%`);
+
+      const { data, count } = await q;
+      if (cancelled) return;
+      const rows = (data ?? []) as Post[];
+      setPosts(rows);
+      setTotal(count ?? 0);
+
+      const mediaIds = rows.map((r) => r.featured_media_id).filter((x): x is number => !!x);
+      if (mediaIds.length) {
+        const { data: mediaRows } = await supabase
+          .from("wp_media")
+          .select("id,storage_url,source_url,alt_text")
+          .in("id", mediaIds);
+        if (!cancelled && mediaRows) {
+          const map: Record<number, Media> = {};
+          for (const m of mediaRows as Media[]) map[m.id] = m;
+          setMedia(map);
+        }
+      } else {
+        setMedia({});
+      }
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [page, debounced]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  function doSearch(e: React.FormEvent) {
-    e.preventDefault();
-    navigate({ search: (s) => ({ ...s, q: searchInput || undefined, page: 0 }) });
-  }
 
   const pageNumbers = useMemo(() => {
     const nums: (number | "…")[] = [];
@@ -140,6 +171,8 @@ function BlogPage() {
         .blog-thumb { aspect-ratio: 16/10; background:#f5f5f5; overflow:hidden; }
         .blog-thumb img { width:100%; height:100%; object-fit:cover; transition:transform .5s ease; }
         .blog-card:hover .blog-thumb img { transform:scale(1.05); }
+        .blog-skeleton { animation: pulse 1.5s ease-in-out infinite; background:#f5f5f5; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
       `,
         }}
       />
@@ -159,32 +192,45 @@ function BlogPage() {
         </p>
 
         {/* Search */}
-        <form onSubmit={doSearch} className="mt-8 max-w-xl mx-auto">
+        <div className="mt-8 max-w-xl mx-auto">
           <div className="relative">
             <input
               type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search posts…"
               className="w-full px-6 py-4 pr-14 rounded-full border border-neutral-200 focus:border-neutral-900 focus:outline-none transition text-base"
             />
-            <button type="submit" className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400">
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </button>
+            </div>
           </div>
-        </form>
+        </div>
       </section>
 
       {/* Grid */}
       <section className="px-6 md:px-10 max-w-7xl mx-auto pb-16">
-        {posts.length === 0 ? (
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="blog-card">
+                <div className="blog-thumb blog-skeleton" />
+                <div className="p-6 space-y-3">
+                  <div className="h-4 w-24 blog-skeleton rounded" />
+                  <div className="h-6 w-full blog-skeleton rounded" />
+                  <div className="h-4 w-3/4 blog-skeleton rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : posts.length === 0 ? (
           <div className="text-center py-24">
-            <p className="text-xl text-neutral-500">No posts found{search ? ` for "${search}"` : ""}.</p>
+            <p className="text-xl text-neutral-500">No posts found{debounced ? ` for "${debounced}"` : ""}.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((p) => {
-              const m = p.featured_media_id ? mediaMap[p.featured_media_id] : undefined;
+              const m = p.featured_media_id ? media[p.featured_media_id] : undefined;
               const thumb = m?.storage_url || m?.source_url;
               const excerpt = stripHtml(p.excerpt);
               return (
@@ -224,12 +270,12 @@ function BlogPage() {
         )}
 
         {/* Pagination */}
-        {posts.length > 0 && totalPages > 1 && (
+        {!loading && posts.length > 0 && totalPages > 1 && (
           <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
             <button
               className="blog-pill"
               disabled={page === 0}
-              onClick={() => navigate({ search: (s) => ({ ...s, page: Math.max(0, page - 1) }) })}
+              onClick={() => { setPage((p) => Math.max(0, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             >
               ← Prev
             </button>
@@ -240,7 +286,7 @@ function BlogPage() {
                 <button
                   key={n}
                   className={`blog-pill ${n === page ? "is-active" : ""}`}
-                  onClick={() => navigate({ search: (s) => ({ ...s, page: n }) })}
+                  onClick={() => { setPage(n); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 >
                   {n + 1}
                 </button>
@@ -249,7 +295,7 @@ function BlogPage() {
             <button
               className="blog-pill"
               disabled={page >= totalPages - 1}
-              onClick={() => navigate({ search: (s) => ({ ...s, page: Math.min(totalPages - 1, page + 1) }) })}
+              onClick={() => { setPage((p) => Math.min(totalPages - 1, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             >
               Next →
             </button>

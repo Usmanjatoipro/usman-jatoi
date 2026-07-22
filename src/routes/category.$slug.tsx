@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
-import { serverGetCategoryBySlug } from "@/lib/wp-data.server";
+import { getCategoryBySlug } from "@/lib/wp-categories.functions";
 
 const SITE = "https://usman-connects-us.lovable.app";
 
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/category/$slug")({
   validateSearch: z.object({ page: z.number().int().min(1).max(50).optional() }).parse,
   loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
   loader: async ({ params, deps }) => {
-    const result = await serverGetCategoryBySlug(params.slug, deps.page, 24);
+    const result = await getCategoryBySlug({ data: { slug: params.slug, page: deps.page } });
     if (!result) throw notFound();
     return result;
   },
@@ -75,35 +75,20 @@ export const Route = createFileRoute("/category/$slug")({
   ),
 });
 
-function stripHtml(html: string | null | undefined) {
-  if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8216;/g, "'")
-    .replace(/&#8220;/g, '"')
-    .replace(/&#8221;/g, '"')
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function CategoryPage() {
-  const data = Route.useLoaderData();
-  const { category, ancestors, children, posts, page, totalPages, total, mediaMap } = data as any;
+  const data = Route.useLoaderData() as NonNullable<Awaited<ReturnType<typeof getCategoryBySlug>>>;
+  const { category, ancestors, children, posts, page, totalPages, total } = data;
   const params = Route.useParams();
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
       <div className="mx-auto max-w-6xl px-6 py-14">
-        {/* Breadcrumb */}
         <nav className="text-sm text-neutral-500 mb-6 flex flex-wrap items-center gap-2">
           <Link to="/" className="hover:text-neutral-900">Home</Link>
           <span>/</span>
           <Link to="/category" className="hover:text-neutral-900">Categories</Link>
-          {(ancestors || []).map((a: any) => (
-            <span key={a.slug} className="flex items-center gap-2">
+          {ancestors.map((a) => (
+            <span key={a.id} className="flex items-center gap-2">
               <span>/</span>
               <Link to="/category/$slug" params={{ slug: a.slug }} className="hover:text-neutral-900">
                 {a.name}
@@ -114,7 +99,6 @@ function CategoryPage() {
           <span className="text-neutral-900 font-medium">{category.name}</span>
         </nav>
 
-        {/* Header */}
         <header className="mb-12 border-b border-neutral-200 pb-10">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-indigo-600 mb-4">
             <span className="h-px w-8 bg-indigo-600" />
@@ -129,74 +113,71 @@ function CategoryPage() {
           </p>
         </header>
 
-        {/* Subcategories */}
-        {(children || []).length > 0 && (
+        {children.length > 0 && (
           <section className="mb-12">
             <h2 className="text-lg font-semibold mb-4">Subcategories</h2>
             <div className="flex flex-wrap gap-2">
-              {(children || []).map((c: any) => (
+              {children.map((c) => (
                 <Link
-                  key={c.slug}
+                  key={c.id}
                   to="/category/$slug"
                   params={{ slug: c.slug }}
                   className="px-4 py-2 rounded-full border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 text-sm transition"
                 >
-                  {c.name}
-                  {c.count ? <span className="text-neutral-400 ml-1">({c.count})</span> : null}
+                  {c.name} <span className="text-neutral-400">({c.count})</span>
                 </Link>
               ))}
             </div>
           </section>
         )}
 
-        {/* Posts grid */}
         {posts.length === 0 ? (
           <p className="text-neutral-500 py-12 text-center">No posts published in this category yet.</p>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post: any) => {
-              const m = post.featured_media_id ? (mediaMap || {})[post.featured_media_id] : undefined;
-              const thumb = m?.storage_url || m?.source_url || null;
-              const href = post.path || `/blog/${post.slug}`;
-              return (
-                <article
-                  key={post.id}
-                  className="group rounded-xl overflow-hidden border border-neutral-200 hover:border-neutral-900 hover:shadow-lg transition"
-                >
-                  {thumb && (
-                    <div className="aspect-[16/10] overflow-hidden bg-neutral-100">
-                      <img
-                        src={thumb}
-                        alt={m?.alt_text || post.title || ""}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                      />
-                    </div>
-                  )}
-                  <div className="p-5">
-                    {post.post_date && (
-                      <time className="text-xs uppercase tracking-widest text-neutral-500">
-                        {new Date(post.post_date).toLocaleDateString(undefined, {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </time>
-                    )}
-                    <h3 className="mt-2 text-lg font-semibold leading-snug group-hover:text-indigo-600 transition">
-                      <a href={href}>{stripHtml(post.title) || "Untitled"}</a>
-                    </h3>
-                    {post.excerpt && (
-                      <p className="mt-2 text-sm text-neutral-600 line-clamp-3">{stripHtml(post.excerpt)}</p>
-                    )}
+            {posts.map((post) => (
+              <article
+                key={post.id}
+                className="group rounded-xl overflow-hidden border border-neutral-200 hover:border-neutral-900 hover:shadow-lg transition"
+              >
+                {post.featured_image && (
+                  <div className="aspect-[16/10] overflow-hidden bg-neutral-100">
+                    <img
+                      src={post.featured_image}
+                      alt={post.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
                   </div>
-                </article>
-              );
-            })}
+                )}
+                <div className="p-5">
+                  {post.post_date && (
+                    <time className="text-xs uppercase tracking-widest text-neutral-500">
+                      {new Date(post.post_date).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </time>
+                  )}
+                  <h3 className="mt-2 text-lg font-semibold leading-snug group-hover:text-indigo-600 transition">
+                    {post.permalink ? (
+                      <a href={post.permalink} target="_blank" rel="noreferrer">
+                        {post.title}
+                      </a>
+                    ) : (
+                      post.title
+                    )}
+                  </h3>
+                  {post.excerpt && (
+                    <p className="mt-2 text-sm text-neutral-600 line-clamp-3">{post.excerpt}</p>
+                  )}
+                </div>
+              </article>
+            ))}
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-center gap-4">
             {page > 1 && (

@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { listCategoriesTree, type WpCategoryNode } from "@/lib/wp-categories.functions";
-import { useMemo, useState } from "react";
+import {
+  rewriteInlineMediaBatch,
+  backfillFeaturedImagesBatch,
+  getCleanupStats,
+} from "@/lib/wp-cleanup.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useState, useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   loader: async () => await listCategoriesTree(),
@@ -102,6 +108,8 @@ function AdminPage() {
             </Link>
           </div>
         </section>
+
+        <CleanupPanel />
 
         {/* Categories */}
         <section className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
@@ -247,4 +255,134 @@ function maxDepth(nodes: WpCategoryNode[], d = 1): number {
     if (n.children.length) max = Math.max(max, maxDepth(n.children, d + 1));
   }
   return max;
+}
+
+function CleanupPanel() {
+  const stats = useServerFn(getCleanupStats);
+  const rewriteBatch = useServerFn(rewriteInlineMediaBatch);
+  const backfillBatch = useServerFn(backfillFeaturedImagesBatch);
+
+  const [info, setInfo] = useState<{
+    dirtyContent: number;
+    orphanFeatured: number;
+    mediaTotal: number;
+    posts: number;
+    pages: number;
+  } | null>(null);
+  const [log, setLog] = useState<string[]>([]);
+  const [running, setRunning] = useState<null | "rewrite" | "backfill">(null);
+
+  const refresh = async () => {
+    try {
+      const s = await stats();
+      setInfo(s);
+    } catch (e: any) {
+      setLog((l) => [...l, `Stats error: ${e.message}`]);
+    }
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const runRewrite = async () => {
+    setRunning("rewrite");
+    setLog(["Starting inline media rewrite…"]);
+    let offset = 0;
+    let totalUpdated = 0;
+    let totalUploaded = 0;
+    try {
+      while (true) {
+        const r = await rewriteBatch({ data: { offset, limit: 10 } });
+        totalUpdated += r.updated;
+        totalUploaded += r.uploaded;
+        setLog((l) => [
+          ...l,
+          `Batch ${offset}: processed ${r.processed}, updated ${r.updated}, uploaded ${r.uploaded} (total posts left ~${Math.max(0, r.total - ((r as any).nextOffset ?? r.processed))})`,
+        ]);
+        if (r.done) break;
+        offset = (r as any).nextOffset ?? offset + r.processed;
+      }
+      setLog((l) => [...l, `✓ Done. Rewrote ${totalUpdated} posts, uploaded ${totalUploaded} images.`]);
+      await refresh();
+    } catch (e: any) {
+      setLog((l) => [...l, `Error: ${e.message}`]);
+    } finally {
+      setRunning(null);
+    }
+  };
+
+  const runBackfill = async () => {
+    setRunning("backfill");
+    setLog(["Starting featured-image backfill…"]);
+    let offset = 0;
+    let totalUpdated = 0;
+    try {
+      while (true) {
+        const r = await backfillBatch({ data: { offset, limit: 50 } });
+        totalUpdated += r.updated;
+        setLog((l) => [...l, `Batch ${offset}: processed ${r.processed}, updated ${r.updated}`]);
+        if (r.done) break;
+        offset = (r as any).nextOffset ?? offset + r.processed;
+      }
+      setLog((l) => [...l, `✓ Done. Backfilled ${totalUpdated} featured images.`]);
+      await refresh();
+    } catch (e: any) {
+      setLog((l) => [...l, `Error: ${e.message}`]);
+    } finally {
+      setRunning(null);
+    }
+  };
+
+  return (
+    <section className="bg-white rounded-xl border border-neutral-200 p-6">
+      <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
+        <div>
+          <h2 className="text-lg font-bold">WordPress Dependency Cleanup</h2>
+          <p className="text-sm text-neutral-500 mt-1">
+            Rehost inline images to Lovable Cloud and rewrite URLs so nothing depends on usmanjatoi.com.
+          </p>
+        </div>
+        <button
+          onClick={refresh}
+          className="text-sm px-3 py-1.5 rounded-md border border-neutral-200 hover:border-neutral-900 transition"
+        >
+          Refresh stats
+        </button>
+      </div>
+
+      {info && (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+          <Stat label="Posts" value={info.posts.toLocaleString()} />
+          <Stat label="Pages" value={info.pages.toLocaleString()} />
+          <Stat label="Media in Cloud" value={info.mediaTotal.toLocaleString()} />
+          <Stat label="Content w/ WP refs" value={info.dirtyContent.toLocaleString()} />
+          <Stat label="Posts missing hero" value={info.orphanFeatured.toLocaleString()} />
+        </div>
+      )}
+
+      <div className="flex gap-3 flex-wrap">
+        <button
+          onClick={runRewrite}
+          disabled={running !== null}
+          className="rounded-md bg-neutral-900 text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-neutral-700 transition"
+        >
+          {running === "rewrite" ? "Rewriting…" : "Rewrite inline media"}
+        </button>
+        <button
+          onClick={runBackfill}
+          disabled={running !== null}
+          className="rounded-md bg-indigo-600 text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-indigo-700 transition"
+        >
+          {running === "backfill" ? "Backfilling…" : "Backfill featured images"}
+        </button>
+      </div>
+
+      {log.length > 0 && (
+        <pre className="mt-5 max-h-64 overflow-auto text-xs bg-neutral-950 text-neutral-100 rounded-md p-4 font-mono whitespace-pre-wrap">
+{log.join("\n")}
+        </pre>
+      )}
+    </section>
+  );
 }
