@@ -108,11 +108,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/webp", sizes: "32x32", href: favicon32.url },
+      { rel: "icon", type: "image/webp", sizes: "192x192", href: favicon192.url },
+      { rel: "apple-touch-icon", sizes: "180x180", href: faviconApple.url },
+      { rel: "shortcut icon", href: favicon32.url },
     ],
   }),
   shellComponent: RootShell,
