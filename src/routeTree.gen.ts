@@ -32,7 +32,6 @@ import { Route as CertificationsRouteImport } from './routes/certifications'
 import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessesRouteImport } from './routes/businesses'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutMeRouteImport } from './routes/about-me'
@@ -42,6 +41,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expertise.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/skills-expertise.technical-skills'
 import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
 import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
@@ -182,11 +182,6 @@ const BusinessesRoute = BusinessesRouteImport.update({
   path: '/businesses',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AwardsRoute = AwardsRouteImport.update({
   id: '/awards',
   path: '/awards',
@@ -229,6 +224,11 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
 const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
   id: '/my-lifestyle/',
   path: '/my-lifestyle/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SkillsExpertiseTechnicalSkillsRoute =
@@ -319,9 +319,9 @@ const CategorySlugRoute = CategorySlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
   id: '/vision-values',
@@ -365,7 +365,6 @@ export interface FileRoutesByFullPath {
   '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
-  '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRoute
@@ -413,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
+  '/blog/': typeof BlogIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
@@ -423,7 +423,6 @@ export interface FileRoutesByTo {
   '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
-  '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRoute
@@ -471,6 +470,7 @@ export interface FileRoutesByTo {
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
+  '/blog': typeof BlogIndexRoute
   '/my-lifestyle': typeof MyLifestyleIndexRoute
   '/services': typeof ServicesIndexRoute
   '/skills-expertise': typeof SkillsExpertiseIndexRoute
@@ -483,7 +483,6 @@ export interface FileRoutesById {
   '/about-me': typeof AboutMeRouteWithChildren
   '/auth': typeof AuthRoute
   '/awards': typeof AwardsRoute
-  '/blog': typeof BlogRouteWithChildren
   '/businesses': typeof BusinessesRoute
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRoute
@@ -531,6 +530,7 @@ export interface FileRoutesById {
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
+  '/blog/': typeof BlogIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
@@ -543,7 +543,6 @@ export interface FileRouteTypes {
     | '/about-me'
     | '/auth'
     | '/awards'
-    | '/blog'
     | '/businesses'
     | '/careers'
     | '/case-studies'
@@ -591,6 +590,7 @@ export interface FileRouteTypes {
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
+    | '/blog/'
     | '/my-lifestyle/'
     | '/services/'
     | '/skills-expertise/'
@@ -601,7 +601,6 @@ export interface FileRouteTypes {
     | '/about-me'
     | '/auth'
     | '/awards'
-    | '/blog'
     | '/businesses'
     | '/careers'
     | '/case-studies'
@@ -649,6 +648,7 @@ export interface FileRouteTypes {
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
+    | '/blog'
     | '/my-lifestyle'
     | '/services'
     | '/skills-expertise'
@@ -660,7 +660,6 @@ export interface FileRouteTypes {
     | '/about-me'
     | '/auth'
     | '/awards'
-    | '/blog'
     | '/businesses'
     | '/careers'
     | '/case-studies'
@@ -708,6 +707,7 @@ export interface FileRouteTypes {
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
+    | '/blog/'
     | '/my-lifestyle/'
     | '/services/'
     | '/skills-expertise/'
@@ -720,7 +720,6 @@ export interface RootRouteChildren {
   AboutMeRoute: typeof AboutMeRouteWithChildren
   AuthRoute: typeof AuthRoute
   AwardsRoute: typeof AwardsRoute
-  BlogRoute: typeof BlogRouteWithChildren
   BusinessesRoute: typeof BusinessesRoute
   CareersRoute: typeof CareersRoute
   CaseStudiesRoute: typeof CaseStudiesRoute
@@ -744,6 +743,7 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
@@ -754,6 +754,7 @@ export interface RootRouteChildren {
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
   SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   SkillsExpertiseIndexRoute: typeof SkillsExpertiseIndexRoute
@@ -922,13 +923,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/awards': {
       id: '/awards'
       path: '/awards'
@@ -990,6 +984,13 @@ declare module '@tanstack/react-router' {
       path: '/my-lifestyle'
       fullPath: '/my-lifestyle/'
       preLoaderRoute: typeof MyLifestyleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/skills-expertise/technical-skills': {
@@ -1106,10 +1107,10 @@ declare module '@tanstack/react-router' {
     }
     '/blog/$slug': {
       id: '/blog/$slug'
-      path: '/$slug'
+      path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
+      parentRoute: typeof rootRouteImport
     }
     '/about-me/vision-values': {
       id: '/about-me/vision-values'
@@ -1195,16 +1196,6 @@ const AboutMeRouteChildren: AboutMeRouteChildren = {
 const AboutMeRouteWithChildren =
   AboutMeRoute._addFileChildren(AboutMeRouteChildren)
 
-interface BlogRouteChildren {
-  BlogSlugRoute: typeof BlogSlugRoute
-}
-
-const BlogRouteChildren: BlogRouteChildren = {
-  BlogSlugRoute: BlogSlugRoute,
-}
-
-const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
-
 interface LegalRouteChildren {
   LegalOurTermsRoute: typeof LegalOurTermsRoute
   LegalPrivacyPolicyRoute: typeof LegalPrivacyPolicyRoute
@@ -1242,7 +1233,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutMeRoute: AboutMeRouteWithChildren,
   AuthRoute: AuthRoute,
   AwardsRoute: AwardsRoute,
-  BlogRoute: BlogRouteWithChildren,
   BusinessesRoute: BusinessesRoute,
   CareersRoute: CareersRoute,
   CaseStudiesRoute: CaseStudiesRoute,
@@ -1266,6 +1256,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
+  BlogSlugRoute: BlogSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
@@ -1277,6 +1268,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsExpertiseCreativeSkillsRoute: SkillsExpertiseCreativeSkillsRoute,
   SkillsExpertiseSeoMarketingRoute: SkillsExpertiseSeoMarketingRoute,
   SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
+  BlogIndexRoute: BlogIndexRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   SkillsExpertiseIndexRoute: SkillsExpertiseIndexRoute,
