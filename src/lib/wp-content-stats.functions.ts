@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { gunzip } from "node:zlib";
 import type { Database } from "@/integrations/supabase/types";
 
 function serverClient() {
@@ -108,6 +109,14 @@ let localImportCache:
     }
   | null = null;
 const localManifestCache = new Map<string, LocalPost[]>();
+function gunzipAsync(input: Buffer) {
+  return new Promise<Buffer>((resolve, reject) => {
+    gunzip(input, (error, output) => {
+      if (error) reject(error);
+      else resolve(output);
+    });
+  });
+}
 
 function normalizePath(path: string | null | undefined) {
   if (!path) return "";
@@ -130,8 +139,35 @@ function decodeHtml(value: string | null | undefined) {
 
 async function readLocalManifest(filename: string): Promise<LocalPost[]> {
   if (localManifestCache.has(filename)) return localManifestCache.get(filename)!;
-  const filePath = resolve(process.cwd(), "src", "data", filename);
-  const data = JSON.parse(await readFile(filePath, "utf8")) as LocalPost[];
+  const cwd = process.cwd();
+  const candidates = [
+    { path: resolve(cwd, "src", "data", filename), gz: false },
+    { path: resolve(cwd, "public", "wp-data", `${filename}.gz`), gz: true },
+    { path: resolve(cwd, ".output", "public", "wp-data", `${filename}.gz`), gz: true },
+    { path: resolve(cwd, "..", "public", "wp-data", `${filename}.gz`), gz: true },
+  ];
+
+  let raw = "";
+  const errors: string[] = [];
+  for (const candidate of candidates) {
+    try {
+      if (candidate.gz) {
+        const inflated = await gunzipAsync(await readFile(candidate.path));
+        raw = inflated.toString("utf8");
+      } else {
+        raw = await readFile(candidate.path, "utf8");
+      }
+      break;
+    } catch (error) {
+      errors.push(`${candidate.path}: ${(error as Error).message}`);
+    }
+  }
+
+  if (!raw) {
+    throw new Error(`Unable to load ${filename}. Tried ${errors.join(" | ")}`);
+  }
+
+  const data = JSON.parse(raw) as LocalPost[];
   localManifestCache.set(filename, data);
   return data;
 }

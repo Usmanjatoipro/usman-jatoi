@@ -2,3 +2,4 @@
 src/data/wp-posts-manifest.json filter=lfs diff=lfs merge=lfs -text
 src/data/wp-pages-manifest.json filter=lfs diff=lfs merge=lfs -text
 src/data/wp-terms-manifest.json filter=lfs diff=lfs merge=lfs -text
+public/wp-data/*.json.gz filter=lfs diff=lfs merge=lfs -text
