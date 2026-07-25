@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { Database } from "@/integrations/supabase/types";
 
 function serverClient() {
@@ -26,6 +28,35 @@ export interface ContentTypeStat {
   published: number;
   sample_path: string | null;
 }
+
+export interface LocalServiceLine {
+  slug: string;
+  path: string;
+  title: string;
+  excerpt: string;
+  count: number;
+}
+
+type LocalPost = {
+  id: number;
+  post_type: string;
+  status: string;
+  slug: string;
+  title: string | null;
+  excerpt: string | null;
+  content?: string | null;
+  permalink?: string | null;
+  path: string | null;
+  post_date?: string | null;
+  post_modified?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  featured_media_id?: number | null;
+  fifu_image_url?: string | null;
+  fifu_image_alt?: string | null;
+  meta?: Record<string, string | string[]> | null;
+  terms?: { taxonomy: string; slug: string; name: string }[];
+};
 
 const LABELS: Record<string, string> = {
   page: "Pages",
@@ -65,3 +96,366 @@ export const getContentTypeStats = createServerFn({ method: "GET" }).handler(
     return { stats, mediaCount: mediaCount ?? 0 };
   },
 );
+
+let localImportCache:
+  | {
+      postCount: number;
+      pageCount: number;
+      servicePageCount: number;
+      serviceRootCount: number;
+      serviceChildCount: number;
+      serviceLines: LocalServiceLine[];
+    }
+  | null = null;
+const localManifestCache = new Map<string, LocalPost[]>();
+
+function normalizePath(path: string | null | undefined) {
+  if (!path) return "";
+  const clean = path.startsWith("/") ? path : `/${path}`;
+  return clean.length > 1 ? clean.replace(/\/+$/, "") : clean;
+}
+
+function decodeHtml(value: string | null | undefined) {
+  return (value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&#038;/g, "&")
+    .replace(/&#8211;/g, "-")
+    .replace(/&#8212;/g, "-")
+    .replace(/&#8217;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function readLocalManifest(filename: string): Promise<LocalPost[]> {
+  if (localManifestCache.has(filename)) return localManifestCache.get(filename)!;
+  const filePath = resolve(process.cwd(), "src", "data", filename);
+  const data = JSON.parse(await readFile(filePath, "utf8")) as LocalPost[];
+  localManifestCache.set(filename, data);
+  return data;
+}
+
+function stripTags(value: string | null | undefined) {
+  return decodeHtml(value).replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function escapeHtml(value: string | null | undefined) {
+  return decodeHtml(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function metaString(meta: LocalPost["meta"], key: string) {
+  const value = meta?.[key];
+  if (Array.isArray(value)) return value.find(Boolean) || "";
+  return value || "";
+}
+
+function labelFromKey(key: string) {
+  const labels: Record<string, string> = {
+    aboutexpertise_section: "About Expertise",
+    BestPracticesTips: "Best Practices & Tips",
+    CommonMistakesMyths: "Common Mistakes & Myths",
+    GlossaryRelatedTerms: "Glossary & Related Terms",
+    "ProcessStep-by-Step": "Process Step by Step",
+    WhatisX: "What Is It?",
+    _cached_industries_block: "Industries We Serve",
+    _cached_locations_block_v4: "Locations We Serve",
+    beginners_tips: "Beginner Tips",
+    advanced_tips: "Advanced Tips",
+    comparison_tables: "Comparison Tables",
+    hero_section: "Hero Section",
+    our_services: "Our Services",
+    pros_cons: "Pros & Cons",
+    why_important: "Why It Matters",
+  };
+  return labels[key] || key.replace(/^_+/, "").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function parseJson(value: string) {
+  const text = value.trim();
+  if (!/^[{[]/.test(text)) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function itemTitle(item: any, fallback: string) {
+  return stripTags(item?.title || item?.heading || item?.name || item?.topic || item?.question || fallback);
+}
+
+function itemDescription(item: any) {
+  return stripTags(item?.description || item?.subtitle || item?.answer || item?.content || item?.text || "");
+}
+
+function listHtml(items: any[]) {
+  return `<ul>${items.map((item) => `<li>${escapeHtml(typeof item === "string" ? item : itemTitle(item, "Item"))}${typeof item === "object" && itemDescription(item) ? `<p>${escapeHtml(itemDescription(item))}</p>` : ""}</li>`).join("")}</ul>`;
+}
+
+function tableHtml(data: any) {
+  const table = data?.comparison || data;
+  const headers = table?.headers || data?.columns;
+  const rows = table?.rows || data?.rows;
+  if (!Array.isArray(headers) || !Array.isArray(rows)) return "";
+  return `<div class="migrated-table"><table><thead><tr>${headers.map((h: any) => `<th>${escapeHtml(stripTags(String(h)))}</th>`).join("")}</tr></thead><tbody>${rows.slice(0, 24).map((row: any) => {
+    const cells = Array.isArray(row) ? row : [row.name || row.topic, ...(row.values || [])];
+    return `<tr>${cells.map((cell: any) => `<td>${escapeHtml(Array.isArray(cell) ? cell.map(stripTags).join(", ") : stripTags(String(cell || "")))}</td>`).join("")}</tr>`;
+  }).join("")}</tbody></table></div>`;
+}
+
+function jsonToHtml(data: any) {
+  if (Array.isArray(data)) return listHtml(data);
+  if (!data || typeof data !== "object") return `<p>${escapeHtml(String(data || ""))}</p>`;
+  const title = stripTags(data["main-title"] || data.section_title || data.title || "");
+  const subtitle = stripTags(data.section_subtitle || data.subtitle || data.intro || data.description || "");
+  const parts = [
+    title ? `<h3>${escapeHtml(title)}</h3>` : "",
+    subtitle ? `<p>${escapeHtml(subtitle)}</p>` : "",
+  ];
+  if (Array.isArray(data.features)) parts.push(listHtml(data.features));
+  if (Array.isArray(data.bullets)) parts.push(listHtml(data.bullets));
+  if (Array.isArray(data.services)) {
+    parts.push(`<div class="migrated-grid">${data.services.map((item: any, index: number) => `<article><h3>${escapeHtml(itemTitle(item, `Service ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p>${item?.link ? `<a href="${String(item.link).replace(/^https?:\/\/usmanjatoi\.com/i, "")}">Open service</a>` : ""}</article>`).join("")}</div>`);
+  }
+  const steps = Array.isArray(data.steps) ? data.steps : Array.isArray(data.items) ? data.items : [];
+  if (steps.length) parts.push(`<div class="migrated-steps">${steps.map((item: any, index: number) => `<article><span>${escapeHtml(String(item?.step_number || item?.step || index + 1))}</span><h3>${escapeHtml(itemTitle(item, `Step ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p></article>`).join("")}</div>`);
+  if (Array.isArray(data.faqs)) {
+    parts.push(`<div class="migrated-faqs">${data.faqs.map((item: any) => `<details open><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(itemDescription(item))}</p></details>`).join("")}</div>`);
+  }
+  parts.push(tableHtml(data));
+  if (parts.filter(Boolean).length <= 1) {
+    parts.push(`<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`);
+  }
+  return parts.filter(Boolean).join("");
+}
+
+const SKIP_BODY_META = new Set([
+  "meta_title",
+  "meta_description",
+  "rank_math_title",
+  "rank_math_description",
+  "_yoast_wpseo_title",
+  "_yoast_wpseo_metadesc",
+  "rank_math_seo_score",
+  "rank_math_focus_keyword",
+  "rank_math_primary_category",
+  "rank_math_robots",
+  "rank_math_sitemap_include",
+  "_wp_page_template",
+  "_elementor_template_type",
+  "fifu_image_url",
+  "fifu_image_alt",
+]);
+
+function metaToHtml(meta: LocalPost["meta"]) {
+  const entries = Object.entries(meta || {}).filter(([key, value]) => {
+    const text = Array.isArray(value) ? value.join("\n") : value;
+    return text.trim() && !SKIP_BODY_META.has(key) && !key.startsWith("_elementor_") && !key.toLowerCase().includes("schema");
+  });
+  if (!entries.length) return "";
+  const order = ["intro", "hero_section", "aboutexpertise_section", "our_services", "process", "comparison_tables", "comparison", "faqs", "_cached_industries_block", "_cached_locations_block_v4"];
+  entries.sort(([a], [b]) => {
+    const ai = order.indexOf(a);
+    const bi = order.indexOf(b);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi) || labelFromKey(a).localeCompare(labelFromKey(b));
+  });
+  return entries.map(([key, raw]) => {
+    const value = Array.isArray(raw) ? raw.filter(Boolean).join("\n\n") : raw;
+    const parsed = parseJson(value);
+    const body = parsed ? jsonToHtml(parsed) : /<\/?[a-z][\s\S]*>/i.test(value) ? value.replace(/<script[\s\S]*?<\/script>/gi, "") : `<p>${escapeHtml(value)}</p>`;
+    return `<section class="migrated-field" data-field="${escapeHtml(key)}"><h2>${escapeHtml(labelFromKey(key))}</h2>${body}</section>`;
+  }).join("");
+}
+
+function hydratedPost(post: LocalPost): LocalPost {
+  const content = post.content && stripTags(post.content) ? post.content : metaToHtml(post.meta);
+  return {
+    ...post,
+    content,
+    excerpt: post.excerpt || metaString(post.meta, "meta_description") || stripTags(content).slice(0, 220),
+    seo_title: post.seo_title || metaString(post.meta, "meta_title") || post.title,
+    seo_description: post.seo_description || metaString(post.meta, "meta_description") || stripTags(content).slice(0, 158),
+  };
+}
+
+export const getLocalPostBySlug = createServerFn({ method: "GET" })
+  .validator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
+    const posts = await readLocalManifest("wp-posts-manifest.json");
+    const post = posts.find((item) => item.status === "publish" && item.slug === data.slug);
+    if (!post) return null;
+    const hydrated = hydratedPost(post);
+    return {
+      post: hydrated,
+      heroUrl: post.fifu_image_url || null,
+      categories: (post.terms || []).filter((term) => term.taxonomy === "category").map((term, index) => ({ id: index + 1, name: term.name, slug: term.slug, parent_id: null, taxonomy: term.taxonomy })),
+      tags: (post.terms || []).filter((term) => term.taxonomy === "post_tag").map((term, index) => ({ id: index + 1000, name: term.name, slug: term.slug, parent_id: null, taxonomy: term.taxonomy })),
+    };
+  });
+
+export const getLocalServiceBySlug = createServerFn({ method: "GET" })
+  .validator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
+    const pages = await readLocalManifest("wp-pages-manifest.json");
+    const path = `/services/${data.slug}`;
+    const page = pages.find((item) => item.status === "publish" && normalizePath(item.path) === path);
+    if (!page) return null;
+    const hydrated = hydratedPost(page);
+    const hero = parseJson(metaString(page.meta, "hero_section")) as any;
+    const about = parseJson(metaString(page.meta, "aboutexpertise_section")) as any;
+    const children = pages
+      .filter((item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`))
+      .slice(0, 240)
+      .map((item) => ({ title: stripTags(item.title) || item.slug, href: normalizePath(item.path), excerpt: stripTags(item.excerpt).slice(0, 130) }));
+    return {
+      service: {
+        ...hydrated,
+        h1: stripTags(hero?.title || page.title || data.slug),
+        title: stripTags(page.title) || data.slug,
+        paragraphs: [
+          stripTags(hero?.subtitle || hero?.description || page.excerpt || hydrated.excerpt || ""),
+          stripTags(about?.intro || ""),
+        ].filter(Boolean),
+        bullets: [
+          ...(Array.isArray(hero?.features) ? hero.features.map(stripTags) : []),
+          ...(Array.isArray(about?.bullets) ? about.bullets.map((item: any) => itemTitle(item, "Benefit")) : []),
+        ].filter(Boolean),
+      },
+      children,
+      childCount: pages.filter((item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`)).length,
+    };
+  });
+
+export const getLocalContentByPath = createServerFn({ method: "GET" })
+  .validator((data: { path: string }) => data)
+  .handler(async ({ data }) => {
+    const wanted = normalizePath(data.path);
+    if (!wanted) return null;
+
+    const [posts, pages] = await Promise.all([
+      readLocalManifest("wp-posts-manifest.json"),
+      readLocalManifest("wp-pages-manifest.json"),
+    ]);
+    const post = [...posts, ...pages].find(
+      (item) => item.status === "publish" && normalizePath(item.path) === wanted,
+    );
+    if (!post) return null;
+
+    const hydrated = hydratedPost(post);
+    const media = post.fifu_image_url
+      ? {
+          storage_url: post.fifu_image_url,
+          source_url: post.fifu_image_url,
+          alt_text: post.fifu_image_alt || post.title || "",
+        }
+      : null;
+
+    const categories = (post.terms || [])
+      .filter((term) => term.taxonomy === "category")
+      .map((term, index) => ({
+        id: index + 1,
+        name: term.name,
+        slug: term.slug,
+        parent_id: null,
+        taxonomy: term.taxonomy,
+      }));
+    const tags = (post.terms || [])
+      .filter((term) => term.taxonomy === "post_tag")
+      .map((term, index) => ({
+        id: index + 1000,
+        name: term.name,
+        slug: term.slug,
+        parent_id: null,
+        taxonomy: term.taxonomy,
+      }));
+
+    const prefix = `${wanted}/`;
+    const segCount = wanted.split("/").filter(Boolean).length;
+    const children =
+      post.post_type === "page"
+        ? pages
+            .filter((item) => {
+              const childPath = normalizePath(item.path);
+              return (
+                item.status === "publish" &&
+                childPath.startsWith(prefix) &&
+                childPath.split("/").filter(Boolean).length === segCount + 1
+              );
+            })
+            .slice(0, 500)
+            .map((item) => ({
+              id: item.id,
+              title: stripTags(item.title) || item.slug,
+              path: normalizePath(item.path),
+              slug: item.slug,
+              excerpt: stripTags(item.excerpt).slice(0, 160),
+              featured_media_id: item.featured_media_id || null,
+            }))
+        : [];
+
+    return {
+      post: {
+        ...hydrated,
+        content: hydrated.content || "",
+        excerpt: hydrated.excerpt || "",
+        permalink: hydrated.permalink || "",
+        path: normalizePath(hydrated.path),
+        post_date: hydrated.post_date || null,
+        post_modified: hydrated.post_modified || null,
+        seo_title: hydrated.seo_title || hydrated.title || "",
+        seo_description: hydrated.seo_description || hydrated.excerpt || "",
+        featured_media_id: hydrated.featured_media_id || null,
+        meta: hydrated.meta || null,
+        raw: { terms: post.terms || [] },
+      },
+      media,
+      children,
+      childrenMedia: {},
+      categories,
+      tags,
+    };
+  });
+
+export const getLocalImportOverview = createServerFn({ method: "GET" }).handler(async () => {
+  if (localImportCache) return localImportCache;
+
+  const [posts, pages] = await Promise.all([
+    readLocalManifest("wp-posts-manifest.json"),
+    readLocalManifest("wp-pages-manifest.json"),
+  ]);
+
+  const publishedPages = pages.filter((page) => page.status === "publish");
+  const servicePages = publishedPages.filter((page) => normalizePath(page.path).startsWith("/services/"));
+  const roots = servicePages.filter((page) => /^\/services\/[^/]+$/.test(normalizePath(page.path)));
+
+  const serviceLines = roots
+    .map((page) => {
+      const path = normalizePath(page.path);
+      const slug = path.split("/").filter(Boolean)[1] || page.slug;
+      const prefix = `/services/${slug}/`;
+      return {
+        slug,
+        path,
+        title: decodeHtml(page.title) || slug.replace(/-/g, " "),
+        excerpt: decodeHtml(page.excerpt).slice(0, 140),
+        count: servicePages.filter((child) => normalizePath(child.path).startsWith(prefix)).length,
+      };
+    })
+    .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title));
+
+  localImportCache = {
+    postCount: posts.length,
+    pageCount: pages.length,
+    servicePageCount: servicePages.length,
+    serviceRootCount: roots.length,
+    serviceChildCount: Math.max(0, servicePages.length - roots.length),
+    serviceLines,
+  };
+
+  return localImportCache;
+});

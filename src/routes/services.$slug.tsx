@@ -25,6 +25,7 @@ import {
   Building2,
 } from "lucide-react";
 import servicesContent from "@/data/services-content.json";
+import { getLocalServiceBySlug } from "@/lib/wp-content-stats.functions";
 
 type ServiceRecord = {
   slug: string;
@@ -32,16 +33,19 @@ type ServiceRecord = {
   h1: string;
   paragraphs: string[];
   bullets: string[];
+  content?: string | null;
 };
 
 const services = servicesContent as Record<string, ServiceRecord>;
 
 export const Route = createFileRoute("/services/$slug")({
-  beforeLoad: ({ params }) => {
-    if (!services[params.slug]) throw notFound();
+  loader: async ({ params }) => {
+    const local = await getLocalServiceBySlug({ data: { slug: params.slug } });
+    if (!local && !services[params.slug]) throw notFound();
+    return local;
   },
-  head: ({ params }) => {
-    const s = services[params.slug];
+  head: ({ params, loaderData }) => {
+    const s = loaderData?.service || services[params.slug];
     if (!s) return { meta: [{ title: "Service — Usman Jatoi" }] };
     const desc =
       s.paragraphs[0] ||
@@ -339,7 +343,9 @@ function Accordion({
 /* ---------------- Main component ---------------- */
 function ServiceDetail() {
   const { slug } = Route.useParams();
-  const s = services[slug];
+  const local = Route.useLoaderData();
+  const s = (local?.service || services[slug]) as ServiceRecord;
+  const childServices = local?.children || [];
   const [tab, setTab] = useState<"web" | "brand" | "content">("web");
 
   // Icons per service card in the "sub-services" grid — reused generically
@@ -382,8 +388,39 @@ function ServiceDetail() {
               {s.paragraphs[0]}
             </p>
           </Reveal>
+          {local ? (
+            <Reveal delay={380}>
+              <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm text-white/70">
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2">
+                  {local.childCount.toLocaleString()} child service pages
+                </span>
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2">
+                  Local WordPress fields loaded
+                </span>
+              </div>
+            </Reveal>
+          ) : null}
         </div>
-        <style>{`@keyframes shine{to{background-position:200% 0}}`}</style>
+        <style>{`
+          @keyframes shine{to{background-position:200% 0}}
+          .service-migrated-body{color:#1f2937;font-size:17px;line-height:1.75}
+          .service-migrated-body .migrated-field{margin:0 0 22px;border:1px solid #e5e7eb;border-radius:18px;background:#fff;padding:clamp(18px,3vw,30px);box-shadow:0 18px 55px rgba(15,23,42,.06)}
+          .service-migrated-body .migrated-field>h2{margin:0 0 14px;color:#111827;font-size:clamp(24px,3vw,36px);line-height:1.12}
+          .service-migrated-body h3{margin:18px 0 8px;color:#111827;font-size:21px;line-height:1.25}
+          .service-migrated-body p{margin:0 0 14px}
+          .service-migrated-body ul{margin:12px 0 0;padding-left:20px}
+          .service-migrated-body li{margin:8px 0}
+          .service-migrated-body .migrated-grid,.service-migrated-body .migrated-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+          .service-migrated-body .migrated-grid article,.service-migrated-body .migrated-steps article{border:1px solid #e5e7eb;border-radius:14px;background:#f9fafb;padding:16px}
+          .service-migrated-body .migrated-steps article span{display:inline-flex;margin-bottom:10px;border-radius:999px;background:#111827;color:white;padding:3px 9px;font-size:12px;font-weight:700}
+          .service-migrated-body .migrated-table{overflow-x:auto;margin-top:14px}
+          .service-migrated-body table{width:100%;border-collapse:collapse;font-size:15px}
+          .service-migrated-body th,.service-migrated-body td{border-bottom:1px solid #e5e7eb;padding:10px;text-align:left;vertical-align:top}
+          .service-migrated-body th{background:#f9fafb;color:#111827}
+          .service-migrated-body details{border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;padding:12px 14px;margin:10px 0}
+          .service-migrated-body summary{cursor:pointer;color:#111827;font-weight:700}
+          .service-migrated-body pre{overflow:auto;border-radius:14px;background:#111827;color:white;padding:16px;font-size:13px;line-height:1.55}
+        `}</style>
       </header>
 
       {/* ---------- Zigzag intro ---------- */}
@@ -449,6 +486,74 @@ function ServiceDetail() {
           </Reveal>
         </div>
       </section>
+
+      {s.content ? (
+        <section className="bg-neutral-50 text-neutral-950">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <Reveal>
+              <span className="inline-block rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+                Imported WordPress Fields
+              </span>
+              <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl">
+                Complete imported service content
+              </h2>
+              <p className="mt-4 max-w-3xl text-neutral-600">
+                This section is generated from the original WordPress custom
+                fields for this service, including service blocks, processes,
+                FAQs, locations, industries, glossary sections, and other
+                preserved meta content.
+              </p>
+            </Reveal>
+            <Reveal delay={120}>
+              <div
+                className="service-migrated-body mt-10"
+                dangerouslySetInnerHTML={{ __html: s.content }}
+              />
+            </Reveal>
+          </div>
+        </section>
+      ) : null}
+
+      {childServices.length ? (
+        <section className="bg-white text-neutral-950">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <Reveal>
+              <span className="inline-block rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+                Child Services
+              </span>
+              <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl">
+                {local?.childCount.toLocaleString()} related service pages
+              </h2>
+              <p className="mt-4 max-w-3xl text-neutral-600">
+                Browse the imported child pages under this exact WordPress
+                parent service path.
+              </p>
+            </Reveal>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {childServices.slice(0, 120).map((child, index) => (
+                <Reveal key={child.href} delay={(index % 9) * 35}>
+                  <a
+                    href={child.href}
+                    className="block h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-5 transition hover:-translate-y-1 hover:border-neutral-300 hover:bg-white hover:shadow-xl hover:shadow-neutral-900/10"
+                  >
+                    <span className="text-xs font-bold uppercase tracking-widest text-neutral-400">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="mt-3 text-lg font-bold leading-snug text-neutral-950">
+                      {child.title}
+                    </h3>
+                    {child.excerpt ? (
+                      <p className="mt-3 text-sm leading-6 text-neutral-600">
+                        {child.excerpt}
+                      </p>
+                    ) : null}
+                  </a>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* ---------- Trusted by ---------- */}
       <section className="border-y border-white/10 bg-white/5">

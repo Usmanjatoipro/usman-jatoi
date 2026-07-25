@@ -1309,6 +1309,49 @@ export function PostArticle({
         .post-body th { background:#f9fafb; font-weight:600; color:#111; }
         .post-body tr:last-child td { border-bottom: none; }
         .post-body iframe, .post-body video { max-width: 100%; border-radius: 14px; margin: 1.5em 0; }
+        .post-body .migrated-field {
+          margin: 1.4em 0;
+          border: 1px solid #e5e7eb;
+          border-radius: 18px;
+          background: #fff;
+          padding: clamp(18px, 3vw, 30px);
+          box-shadow: 0 18px 50px rgba(15, 23, 42, 0.05);
+        }
+        .post-body .migrated-field > h2 {
+          margin-top: 0;
+          font-size: clamp(24px, 3vw, 36px);
+          line-height: 1.08;
+        }
+        .post-body .migrated-grid,
+        .post-body .migrated-steps {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 14px;
+          margin: 1.2em 0;
+        }
+        .post-body .migrated-grid article,
+        .post-body .migrated-steps article {
+          border: 1px solid #e5e7eb;
+          border-radius: 14px;
+          background: #f9fafb;
+          padding: 16px;
+        }
+        .post-body .migrated-grid article h3,
+        .post-body .migrated-steps article h3 {
+          margin: 0 0 8px;
+          font-size: 1.05em;
+        }
+        .post-body .migrated-steps article span {
+          display: inline-flex;
+          margin-bottom: 10px;
+          border-radius: 999px;
+          background: #111827;
+          color: #fff;
+          padding: 3px 9px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .post-body .migrated-table { overflow-x: auto; }
 
         /* Auto-decorated FAQ (WP details/summary or dt/dd style) */
         .post-body details {

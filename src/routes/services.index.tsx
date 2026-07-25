@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import PageHero from "@/components/PageHero";
+import { getLocalImportOverview, type LocalServiceLine } from "@/lib/wp-content-stats.functions";
 
 export const Route = createFileRoute("/services/")({
+  loader: async () => getLocalImportOverview(),
   head: () => ({
     meta: [
       { title: "Services — Usman Jatoi" },
@@ -167,6 +168,7 @@ const faqs = [
 ];
 
 function ServicesPage() {
+  const overview = Route.useLoaderData();
   return (
     <main className="min-h-screen bg-white text-neutral-900">
       <PageHero
@@ -184,6 +186,8 @@ function ServicesPage() {
             White-label partnership
           </Link>
         </div>
+
+        <ImportOverview overview={overview} />
 
         <div className="space-y-6">
           {services.map((s) => (
@@ -232,7 +236,7 @@ function ServicesPage() {
           ))}
         </div>
 
-        <ServiceDirectory />
+        <ServiceDirectory initialServices={overview.serviceLines} />
 
         <section className="mt-16">
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -318,48 +322,17 @@ function decodeHtml(s: string) {
     .replace(/&gt;/g, ">");
 }
 
-function ServiceDirectory() {
+function ServiceDirectory({ initialServices }: { initialServices: LocalServiceLine[] }) {
   const [q, setQ] = useState("");
   const { data, isLoading } = useQuery({
-    queryKey: ["service-directory"],
-    queryFn: async () => {
-      const top = await supabase
-        .from("wp_posts")
-        .select("id, slug, title, excerpt, path")
-        .eq("post_type", "page")
-        .eq("status", "publish")
-        .like("path", "/services/%")
-        .order("title", { ascending: true });
-      const items = (top.data || []).filter((p: any) =>
-        /^\/services\/[^/]+\/?$/.test(p.path || ""),
-      );
-      const counts = await supabase
-        .from("wp_posts")
-        .select("path")
-        .eq("post_type", "page")
-        .eq("status", "publish")
-        .like("path", "/services/%");
-      const countMap: Record<string, number> = {};
-      for (const r of counts.data || []) {
-        const m = /^\/services\/([^/]+)\//.exec((r as any).path || "");
-        if (m) countMap[m[1]] = (countMap[m[1]] || 0) + 1;
-      }
-      return items.map((p: any) => {
-        const slug = (p.path || "").split("/").filter(Boolean)[1] || p.slug;
-        return {
-          slug,
-          path: p.path,
-          title: decodeHtml(p.title || slug),
-          excerpt: p.excerpt ? decodeHtml(p.excerpt).slice(0, 120) : "",
-          count: Math.max(0, (countMap[slug] || 1) - 1),
-        };
-      });
-    },
+    queryKey: ["local-service-directory"],
+    queryFn: async () => (await getLocalImportOverview()).serviceLines,
+    initialData: initialServices,
     staleTime: 5 * 60 * 1000,
   });
 
   const filtered = useMemo(() => {
-    const list = data || [];
+    const list: LocalServiceLine[] = data || [];
     if (!q.trim()) return list;
     const needle = q.toLowerCase();
     return list.filter(
@@ -443,6 +416,59 @@ function ServiceDirectory() {
           )}
         </div>
       )}
+    </section>
+  );
+}
+
+function ImportOverview({ overview }: { overview: Awaited<ReturnType<typeof getLocalImportOverview>> }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["local-import-overview"],
+    queryFn: () => getLocalImportOverview(),
+    initialData: overview,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const stats = [
+    ["Imported posts", data?.postCount],
+    ["Imported pages", data?.pageCount],
+    ["Service pages", data?.servicePageCount],
+    ["Child service pages", data?.serviceChildCount],
+  ];
+
+  return (
+    <section className="mb-14 rounded-2xl border border-neutral-200 bg-neutral-950 p-6 text-white sm:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <span className="inline-block rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-widest text-white/70">
+            Local WordPress import
+          </span>
+          <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
+            The migrated archive is loaded here.
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">
+            These totals come from the local TanStack JSON manifests, not live WordPress.
+            Blog posts are under <Link to="/blog" className="text-white underline">/blog</Link>, service pages are below, and old WordPress paths resolve through the catch-all route.
+          </p>
+        </div>
+        <Link
+          to="/blog"
+          className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+        >
+          Open blog archive
+        </Link>
+      </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map(([label, value]) => (
+          <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+            <div className="text-3xl font-semibold">
+              {isLoading ? "..." : Number(value || 0).toLocaleString()}
+            </div>
+            <div className="mt-1 text-xs font-medium uppercase tracking-widest text-white/55">
+              {label}
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

@@ -6,6 +6,7 @@ import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCir
 import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-category-archive";
 import { PostArticle, type PostArticleTerm } from "@/components/PostArticle";
 import PageHero from "@/components/PageHero";
+import { getLocalContentByPath } from "@/lib/wp-content-stats.functions";
 
 
 type WpPost = {
@@ -201,15 +202,20 @@ export const Route = createFileRoute("/$")({
     const splat = (params as { _splat?: string })._splat ?? "";
     if (!splat) throw notFound();
 
-    // 1) Try wp_posts (page/post/product/course)
+    // 1) Local WordPress manifests. This keeps the imported site working even
+    // after WordPress/Supabase are gone.
+    const local = await getLocalContentByPath({ data: { path: splat } });
+    if (local) return { kind: "post" as const, ...local };
+
+    // 2) Try wp_posts (page/post/product/course)
     const result = await loadPage(splat);
     if (result) return { kind: "post" as const, ...result };
 
-    // 2) Try category archive (matches /websites/, /websites/web-innovations/, etc.)
+    // 3) Try category archive (matches /websites/, /websites/web-innovations/, etc.)
     const archive = await loadCategoryArchiveByPath(splat, deps.page);
     if (archive) return { kind: "category" as const, archive };
 
-    // 3) Redirects table
+    // 4) Redirects table
     const p = "/" + splat.replace(/^\/+|\/+$/g, "");
     const { data: rd } = await supabase
       .from("redirects")
@@ -273,7 +279,7 @@ export const Route = createFileRoute("/$")({
     );
     const image = media?.storage_url || media?.source_url || undefined;
 
-    const structured = extractStructured(post.meta);
+    const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
     const jsonLdEntries: Array<Record<string, unknown>> = [];
 
     jsonLdEntries.push(
@@ -592,7 +598,7 @@ function DynamicPage() {
   const contentHtml = rewriteContentHtml(post.content || "");
   const heroUrl = media?.storage_url || media?.source_url || null;
   const date = post.post_date ? new Date(post.post_date) : null;
-  const structured = extractStructured(post.meta);
+  const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
   const hasStructured =
     !!(structured.hero || structured.about || structured.process || structured.services || structured.faqs);
 
@@ -742,9 +748,31 @@ function PostArticleFromWp({
   const tagIds: number[] = Array.isArray((post as any).raw?.tags)
     ? (post as any).raw.tags
     : [];
+  const localTerms = Array.isArray((post as any).raw?.terms)
+    ? ((post as any).raw.terms as Array<{ taxonomy: string; slug: string; name: string }>)
+    : null;
+  const localCategories = localTerms
+    ?.filter((term) => term.taxonomy === "category")
+    .map((term, index) => ({
+      id: index + 1,
+      name: term.name,
+      slug: term.slug,
+      parent_id: null,
+      taxonomy: term.taxonomy,
+    }));
+  const localTags = localTerms
+    ?.filter((term) => term.taxonomy === "post_tag")
+    .map((term, index) => ({
+      id: index + 1000,
+      name: term.name,
+      slug: term.slug,
+      parent_id: null,
+      taxonomy: term.taxonomy,
+    }));
 
   const { data: taxonomies } = useQuery({
     queryKey: ["post-terms", post.id, catIds.join(","), tagIds.join(",")],
+    enabled: !localTerms && !!(catIds.length || tagIds.length),
     queryFn: async () => {
       const ids = [...catIds, ...tagIds];
       if (!ids.length) return { categories: [] as PostArticleTerm[], tags: [] as PostArticleTerm[] };
@@ -796,8 +824,8 @@ function PostArticleFromWp({
         raw: (post as any).raw,
       }}
       heroUrl={heroUrl}
-      categories={taxonomies?.categories ?? []}
-      tags={taxonomies?.tags ?? []}
+      categories={localCategories ?? taxonomies?.categories ?? []}
+      tags={localTags ?? taxonomies?.tags ?? []}
       categoryArchivePath={archivePath}
       primaryCategoryChildren={primaryChildren}
     />

@@ -69,9 +69,9 @@ export const Route = createFileRoute("/category/$slug")({
     <div className="mx-auto max-w-3xl px-6 py-24 text-center">
       <h1 className="text-3xl font-bold mb-3">Category not found</h1>
       <p className="text-neutral-600 mb-6">This category doesn't exist or has been removed.</p>
-      <Link to="/category" className="text-indigo-600 hover:underline">
+      <a href="/category" className="text-indigo-600 hover:underline">
         Browse all categories
-      </Link>
+      </a>
     </div>
   ),
 });
