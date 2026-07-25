@@ -131,17 +131,30 @@ function AdminPage() {
 
 
         {/* Quick actions */}
-        <section className="bg-white rounded-xl border border-neutral-200 p-6">
-          <h2 className="text-lg font-bold mb-4">Import & Sync</h2>
+        <section className="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900">🚀 WordPress Database Importer & Seeder</h2>
+              <p className="text-sm text-neutral-500 mt-1">
+                Live cloud seeder: imports XML exports & gateway data (posts, pages, media, custom fields, SEO metadata, featured images) directly into Supabase.
+              </p>
+            </div>
+            <Link
+              to="/import"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition shadow-sm"
+            >
+              ⚡ Launch Seeder / Importer →
+            </Link>
+          </div>
           <div className="grid gap-3 md:grid-cols-2">
             <Link
               to="/import"
               className="group flex items-center justify-between rounded-lg border border-neutral-200 p-4 hover:border-indigo-600 hover:bg-indigo-50/40 transition"
             >
               <div>
-                <p className="font-semibold text-neutral-900">WordPress Import</p>
+                <p className="font-semibold text-neutral-900">Database Seeder & WordPress Import</p>
                 <p className="text-sm text-neutral-500 mt-1">
-                  Posts, pages, custom post types
+                  16,919+ posts, 21,607+ pages, custom post types & XML metadata
                 </p>
               </div>
               <span className="text-indigo-600 group-hover:translate-x-1 transition">→</span>
@@ -151,9 +164,9 @@ function AdminPage() {
               className="group flex items-center justify-between rounded-lg border border-neutral-200 p-4 hover:border-indigo-600 hover:bg-indigo-50/40 transition"
             >
               <div>
-                <p className="font-semibold text-neutral-900">Media Sync</p>
+                <p className="font-semibold text-neutral-900">Media Sync & Storage Seeder</p>
                 <p className="text-sm text-neutral-500 mt-1">
-                  609 attachments to storage
+                  609 attachments from XML export to Lovable Cloud Storage
                 </p>
               </div>
               <span className="text-indigo-600 group-hover:translate-x-1 transition">→</span>

@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/import")({
   component: ImportPage,
-  head: () => ({ meta: [{ title: "Import — Usman Jatoi" }] }),
+  head: () => ({ meta: [{ title: "Database Seeder & Import — Usman Jatoi" }] }),
 });
 
 type State = {
@@ -215,9 +215,9 @@ function ImportPage() {
       <div className="max-w-4xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">WordPress Import</h1>
+            <h1 className="text-2xl font-bold">🚀 WordPress Database Importer & Seeder</h1>
             <p className="text-sm text-muted-foreground">
-              Pulls posts, pages, media, and taxonomies from usmanjatoi.com into Lovable Cloud.
+              Seeds & syncs posts, pages, media attachments, custom fields, SEO metadata, and taxonomy from XML exports into Lovable Cloud Supabase.
             </p>
           </div>
           <Button variant="outline" onClick={signOut}>
