@@ -7,6 +7,8 @@
     "dev": "vite dev",
     "build": "node scripts/prepare-wp-manifests.mjs && vite build",
     "build:dev": "vite build --mode development",
+    "wp:split": "node scripts/split-wp-manifests.mjs",
+    "wp:verify": "node scripts/verify-wp-split.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."

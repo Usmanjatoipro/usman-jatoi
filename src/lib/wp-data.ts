@@ -1,7 +1,4 @@
 import mediaData from "@/data/wp-media-manifest.json";
-import postsData from "@/data/wp-posts-manifest.json";
-import pagesData from "@/data/wp-pages-manifest.json";
-import termsData from "@/data/wp-terms-manifest.json";
 import { supabase } from "@/integrations/supabase/client";
 
 export type WpPostItem = {
@@ -76,26 +73,6 @@ export async function getWpPageOrPostByPath(rawPath: string): Promise<{ post: Wp
     // Fallback
   }
 
-  // Local fallback search across pages then posts
-  const slug = cleanPath.replace(/^\//, "");
-  const pageMatch = (pagesData as WpPostItem[]).find(
-    (p) => p.path === withSlash || p.path === noSlash || p.slug === slug
-  );
-
-  if (pageMatch) {
-    const media = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === pageMatch.featured_media_id) || null;
-    return { post: pageMatch, media };
-  }
-
-  const postMatch = (postsData as WpPostItem[]).find(
-    (p) => p.path === withSlash || p.path === noSlash || p.slug === slug
-  );
-
-  if (postMatch) {
-    const media = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === postMatch.featured_media_id) || null;
-    return { post: postMatch, media };
-  }
-
   return null;
 }
 
@@ -116,12 +93,6 @@ export async function getWpPostBySlug(slug: string): Promise<{ post: WpPostItem;
     }
   } catch (e) {
     // Fallback
-  }
-
-  const match = (postsData as WpPostItem[]).find((p) => p.slug === slug);
-  if (match) {
-    const media = (mediaData as unknown as WpMediaItem[]).find((m) => m.id === match.featured_media_id) || null;
-    return { post: match, media };
   }
 
   return null;
@@ -149,15 +120,5 @@ export async function getWpPostsList(page: number = 0, pageSize: number = 24, se
     // Fallback
   }
 
-  // Local manifest fallback
-  let list = (postsData as WpPostItem[]).filter((p) => p.status === "publish");
-  if (search) {
-    const s = search.toLowerCase();
-    list = list.filter((p) => (p.title || "").toLowerCase().includes(s));
-  }
-  const total = list.length;
-  const start = page * pageSize;
-  const posts = list.slice(start, start + pageSize);
-
-  return { posts, total };
+  return { posts: [] as WpPostItem[], total: 0 };
 }

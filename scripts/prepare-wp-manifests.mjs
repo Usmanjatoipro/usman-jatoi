@@ -1,38 +1,39 @@
-import { createGzip } from "node:zlib";
-import { createReadStream, createWriteStream } from "node:fs";
-import { mkdir, stat } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { pipeline } from "node:stream/promises";
+import { readdir, stat } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const root = process.cwd();
-const files = [
-  "wp-posts-manifest.json",
-  "wp-pages-manifest.json",
-  "wp-terms-manifest.json",
+const base = resolve(root, "public", "wp-data");
+const required = [
+  "wp-data-index.json.gz",
+  "terms/all.json.gz",
 ];
 
-for (const file of files) {
-  const source = resolve(root, "src", "data", file);
-  const target = resolve(root, "public", "wp-data", `${file}.gz`);
-  await mkdir(dirname(target), { recursive: true });
-
-  let shouldWrite = true;
-  try {
-    const [sourceStat, targetStat] = await Promise.all([stat(source), stat(target)]);
-    shouldWrite = sourceStat.mtimeMs > targetStat.mtimeMs || targetStat.size === 0;
-  } catch {
-    shouldWrite = true;
+async function assertFile(relativePath) {
+  const file = resolve(base, relativePath);
+  const info = await stat(file);
+  if (!info.isFile() || info.size === 0) {
+    throw new Error(`WP manifest shard is empty: ${relativePath}`);
   }
+}
 
-  if (!shouldWrite) {
-    console.log(`wp manifest ready: ${file}.gz`);
-    continue;
+async function assertDirectory(relativePath) {
+  const dir = resolve(base, relativePath);
+  const files = await readdir(dir);
+  const shards = files.filter((file) => file.endsWith(".json.gz"));
+  if (!shards.length) {
+    throw new Error(`WP manifest shard directory is empty: ${relativePath}`);
   }
+  return shards.length;
+}
 
-  await pipeline(
-    createReadStream(source),
-    createGzip({ level: 9 }),
-    createWriteStream(target),
-  );
-  console.log(`compressed wp manifest: ${file}.gz`);
+try {
+  for (const file of required) await assertFile(file);
+  const postCount = await assertDirectory("posts");
+  const pageCount = await assertDirectory("pages");
+  const serviceCount = await assertDirectory("services");
+  console.log(`wp split manifests ready: ${postCount} post shards, ${pageCount} page shards, ${serviceCount} service shards`);
+} catch (error) {
+  console.error((error instanceof Error ? error.message : String(error)));
+  console.error("Run: node scripts/split-wp-manifests.mjs");
+  process.exit(1);
 }

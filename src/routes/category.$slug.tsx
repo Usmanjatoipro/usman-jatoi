@@ -1,14 +1,37 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
 import { getCategoryBySlug } from "@/lib/wp-categories.functions";
+import { getLocalCategoryArchiveBySlug } from "@/lib/wp-content-stats.functions";
 import PageHero, { type Crumb } from "@/components/PageHero";
 
 const SITE = "https://usman-connects-us.lovable.app";
+
+type CategoryViewItem = {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  parent_id: number | null;
+  count: number;
+};
+
+type CategoryPostView = {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+  permalink?: string | null;
+  path?: string | null;
+  post_date: string | null;
+  featured_image: string | null;
+};
 
 export const Route = createFileRoute("/category/$slug")({
   validateSearch: z.object({ page: z.number().int().min(1).max(50).optional() }).parse,
   loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
   loader: async ({ params, deps }) => {
+    const local = await getLocalCategoryArchiveBySlug({ data: { slug: params.slug, page: deps.page } });
+    if (local) return local;
     const result = await getCategoryBySlug({ data: { slug: params.slug, page: deps.page } });
     if (!result) throw notFound();
     return result;
@@ -77,14 +100,14 @@ export const Route = createFileRoute("/category/$slug")({
 });
 
 function CategoryPage() {
-  const data = Route.useLoaderData() as NonNullable<Awaited<ReturnType<typeof getCategoryBySlug>>>;
+  const data = Route.useLoaderData() as any;
   const { category, ancestors, children, posts, page, totalPages, total } = data;
   const params = Route.useParams();
 
   const crumbs: Crumb[] = [
     { label: "Home", href: "/" },
     { label: "Categories", href: "/category" },
-    ...ancestors.map((a) => ({ label: a.name, href: `/category/${a.slug}` })),
+    ...ancestors.map((a: CategoryViewItem) => ({ label: a.name, href: `/category/${a.slug}` })),
     { label: category.name },
   ];
 
@@ -106,7 +129,7 @@ function CategoryPage() {
           <section className="mb-12">
             <h2 className="text-lg font-semibold mb-4">Subcategories</h2>
             <div className="flex flex-wrap gap-2">
-              {children.map((c) => (
+              {children.map((c: CategoryViewItem) => (
                 <Link
                   key={c.id}
                   to="/category/$slug"
@@ -124,7 +147,7 @@ function CategoryPage() {
           <p className="text-neutral-500 py-12 text-center">No posts published in this category yet.</p>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
+            {posts.map((post: CategoryPostView) => (
               <article
                 key={post.id}
                 className="group rounded-xl overflow-hidden border border-neutral-200 hover:border-neutral-900 hover:shadow-lg transition"
@@ -150,8 +173,8 @@ function CategoryPage() {
                     </time>
                   )}
                   <h3 className="mt-2 text-lg font-semibold leading-snug group-hover:text-indigo-600 transition">
-                    {post.permalink ? (
-                      <a href={post.permalink} target="_blank" rel="noreferrer">
+                    {post.path || post.permalink ? (
+                      <a href={(post.path || post.permalink) || undefined}>
                         {post.title}
                       </a>
                     ) : (

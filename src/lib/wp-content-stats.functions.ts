@@ -59,6 +59,41 @@ type LocalPost = {
   terms?: { taxonomy: string; slug: string; name: string }[];
 };
 
+type WpDataRef = {
+  kind: "posts" | "pages" | "services";
+  file: string;
+  id: number;
+};
+
+type WpCategoryIndex = {
+  slug: string;
+  name: string;
+  taxonomy: string;
+  count: number;
+  posts: { id: number; file: string; date: string }[];
+};
+
+type WpDataIndex = {
+  counts: {
+    posts: number;
+    pages: number;
+    terms: number;
+    servicePages: number;
+    serviceRoots: number;
+    serviceChildren: number;
+  };
+  files: {
+    posts: Record<string, number>;
+    pages: Record<string, number>;
+    services: Record<string, number>;
+    terms: string;
+  };
+  slugs: Record<string, WpDataRef[]>;
+  paths: Record<string, WpDataRef>;
+  services: (LocalServiceLine & { file: string })[];
+  categories: Record<string, WpCategoryIndex>;
+};
+
 const LABELS: Record<string, string> = {
   page: "Pages",
   post: "Posts",
@@ -109,6 +144,9 @@ let localImportCache:
     }
   | null = null;
 const localManifestCache = new Map<string, LocalPost[]>();
+let wpDataIndexCache: WpDataIndex | null = null;
+const wpShardCache = new Map<string, LocalPost[]>();
+const wpJsonCache = new Map<string, unknown>();
 function gunzipAsync(input: Buffer) {
   return new Promise<Buffer>((resolve, reject) => {
     gunzip(input, (error, output) => {
@@ -170,6 +208,86 @@ async function readLocalManifest(filename: string): Promise<LocalPost[]> {
   const data = JSON.parse(raw) as LocalPost[];
   localManifestCache.set(filename, data);
   return data;
+}
+
+async function readWpDataJson<T>(relativePath: string): Promise<T> {
+  if (wpJsonCache.has(relativePath)) return wpJsonCache.get(relativePath) as T;
+  const cwd = process.cwd();
+  const candidates = [
+    resolve(cwd, "public", "wp-data", relativePath),
+    resolve(cwd, ".output", "public", "wp-data", relativePath),
+    resolve(cwd, "..", "public", "wp-data", relativePath),
+  ];
+  const errors: string[] = [];
+  for (const filePath of candidates) {
+    try {
+      const inflated = await gunzipAsync(await readFile(filePath));
+      const data = JSON.parse(inflated.toString("utf8")) as T;
+      wpJsonCache.set(relativePath, data);
+      return data;
+    } catch (error) {
+      errors.push(`${filePath}: ${(error as Error).message}`);
+    }
+  }
+  throw new Error(`Unable to load split WP data ${relativePath}. Tried ${errors.join(" | ")}`);
+}
+
+async function getWpDataIndex() {
+  if (wpDataIndexCache) return wpDataIndexCache;
+  wpDataIndexCache = await readWpDataJson<WpDataIndex>("wp-data-index.json.gz");
+  return wpDataIndexCache;
+}
+
+async function readWpShard(file: string) {
+  if (wpShardCache.has(file)) return wpShardCache.get(file)!;
+  const data = await readWpDataJson<LocalPost[]>(file);
+  wpShardCache.set(file, data);
+  return data;
+}
+
+async function findItemFromRefs(refs: WpDataRef[] | undefined, predicate: (item: LocalPost) => boolean) {
+  for (const ref of refs || []) {
+    const items = await readWpShard(ref.file);
+    const found = items.find((item) => item.id === ref.id && predicate(item));
+    if (found) return found;
+  }
+  return null;
+}
+
+async function findItemByPath(path: string) {
+  const index = await getWpDataIndex();
+  const ref = index.paths[normalizePath(path)];
+  if (!ref) return { item: null as LocalPost | null, ref: null as WpDataRef | null, siblings: [] as LocalPost[] };
+  const siblings = await readWpShard(ref.file);
+  return {
+    item: siblings.find((entry) => entry.id === ref.id) || null,
+    ref,
+    siblings,
+  };
+}
+
+function directChildren(items: LocalPost[], parentPath: string) {
+  const wanted = normalizePath(parentPath);
+  const prefix = `${wanted}/`;
+  const segCount = wanted.split("/").filter(Boolean).length;
+  return items
+    .filter((item) => {
+      const childPath = normalizePath(item.path);
+      return (
+        item.status === "publish" &&
+        childPath.startsWith(prefix) &&
+        childPath.split("/").filter(Boolean).length === segCount + 1
+      );
+    })
+    .slice(0, 500)
+    .map((item) => ({
+      id: item.id,
+      title: stripTags(item.title) || item.slug,
+      path: normalizePath(item.path),
+      slug: item.slug,
+      excerpt: stripTags(item.excerpt).slice(0, 160),
+      featured_media_id: item.featured_media_id || null,
+    }));
 }
 
 function stripTags(value: string | null | undefined) {
@@ -322,8 +440,11 @@ function hydratedPost(post: LocalPost): LocalPost {
 export const getLocalPostBySlug = createServerFn({ method: "GET" })
   .validator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
-    const posts = await readLocalManifest("wp-posts-manifest.json");
-    const post = posts.find((item) => item.status === "publish" && item.slug === data.slug);
+    const index = await getWpDataIndex();
+    const post = await findItemFromRefs(
+      (index.slugs[data.slug] || []).filter((ref) => ref.kind === "posts"),
+      (item) => item.status === "publish" && item.slug === data.slug,
+    );
     if (!post) return null;
     const hydrated = hydratedPost(post);
     return {
@@ -337,8 +458,10 @@ export const getLocalPostBySlug = createServerFn({ method: "GET" })
 export const getLocalServiceBySlug = createServerFn({ method: "GET" })
   .validator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
-    const pages = await readLocalManifest("wp-pages-manifest.json");
     const path = `/services/${data.slug}`;
+    const index = await getWpDataIndex();
+    const serviceLine = index.services.find((service) => service.slug === data.slug);
+    const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
     const page = pages.find((item) => item.status === "publish" && normalizePath(item.path) === path);
     if (!page) return null;
     const hydrated = hydratedPost(page);
@@ -373,13 +496,7 @@ export const getLocalContentByPath = createServerFn({ method: "GET" })
     const wanted = normalizePath(data.path);
     if (!wanted) return null;
 
-    const [posts, pages] = await Promise.all([
-      readLocalManifest("wp-posts-manifest.json"),
-      readLocalManifest("wp-pages-manifest.json"),
-    ]);
-    const post = [...posts, ...pages].find(
-      (item) => item.status === "publish" && normalizePath(item.path) === wanted,
-    );
+    const { item: post, siblings } = await findItemByPath(wanted);
     if (!post) return null;
 
     const hydrated = hydratedPost(post);
@@ -414,7 +531,7 @@ export const getLocalContentByPath = createServerFn({ method: "GET" })
     const segCount = wanted.split("/").filter(Boolean).length;
     const children =
       post.post_type === "page"
-        ? pages
+        ? siblings
             .filter((item) => {
               const childPath = normalizePath(item.path);
               return (
@@ -460,38 +577,77 @@ export const getLocalContentByPath = createServerFn({ method: "GET" })
 export const getLocalImportOverview = createServerFn({ method: "GET" }).handler(async () => {
   if (localImportCache) return localImportCache;
 
-  const [posts, pages] = await Promise.all([
-    readLocalManifest("wp-posts-manifest.json"),
-    readLocalManifest("wp-pages-manifest.json"),
-  ]);
-
-  const publishedPages = pages.filter((page) => page.status === "publish");
-  const servicePages = publishedPages.filter((page) => normalizePath(page.path).startsWith("/services/"));
-  const roots = servicePages.filter((page) => /^\/services\/[^/]+$/.test(normalizePath(page.path)));
-
-  const serviceLines = roots
-    .map((page) => {
-      const path = normalizePath(page.path);
-      const slug = path.split("/").filter(Boolean)[1] || page.slug;
-      const prefix = `/services/${slug}/`;
-      return {
-        slug,
-        path,
-        title: decodeHtml(page.title) || slug.replace(/-/g, " "),
-        excerpt: decodeHtml(page.excerpt).slice(0, 140),
-        count: servicePages.filter((child) => normalizePath(child.path).startsWith(prefix)).length,
-      };
-    })
-    .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title));
+  const index = await getWpDataIndex();
+  const serviceLines = index.services.map(({ file: _file, ...service }) => ({
+    ...service,
+    excerpt: decodeHtml(service.excerpt).slice(0, 140),
+  }));
 
   localImportCache = {
-    postCount: posts.length,
-    pageCount: pages.length,
-    servicePageCount: servicePages.length,
-    serviceRootCount: roots.length,
-    serviceChildCount: Math.max(0, servicePages.length - roots.length),
+    postCount: index.counts.posts,
+    pageCount: index.counts.pages,
+    servicePageCount: index.counts.servicePages,
+    serviceRootCount: index.counts.serviceRoots,
+    serviceChildCount: index.counts.serviceChildren,
     serviceLines,
   };
 
   return localImportCache;
 });
+
+export const getLocalCategoryArchiveBySlug = createServerFn({ method: "GET" })
+  .validator((data: { slug: string; page?: number }) => data)
+  .handler(async ({ data }) => {
+    const index = await getWpDataIndex();
+    const category = index.categories[data.slug];
+    if (!category) return null;
+
+    const pageSize = 24;
+    const total = category.posts.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const page = Math.min(Math.max(1, data.page || 1), totalPages);
+    const refs = category.posts.slice((page - 1) * pageSize, page * pageSize);
+    const byFile = new Map<string, Set<number>>();
+    refs.forEach((ref) => {
+      if (!byFile.has(ref.file)) byFile.set(ref.file, new Set());
+      byFile.get(ref.file)!.add(ref.id);
+    });
+    const order = new Map(refs.map((ref, index) => [ref.id, index]));
+
+    const posts = [];
+    for (const [file, ids] of byFile) {
+      const shard = await readWpShard(file);
+      for (const post of shard) {
+        if (!ids.has(post.id) || post.status !== "publish") continue;
+        posts.push({
+          id: post.id,
+          slug: post.slug,
+          title: decodeHtml(post.title),
+          excerpt: stripTags(post.excerpt || post.content).slice(0, 240),
+          permalink: normalizePath(post.path) || post.permalink || `/blog/${post.slug}`,
+          path: normalizePath(post.path),
+          post_date: post.post_date || null,
+          featured_image: post.fifu_image_url || null,
+        });
+      }
+    }
+    posts.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+
+    return {
+      category: {
+        id: Math.abs(data.slug.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0)),
+        slug: category.slug,
+        name: decodeHtml(category.name),
+        description: "",
+        parent_id: null,
+        count: total,
+      },
+      ancestors: [],
+      children: [],
+      posts,
+      page,
+      pageSize,
+      total,
+      totalPages,
+    };
+  });
