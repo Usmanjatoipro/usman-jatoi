@@ -263,8 +263,8 @@ function BlogPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14">
             {(page === 0 && !debounced ? rest : posts).map((p) => {
-              const m = p.featured_media_id ? media[p.featured_media_id] : undefined;
-              const thumb = m?.storage_url || m?.source_url || firstImageFromHtml(p.content);
+              const m = p.featured_media_id && p.featured_media_id > 0 ? media[p.featured_media_id] : undefined;
+              const thumb = postImage(p, media);
               const excerpt = stripHtml(p.excerpt) || stripHtml(p.content).slice(0, 160);
               return (
                 <Link
