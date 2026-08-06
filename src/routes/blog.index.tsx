@@ -168,11 +168,9 @@ function BlogPage() {
   }, [page, totalPages]);
 
   const [featured, ...rest] = posts;
-  const featuredMedia = featured?.featured_media_id ? media[featured.featured_media_id] : undefined;
-  const featuredThumb =
-    featuredMedia?.storage_url ||
-    featuredMedia?.source_url ||
-    firstImageFromHtml(featured?.content);
+  const featuredMedia =
+    featured?.featured_media_id && featured.featured_media_id > 0 ? media[featured.featured_media_id] : undefined;
+  const featuredThumb = featured ? postImage(featured, media) : null;
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
