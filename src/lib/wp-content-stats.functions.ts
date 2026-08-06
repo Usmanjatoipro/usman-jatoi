@@ -1,8 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { gunzip } from "node:zlib";
 import type { Database } from "@/integrations/supabase/types";
 
 function serverClient() {
@@ -147,11 +144,29 @@ const localManifestCache = new Map<string, LocalPost[]>();
 let wpDataIndexCache: WpDataIndex | null = null;
 const wpShardCache = new Map<string, LocalPost[]>();
 const wpJsonCache = new Map<string, unknown>();
-function gunzipAsync(input: Buffer) {
-  return new Promise<Buffer>((resolve, reject) => {
+async function readFileBuf(path: string): Promise<Buffer> {
+  const { readFile: rf } = await import("node:fs/promises");
+  return (await rf(path)) as unknown as Buffer;
+}
+
+async function readFileText(path: string): Promise<string> {
+  const { readFile: rf } = await import("node:fs/promises");
+  return rf(path, "utf8");
+}
+
+function resolve(...parts: string[]) {
+  return parts
+    .join("/")
+    .replace(/\/+/g, "/")
+    .replace(/\/[^/]+\/\.\./g, "");
+}
+
+async function gunzipAsync(input: Buffer) {
+  const { gunzip } = await import("node:zlib");
+  return new Promise<Buffer>((res, reject) => {
     gunzip(input, (error, output) => {
       if (error) reject(error);
-      else resolve(output);
+      else res(output);
     });
   });
 }
@@ -190,10 +205,10 @@ async function readLocalManifest(filename: string): Promise<LocalPost[]> {
   for (const candidate of candidates) {
     try {
       if (candidate.gz) {
-        const inflated = await gunzipAsync(await readFile(candidate.path));
+        const inflated = await gunzipAsync(await readFileBuf(candidate.path));
         raw = inflated.toString("utf8");
       } else {
-        raw = await readFile(candidate.path, "utf8");
+        raw = await readFileText(candidate.path);
       }
       break;
     } catch (error) {
@@ -240,7 +255,7 @@ async function readWpDataJson<T>(relativePath: string): Promise<T> {
   const errors: string[] = [];
   for (const filePath of candidates) {
     try {
-      const inflated = await gunzipAsync(await readFile(filePath));
+      const inflated = await gunzipAsync(await readFileBuf(filePath));
       const data = JSON.parse(inflated.toString("utf8")) as T;
       wpJsonCache.set(relativePath, data);
       return data;
@@ -500,7 +515,7 @@ async function postFromDatabase(slug: string) {
       .select("storage_url, source_url")
       .eq("id", row.featured_media_id)
       .maybeSingle();
-    heroUrl = media?.storage_url || media?.source_url || null;
+    heroUrl = media?.source_url || media?.storage_url || null;
   }
   heroUrl = heroUrl || metaImageUrl(row.meta) || firstHtmlImage(row.content);
 

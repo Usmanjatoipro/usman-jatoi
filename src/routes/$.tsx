@@ -277,7 +277,7 @@ export const Route = createFileRoute("/$")({
       post.seo_description || post.excerpt || `${post.title} — Usman Jatoi`,
       158,
     );
-    const image = media?.storage_url || media?.source_url || undefined;
+    const image = media?.source_url || media?.storage_url || undefined;
 
     const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
     const jsonLdEntries: Array<Record<string, unknown>> = [];
@@ -390,7 +390,7 @@ function Breadcrumbs({ path }: { path: string }) {
 // -------------------- Structured section components --------------------
 
 function StructuredHero({ hero, post, media }: { hero: HeroSection; post: WpPost; media: WpMedia | null }) {
-  const heroUrl = media?.storage_url || media?.source_url || null;
+  const heroUrl = media?.source_url || media?.storage_url || null;
   return (
     <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="absolute inset-0 opacity-30 pointer-events-none [background:radial-gradient(60%_60%_at_10%_10%,#a855f7_0%,transparent_60%),radial-gradient(50%_50%_at_90%_20%,#3b82f6_0%,transparent_60%),radial-gradient(50%_50%_at_50%_100%,#ec4899_0%,transparent_60%)]" />
@@ -596,7 +596,7 @@ function DynamicPage() {
   }
   const { post, media, children, childrenMedia } = loaderData;
   const contentHtml = rewriteContentHtml(post.content || "");
-  const heroUrl = media?.storage_url || media?.source_url || null;
+  const heroUrl = media?.source_url || media?.storage_url || null;
   const date = post.post_date ? new Date(post.post_date) : null;
   const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
   const hasStructured =
@@ -851,7 +851,7 @@ function ChildrenGrid({
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {children.map((c) => {
             const cm = c.featured_media_id ? childrenMedia[c.featured_media_id] : null;
-            const cImg = cm?.storage_url || cm?.source_url || null;
+            const cImg = cm?.source_url || cm?.storage_url || null;
             return (
               <Link
                 key={c.id}

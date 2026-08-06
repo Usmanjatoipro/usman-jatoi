@@ -45,10 +45,14 @@ function stripHtml(html: string | null | undefined) {
   return html
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&#8217;|&#8216;/g, "'")
-    .replace(/&#8220;|&#8221;/g, '"')
     .replace(/&hellip;/g, "…")
+    .replace(/&#(\d+);/g, (_, code: string) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code: string) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;|&#039;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -72,8 +76,8 @@ function metaImage(meta: Record<string, unknown> | null | undefined): string | n
 function postImage(p: Post, media: Record<number, Media>): string | null {
   const m = p.featured_media_id && p.featured_media_id > 0 ? media[p.featured_media_id] : undefined;
   return (
-    m?.storage_url ||
     m?.source_url ||
+    m?.storage_url ||
     metaImage(p.meta) ||
     firstImageFromHtml(p.content) ||
     null

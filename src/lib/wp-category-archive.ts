@@ -161,7 +161,7 @@ export async function loadCategoryArchiveByPath(
         .select("id,storage_url,source_url")
         .in("id", mediaIds);
       (mediaRows ?? []).forEach((m: any) => {
-        mediaMap.set(m.id, m.storage_url || m.source_url || "");
+        mediaMap.set(m.id, m.source_url || m.storage_url || "");
       });
     }
     posts = (postRows ?? []).map((p: any) => ({
