@@ -114,10 +114,9 @@ function BlogPage() {
     let cancelled = false;
     setLoading(true);
     (async () => {
-      // Curated: only posts that have a real featured image attached.
       let q = supabase
         .from("wp_posts")
-        .select("id,slug,title,excerpt,content,post_date,featured_media_id", { count: "exact" })
+        .select("id,slug,title,excerpt,content,post_date,featured_media_id,meta", { count: "exact" })
         .eq("post_type", "post")
         .eq("status", "publish")
         .order("post_date", { ascending: false })
