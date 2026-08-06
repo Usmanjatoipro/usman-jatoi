@@ -33,6 +33,7 @@ type Post = {
   content: string | null;
   post_date: string | null;
   featured_media_id: number | null;
+  meta?: Record<string, unknown> | null;
 };
 
 type Media = { id: number; storage_url: string | null; source_url: string | null; alt_text: string | null };
@@ -58,10 +59,32 @@ function firstImageFromHtml(html: string | null | undefined): string | null {
   return m ? m[1] : null;
 }
 
+function metaImage(meta: Record<string, unknown> | null | undefined): string | null {
+  if (!meta) return null;
+  for (const key of ["fifu_image_url", "_thumbnail_url", "rank_math_facebook_image", "og_image"]) {
+    const raw = meta[key];
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    if (typeof value === "string" && /^https?:\/\//i.test(value.trim())) return value.trim();
+  }
+  return null;
+}
+
+function postImage(p: Post, media: Record<number, Media>): string | null {
+  const m = p.featured_media_id && p.featured_media_id > 0 ? media[p.featured_media_id] : undefined;
+  return (
+    m?.storage_url ||
+    m?.source_url ||
+    metaImage(p.meta) ||
+    firstImageFromHtml(p.content) ||
+    null
+  );
+}
+
 function readingMinutes(html: string | null | undefined) {
   const words = stripHtml(html).split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 220));
 }
+
 
 function formatDate(iso: string | null) {
   if (!iso) return "";
