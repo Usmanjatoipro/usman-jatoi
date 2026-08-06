@@ -144,9 +144,14 @@ const localManifestCache = new Map<string, LocalPost[]>();
 let wpDataIndexCache: WpDataIndex | null = null;
 const wpShardCache = new Map<string, LocalPost[]>();
 const wpJsonCache = new Map<string, unknown>();
-async function readFile(path: string, encoding?: "utf8") {
+async function readFileBuf(path: string): Promise<Buffer> {
   const { readFile: rf } = await import("node:fs/promises");
-  return encoding ? rf(path, encoding) : rf(path);
+  return (await rf(path)) as unknown as Buffer;
+}
+
+async function readFileText(path: string): Promise<string> {
+  const { readFile: rf } = await import("node:fs/promises");
+  return rf(path, "utf8");
 }
 
 function resolve(...parts: string[]) {
@@ -200,10 +205,10 @@ async function readLocalManifest(filename: string): Promise<LocalPost[]> {
   for (const candidate of candidates) {
     try {
       if (candidate.gz) {
-        const inflated = await gunzipAsync(await readFile(candidate.path));
+        const inflated = await gunzipAsync(await readFileBuf(candidate.path));
         raw = inflated.toString("utf8");
       } else {
-        raw = await readFile(candidate.path, "utf8");
+        raw = await readFileText(candidate.path);
       }
       break;
     } catch (error) {
@@ -250,7 +255,7 @@ async function readWpDataJson<T>(relativePath: string): Promise<T> {
   const errors: string[] = [];
   for (const filePath of candidates) {
     try {
-      const inflated = await gunzipAsync(await readFile(filePath));
+      const inflated = await gunzipAsync(await readFileBuf(filePath));
       const data = JSON.parse(inflated.toString("utf8")) as T;
       wpJsonCache.set(relativePath, data);
       return data;
