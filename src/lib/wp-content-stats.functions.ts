@@ -500,7 +500,7 @@ async function postFromDatabase(slug: string) {
       .select("storage_url, source_url")
       .eq("id", row.featured_media_id)
       .maybeSingle();
-    heroUrl = media?.storage_url || media?.source_url || null;
+    heroUrl = media?.source_url || media?.storage_url || null;
   }
   heroUrl = heroUrl || metaImageUrl(row.meta) || firstHtmlImage(row.content);
 

@@ -72,8 +72,8 @@ function metaImage(meta: Record<string, unknown> | null | undefined): string | n
 function postImage(p: Post, media: Record<number, Media>): string | null {
   const m = p.featured_media_id && p.featured_media_id > 0 ? media[p.featured_media_id] : undefined;
   return (
-    m?.storage_url ||
     m?.source_url ||
+    m?.storage_url ||
     metaImage(p.meta) ||
     firstImageFromHtml(p.content) ||
     null
