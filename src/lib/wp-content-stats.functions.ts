@@ -210,6 +210,25 @@ async function readLocalManifest(filename: string): Promise<LocalPost[]> {
   return data;
 }
 
+async function fetchWpDataOverHttp<T>(relativePath: string): Promise<T | null> {
+  try {
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const req = getRequest();
+    if (!req?.url) return null;
+    const base = new URL(req.url).origin;
+    const res = await fetch(`${base}/wp-data/${relativePath}`);
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+    const text =
+      buf[0] === 0x1f && buf[1] === 0x8b
+        ? (await gunzipAsync(buf)).toString("utf8")
+        : buf.toString("utf8");
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+}
+
 async function readWpDataJson<T>(relativePath: string): Promise<T> {
   if (wpJsonCache.has(relativePath)) return wpJsonCache.get(relativePath) as T;
   const cwd = process.cwd();
@@ -229,8 +248,14 @@ async function readWpDataJson<T>(relativePath: string): Promise<T> {
       errors.push(`${filePath}: ${(error as Error).message}`);
     }
   }
+  const viaHttp = await fetchWpDataOverHttp<T>(relativePath);
+  if (viaHttp) {
+    wpJsonCache.set(relativePath, viaHttp);
+    return viaHttp;
+  }
   throw new Error(`Unable to load split WP data ${relativePath}. Tried ${errors.join(" | ")}`);
 }
+
 
 async function getWpDataIndex() {
   if (wpDataIndexCache) return wpDataIndexCache;
@@ -437,19 +462,91 @@ function hydratedPost(post: LocalPost): LocalPost {
   };
 }
 
+function metaImageUrl(meta: unknown): string | null {
+  if (!meta || typeof meta !== "object") return null;
+  const record = meta as Record<string, unknown>;
+  for (const key of ["fifu_image_url", "_thumbnail_url", "rank_math_facebook_image", "og_image"]) {
+    const raw = record[key];
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    if (typeof value === "string" && /^https?:\/\//i.test(value.trim())) return value.trim();
+  }
+  return null;
+}
+
+function firstHtmlImage(html: string | null | undefined): string | null {
+  if (!html) return null;
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return match ? match[1] : null;
+}
+
+async function postFromDatabase(slug: string) {
+  const sb = serverClient();
+  const { data: row } = await sb
+    .from("wp_posts")
+    .select(
+      "id, post_type, status, slug, title, excerpt, content, permalink, path, post_date, post_modified, seo_title, seo_description, featured_media_id, meta",
+    )
+    .eq("post_type", "post")
+    .eq("slug", slug)
+    .eq("status", "publish")
+    .limit(1)
+    .maybeSingle();
+  if (!row) return null;
+
+  let heroUrl: string | null = null;
+  if (row.featured_media_id && row.featured_media_id > 0) {
+    const { data: media } = await sb
+      .from("wp_media")
+      .select("storage_url, source_url")
+      .eq("id", row.featured_media_id)
+      .maybeSingle();
+    heroUrl = media?.storage_url || media?.source_url || null;
+  }
+  heroUrl = heroUrl || metaImageUrl(row.meta) || firstHtmlImage(row.content);
+
+  const { data: links } = await sb.from("wp_post_terms").select("term_id, taxonomy").eq("post_id", row.id);
+  const termIds = (links || []).map((l) => l.term_id);
+  const { data: terms } = termIds.length
+    ? await sb.from("wp_terms").select("id, name, slug, taxonomy, parent_id").in("id", termIds)
+    : { data: [] as { id: number; name: string | null; slug: string; taxonomy: string; parent_id: number | null }[] };
+
+  const mapped = (terms || []).map((t) => ({
+    id: t.id,
+    name: t.name || t.slug,
+    slug: t.slug,
+    parent_id: t.parent_id,
+    taxonomy: t.taxonomy,
+  }));
+
+  return {
+    post: hydratedPost(row as unknown as LocalPost),
+    heroUrl,
+    categories: mapped.filter((t) => t.taxonomy === "category"),
+    tags: mapped.filter((t) => t.taxonomy === "post_tag"),
+  };
+}
+
 export const getLocalPostBySlug = createServerFn({ method: "GET" })
   .validator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
-    const index = await getWpDataIndex();
-    const post = await findItemFromRefs(
-      (index.slugs[data.slug] || []).filter((ref) => ref.kind === "posts"),
-      (item) => item.status === "publish" && item.slug === data.slug,
-    );
-    if (!post) return null;
+    let post: LocalPost | null = null;
+    try {
+      const index = await getWpDataIndex();
+      post = await findItemFromRefs(
+        (index.slugs[data.slug] || []).filter((ref) => ref.kind === "posts"),
+        (item) => item.status === "publish" && item.slug === data.slug,
+      );
+    } catch {
+      post = null;
+    }
+    if (!post) return await postFromDatabase(data.slug);
     const hydrated = hydratedPost(post);
+    const heroUrl =
+      post.fifu_image_url || metaImageUrl(post.meta) || firstHtmlImage(hydrated.content) || null;
+    const fallbackHero = heroUrl ? null : await postFromDatabase(data.slug);
     return {
       post: hydrated,
-      heroUrl: post.fifu_image_url || null,
+      heroUrl: heroUrl || fallbackHero?.heroUrl || null,
       categories: (post.terms || []).filter((term) => term.taxonomy === "category").map((term, index) => ({ id: index + 1, name: term.name, slug: term.slug, parent_id: null, taxonomy: term.taxonomy })),
       tags: (post.terms || []).filter((term) => term.taxonomy === "post_tag").map((term, index) => ({ id: index + 1000, name: term.name, slug: term.slug, parent_id: null, taxonomy: term.taxonomy })),
     };

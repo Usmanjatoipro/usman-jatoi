@@ -33,6 +33,7 @@ type Post = {
   content: string | null;
   post_date: string | null;
   featured_media_id: number | null;
+  meta?: Record<string, unknown> | null;
 };
 
 type Media = { id: number; storage_url: string | null; source_url: string | null; alt_text: string | null };
@@ -58,16 +59,69 @@ function firstImageFromHtml(html: string | null | undefined): string | null {
   return m ? m[1] : null;
 }
 
+function metaImage(meta: Record<string, unknown> | null | undefined): string | null {
+  if (!meta) return null;
+  for (const key of ["fifu_image_url", "_thumbnail_url", "rank_math_facebook_image", "og_image"]) {
+    const raw = meta[key];
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    if (typeof value === "string" && /^https?:\/\//i.test(value.trim())) return value.trim();
+  }
+  return null;
+}
+
+function postImage(p: Post, media: Record<number, Media>): string | null {
+  const m = p.featured_media_id && p.featured_media_id > 0 ? media[p.featured_media_id] : undefined;
+  return (
+    m?.storage_url ||
+    m?.source_url ||
+    metaImage(p.meta) ||
+    firstImageFromHtml(p.content) ||
+    null
+  );
+}
+
 function readingMinutes(html: string | null | undefined) {
   const words = stripHtml(html).split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 220));
 }
+
 
 function formatDate(iso: string | null) {
   if (!iso) return "";
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
+
+function CoverFallback({ title, big }: { title: string; big?: boolean }) {
+  const seed = Array.from(title).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const hue = seed % 360;
+  const initials = title
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+  return (
+    <div
+      className="w-full h-full flex items-center justify-center relative overflow-hidden"
+      style={{
+        background: `linear-gradient(135deg, hsl(${hue} 30% 16%), hsl(${(hue + 48) % 360} 42% 30%))`,
+      }}
+      aria-hidden
+    >
+      <span
+        className={`font-semibold tracking-tight text-white/85 ${big ? "text-6xl" : "text-4xl"}`}
+      >
+        {initials || "UJ"}
+      </span>
+      <span className="absolute bottom-3 right-4 text-[10px] font-mono uppercase tracking-[0.24em] text-white/45">
+        Usman Jatoi
+      </span>
+    </div>
+  );
+}
+
+
 
 function BlogPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -91,10 +145,9 @@ function BlogPage() {
     let cancelled = false;
     setLoading(true);
     (async () => {
-      // Curated: only posts that have a real featured image attached.
       let q = supabase
         .from("wp_posts")
-        .select("id,slug,title,excerpt,content,post_date,featured_media_id", { count: "exact" })
+        .select("id,slug,title,excerpt,content,post_date,featured_media_id,meta", { count: "exact" })
         .eq("post_type", "post")
         .eq("status", "publish")
         .order("post_date", { ascending: false })
@@ -146,11 +199,9 @@ function BlogPage() {
   }, [page, totalPages]);
 
   const [featured, ...rest] = posts;
-  const featuredMedia = featured?.featured_media_id ? media[featured.featured_media_id] : undefined;
-  const featuredThumb =
-    featuredMedia?.storage_url ||
-    featuredMedia?.source_url ||
-    firstImageFromHtml(featured?.content);
+  const featuredMedia =
+    featured?.featured_media_id && featured.featured_media_id > 0 ? media[featured.featured_media_id] : undefined;
+  const featuredThumb = featured ? postImage(featured, media) : null;
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
@@ -193,9 +244,7 @@ function BlogPage() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-neutral-300" aria-hidden>
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-                </div>
+                <CoverFallback title={stripHtml(featured.title)} big />
               )}
             </div>
             <div className="md:col-span-2">
@@ -243,8 +292,8 @@ function BlogPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14">
             {(page === 0 && !debounced ? rest : posts).map((p) => {
-              const m = p.featured_media_id ? media[p.featured_media_id] : undefined;
-              const thumb = m?.storage_url || m?.source_url || firstImageFromHtml(p.content);
+              const m = p.featured_media_id && p.featured_media_id > 0 ? media[p.featured_media_id] : undefined;
+              const thumb = postImage(p, media);
               const excerpt = stripHtml(p.excerpt) || stripHtml(p.content).slice(0, 160);
               return (
                 <Link
@@ -262,9 +311,7 @@ function BlogPage() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-neutral-300" aria-hidden>
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-                      </div>
+                      <CoverFallback title={stripHtml(p.title)} />
                     )}
                   </div>
                   <div className="mt-4 flex items-center gap-2 text-[11px] font-mono tracking-wide text-neutral-500">

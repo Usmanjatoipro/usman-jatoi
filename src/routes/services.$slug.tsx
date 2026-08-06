@@ -530,7 +530,7 @@ function ServiceDetail() {
               </p>
             </Reveal>
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {childServices.slice(0, 120).map((child, index) => (
+              {childServices.slice(0, 120).map((child: { href: string; title: string; excerpt?: string }, index: number) => (
                 <Reveal key={child.href} delay={(index % 9) * 35}>
                   <a
                     href={child.href}
