@@ -213,9 +213,7 @@ function BlogPage() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-neutral-300" aria-hidden>
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-                </div>
+                <CoverFallback title={stripHtml(featured.title)} big />
               )}
             </div>
             <div className="md:col-span-2">
