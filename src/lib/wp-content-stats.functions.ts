@@ -210,6 +210,25 @@ async function readLocalManifest(filename: string): Promise<LocalPost[]> {
   return data;
 }
 
+async function fetchWpDataOverHttp<T>(relativePath: string): Promise<T | null> {
+  try {
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const req = getRequest();
+    if (!req?.url) return null;
+    const base = new URL(req.url).origin;
+    const res = await fetch(`${base}/wp-data/${relativePath}`);
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+    const text =
+      buf[0] === 0x1f && buf[1] === 0x8b
+        ? (await gunzipAsync(buf)).toString("utf8")
+        : buf.toString("utf8");
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+}
+
 async function readWpDataJson<T>(relativePath: string): Promise<T> {
   if (wpJsonCache.has(relativePath)) return wpJsonCache.get(relativePath) as T;
   const cwd = process.cwd();
@@ -229,8 +248,14 @@ async function readWpDataJson<T>(relativePath: string): Promise<T> {
       errors.push(`${filePath}: ${(error as Error).message}`);
     }
   }
+  const viaHttp = await fetchWpDataOverHttp<T>(relativePath);
+  if (viaHttp) {
+    wpJsonCache.set(relativePath, viaHttp);
+    return viaHttp;
+  }
   throw new Error(`Unable to load split WP data ${relativePath}. Tried ${errors.join(" | ")}`);
 }
+
 
 async function getWpDataIndex() {
   if (wpDataIndexCache) return wpDataIndexCache;
