@@ -92,6 +92,37 @@ function formatDate(iso: string | null) {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
+function CoverFallback({ title, big }: { title: string; big?: boolean }) {
+  const seed = Array.from(title).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const hue = seed % 360;
+  const initials = title
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+  return (
+    <div
+      className="w-full h-full flex items-center justify-center relative overflow-hidden"
+      style={{
+        background: `linear-gradient(135deg, hsl(${hue} 30% 16%), hsl(${(hue + 48) % 360} 42% 30%))`,
+      }}
+      aria-hidden
+    >
+      <span
+        className={`font-semibold tracking-tight text-white/85 ${big ? "text-6xl" : "text-4xl"}`}
+      >
+        {initials || "UJ"}
+      </span>
+      <span className="absolute bottom-3 right-4 text-[10px] font-mono uppercase tracking-[0.24em] text-white/45">
+        Usman Jatoi
+      </span>
+    </div>
+  );
+}
+
+
+
 function BlogPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [media, setMedia] = useState<Record<number, Media>>({});
