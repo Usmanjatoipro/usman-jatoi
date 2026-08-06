@@ -1,8 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { gunzip } from "node:zlib";
 import type { Database } from "@/integrations/supabase/types";
 
 function serverClient() {
@@ -147,11 +144,24 @@ const localManifestCache = new Map<string, LocalPost[]>();
 let wpDataIndexCache: WpDataIndex | null = null;
 const wpShardCache = new Map<string, LocalPost[]>();
 const wpJsonCache = new Map<string, unknown>();
-function gunzipAsync(input: Buffer) {
-  return new Promise<Buffer>((resolve, reject) => {
+async function readFile(path: string, encoding?: "utf8") {
+  const { readFile: rf } = await import("node:fs/promises");
+  return encoding ? rf(path, encoding) : rf(path);
+}
+
+function resolve(...parts: string[]) {
+  return parts
+    .join("/")
+    .replace(/\/+/g, "/")
+    .replace(/\/[^/]+\/\.\./g, "");
+}
+
+async function gunzipAsync(input: Buffer) {
+  const { gunzip } = await import("node:zlib");
+  return new Promise<Buffer>((res, reject) => {
     gunzip(input, (error, output) => {
       if (error) reject(error);
-      else resolve(output);
+      else res(output);
     });
   });
 }
