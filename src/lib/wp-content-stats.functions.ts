@@ -468,6 +468,11 @@ const RICH_BODY_META = [
   "case_studies",
   "timeline",
   "GlossaryRelatedTerms",
+  "BenefitsAdvantages",
+  "DrawbacksLimitations",
+  "StrategiesFrameworks",
+  "ActionPlanHowtoImplement",
+  "FuturePredictions",
   "faqs",
 ] as const;
 
@@ -504,10 +509,10 @@ function metaToHtml(meta: LocalPost["meta"]) {
 function hydratedPost(post: LocalPost): LocalPost {
   const originalContent = post.content && stripTags(post.content) ? post.content : "";
   const structuredContent = metaToHtml(post.meta);
-  const originalWords = stripTags(originalContent).split(/\s+/).filter(Boolean).length;
-  const content = structuredContent && originalWords < 900
-    ? `${originalContent}${structuredContent}`
-    : originalContent || structuredContent;
+  const isPlaceholder = /this is a comprehensive post about/i.test(stripTags(originalContent));
+  const content = structuredContent
+    ? `${isPlaceholder ? "" : originalContent}${structuredContent}`
+    : originalContent;
   return {
     ...post,
     content,
