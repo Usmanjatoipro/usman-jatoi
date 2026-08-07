@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import PageHero from "@/components/PageHero";
+import { getBlogIndexPage } from "@/lib/wp-blog.functions";
 
 export const Route = createFileRoute("/blog/")({
+  loader: () => getBlogIndexPage({ data: { offset: 0, limit: PAGE_SIZE, search: "" } }),
   head: () => ({
     meta: [
       { title: "Blog — Usman Jatoi" },
@@ -125,16 +127,37 @@ function CoverFallback({ title, big }: { title: string; big?: boolean }) {
   );
 }
 
+function CoverImage({ src, alt, eager = false }: { src: string; alt: string; eager?: boolean }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <CoverFallback title={alt} big={eager} />;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading={eager ? "eager" : "lazy"}
+      fetchPriority={eager ? "high" : "auto"}
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+  );
+}
+
 
 
 function BlogPage() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [media, setMedia] = useState<Record<number, Media>>({});
-  const [total, setTotal] = useState(0);
+  const initial = Route.useLoaderData();
+  const loadPage = useServerFn(getBlogIndexPage);
+  const initialPosts = (initial?.posts ?? []) as Post[];
+  const initialMedia = (initial?.media ?? {}) as Record<number, Media>;
+  const initialTotal = initial?.total ?? 0;
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [media, setMedia] = useState<Record<number, Media>>(initialMedia);
+  const [total, setTotal] = useState(initialTotal);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initial);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search.trim()), 300);
@@ -149,41 +172,26 @@ function BlogPage() {
     let cancelled = false;
     setLoading(true);
     (async () => {
-      let q = supabase
-        .from("wp_posts")
-        .select("id,slug,title,excerpt,content,post_date,featured_media_id,meta", { count: "exact" })
-        .eq("post_type", "post")
-        .eq("status", "publish")
-        .order("post_date", { ascending: false })
-        .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
-      if (debounced) q = q.ilike("title", `%${debounced}%`);
-
-      const { data, count } = await q;
-      if (cancelled) return;
-      const rows = (data ?? []) as Post[];
-      setPosts(rows);
-      setTotal(count ?? 0);
-
-      const mediaIds = rows.map((r) => r.featured_media_id).filter((x): x is number => !!x && x > 0);
-      if (mediaIds.length) {
-        const { data: mediaRows } = await supabase
-          .from("wp_media")
-          .select("id,storage_url,source_url,alt_text")
-          .in("id", mediaIds);
-        if (!cancelled && mediaRows) {
-          const map: Record<number, Media> = {};
-          for (const m of mediaRows as Media[]) map[m.id] = m;
-          setMedia(map);
-        }
-      } else {
-        setMedia({});
+      if (page === 0 && !debounced && initial) {
+        setPosts(initialPosts);
+        setMedia(initialMedia);
+        setTotal(initialTotal);
+        setLoading(false);
+        return;
       }
+      const result = await loadPage({
+        data: { offset: page * PAGE_SIZE, limit: PAGE_SIZE, search: debounced },
+      });
+      if (cancelled) return;
+      setPosts(result.posts as Post[]);
+      setMedia(result.media as Record<number, Media>);
+      setTotal(result.total);
       setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [page, debounced]);
+  }, [page, debounced, loadPage]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -241,11 +249,10 @@ function BlogPage() {
           >
             <div className="md:col-span-3 aspect-[16/10] overflow-hidden rounded-2xl bg-neutral-100">
               {featuredThumb ? (
-                <img
+                <CoverImage
                   src={featuredThumb}
-                  alt={featuredMedia?.alt_text || stripHtml(featured.title) || ""}
-                  loading="eager"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  alt={featuredMedia?.alt_text || stripHtml(featured.title) || "Featured article"}
+                  eager
                 />
               ) : (
                 <CoverFallback title={stripHtml(featured.title)} big />
@@ -308,11 +315,9 @@ function BlogPage() {
                 >
                   <div className="aspect-[16/10] overflow-hidden rounded-xl bg-neutral-100">
                     {thumb ? (
-                      <img
+                      <CoverImage
                         src={thumb}
-                        alt={m?.alt_text || stripHtml(p.title) || ""}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                        alt={m?.alt_text || stripHtml(p.title) || "Article cover"}
                       />
                     ) : (
                       <CoverFallback title={stripHtml(p.title)} />

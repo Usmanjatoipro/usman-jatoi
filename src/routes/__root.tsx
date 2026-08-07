@@ -98,8 +98,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Usman Jatoi" },
       { name: "twitter:description", content: "Official site of Usman Jatoi — educator, entrepreneur and strategist. Courses, blog posts, services and resources." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e901daa5-94b1-4dad-ba70-d62cdfd49876/id-preview-2bfe4ee5--c241856b-8f20-4e04-92b8-c8a67d842604.lovable.app-1784739553909.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e901daa5-94b1-4dad-ba70-d62cdfd49876/id-preview-2bfe4ee5--c241856b-8f20-4e04-92b8-c8a67d842604.lovable.app-1784739553909.png" },
     ],
     scripts: [
       {

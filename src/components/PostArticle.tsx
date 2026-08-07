@@ -26,7 +26,6 @@ import {
   Instagram,
   Rss,
 } from "lucide-react";
-import heroBg from "@/assets/hero-bg.webp.asset.json";
 import PageHero from "@/components/PageHero";
 
 export type PostArticleData = {
@@ -423,54 +422,31 @@ export function PostArticle({
         ]}
       />
 
+      {heroUrl && (
+        <figure className="mx-auto mt-8 w-full max-w-7xl px-4 md:px-6">
+          <div className="aspect-[16/7] overflow-hidden rounded-xl bg-neutral-100">
+            <img
+              src={heroUrl}
+              alt={title}
+              width={1600}
+              height={700}
+              fetchPriority="high"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </figure>
+      )}
+
       <div className="h-8" />
 
       {/* ================= 70/30 ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
         {/* ---------- MAIN ---------- */}
         <main className="min-w-0">
-          {/* HERO CARD — dark silky background, title, excerpt, category pills */}
-          <section
-            className="relative overflow-hidden rounded-3xl border border-neutral-200/60 shadow-sm text-white"
-            style={{
-              backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%), url(${heroUrl || heroBg.url})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundColor: "#050505",
-            }}
-          >
-            <div className="p-6 md:p-10 lg:p-14 min-h-[340px] md:min-h-[420px] flex flex-col justify-end">
-              <h1 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight max-w-3xl">
-                {title}
-              </h1>
-              {excerpt && (
-                <p className="mt-5 max-w-2xl text-sm md:text-base text-white/75 leading-relaxed line-clamp-3">
-                  {excerpt}
-                </p>
-              )}
-              {categories.length > 0 && (
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {categories.slice(0, 4).map((c) => (
-                    <Link
-                      key={c.id}
-                      to={"/category/$slug" as any}
-                      params={{ slug: c.slug } as any}
-                      className="text-xs md:text-sm rounded-full border border-white/25 bg-white/5 backdrop-blur px-3.5 py-1.5 text-white/90 hover:bg-white/10 transition"
-                    >
-                      {c.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-              {/* small author avatar */}
-              <div
-                className="absolute bottom-4 right-4 h-9 w-9 rounded-full bg-gradient-to-br from-amber-400 to-rose-500 border-2 border-white/40 flex items-center justify-center text-[11px] font-bold text-white"
-                aria-hidden
-              >
-                UJ
-              </div>
-            </div>
-          </section>
+          {excerpt && (
+            <p className="max-w-3xl text-lg leading-relaxed text-neutral-600">{excerpt}</p>
+          )}
 
           {/* Meta row: views · date · responses  +  sources button */}
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
