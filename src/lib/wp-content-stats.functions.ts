@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 function serverClient() {
   const url = process.env.SUPABASE_URL!;
@@ -52,7 +52,7 @@ type LocalPost = {
   featured_media_id?: number | null;
   fifu_image_url?: string | null;
   fifu_image_alt?: string | null;
-  meta?: Record<string, string | string[]> | null;
+  meta?: Json;
   terms?: { taxonomy: string; slug: string; name: string }[];
 };
 
@@ -343,9 +343,13 @@ function escapeHtml(value: string | null | undefined) {
 }
 
 function metaString(meta: LocalPost["meta"], key: string) {
-  const value = meta?.[key];
-  if (Array.isArray(value)) return value.find(Boolean) || "";
-  return value || "";
+  if (!meta || Array.isArray(meta) || typeof meta !== "object") return "";
+  const value = meta[key];
+  if (Array.isArray(value)) {
+    const first = value.find((entry) => typeof entry === "string" && entry.trim());
+    return typeof first === "string" ? first : "";
+  }
+  return typeof value === "string" ? value : "";
 }
 
 function labelFromKey(key: string) {
@@ -446,20 +450,56 @@ const SKIP_BODY_META = new Set([
   "fifu_image_alt",
 ]);
 
+const RICH_BODY_META = [
+  "intro",
+  "takeaways",
+  "WhatisX",
+  "why_important",
+  "examples",
+  "ProcessStep-by-Step",
+  "checklist",
+  "BestPracticesTips",
+  "beginners_tips",
+  "advanced_tips",
+  "CommonMistakesMyths",
+  "pros_cons",
+  "comparison",
+  "comparison_tables",
+  "case_studies",
+  "timeline",
+  "GlossaryRelatedTerms",
+  "BenefitsAdvantages",
+  "DrawbacksLimitations",
+  "StrategiesFrameworks",
+  "ActionPlanHowtoImplement",
+  "FuturePredictions",
+  "faqs",
+] as const;
+
 function metaToHtml(meta: LocalPost["meta"]) {
-  const entries = Object.entries(meta || {}).filter(([key, value]) => {
-    const text = Array.isArray(value) ? value.join("\n") : value;
-    return text.trim() && !SKIP_BODY_META.has(key) && !key.startsWith("_elementor_") && !key.toLowerCase().includes("schema");
+  const record = meta && !Array.isArray(meta) && typeof meta === "object" ? meta : {};
+  const entries = Object.entries(record).filter(([key, value]) => {
+    const text = Array.isArray(value)
+      ? value.filter((entry): entry is string => typeof entry === "string").join("\n")
+      : typeof value === "string"
+        ? value
+        : value && typeof value === "object"
+          ? JSON.stringify(value)
+          : "";
+    return text.trim() && RICH_BODY_META.includes(key as (typeof RICH_BODY_META)[number]) && !SKIP_BODY_META.has(key);
   });
   if (!entries.length) return "";
-  const order = ["intro", "hero_section", "aboutexpertise_section", "our_services", "process", "comparison_tables", "comparison", "faqs", "_cached_industries_block", "_cached_locations_block_v4"];
   entries.sort(([a], [b]) => {
-    const ai = order.indexOf(a);
-    const bi = order.indexOf(b);
-    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi) || labelFromKey(a).localeCompare(labelFromKey(b));
+    const ai = RICH_BODY_META.indexOf(a as (typeof RICH_BODY_META)[number]);
+    const bi = RICH_BODY_META.indexOf(b as (typeof RICH_BODY_META)[number]);
+    return ai - bi;
   });
   return entries.map(([key, raw]) => {
-    const value = Array.isArray(raw) ? raw.filter(Boolean).join("\n\n") : raw;
+    const value = Array.isArray(raw)
+      ? raw.filter((entry): entry is string => typeof entry === "string" && Boolean(entry)).join("\n\n")
+      : typeof raw === "string"
+        ? raw
+        : JSON.stringify(raw);
     const parsed = parseJson(value);
     const body = parsed ? jsonToHtml(parsed) : /<\/?[a-z][\s\S]*>/i.test(value) ? value.replace(/<script[\s\S]*?<\/script>/gi, "") : `<p>${escapeHtml(value)}</p>`;
     return `<section class="migrated-field" data-field="${escapeHtml(key)}"><h2>${escapeHtml(labelFromKey(key))}</h2>${body}</section>`;
@@ -467,7 +507,12 @@ function metaToHtml(meta: LocalPost["meta"]) {
 }
 
 function hydratedPost(post: LocalPost): LocalPost {
-  const content = post.content && stripTags(post.content) ? post.content : metaToHtml(post.meta);
+  const originalContent = post.content && stripTags(post.content) ? post.content : "";
+  const structuredContent = metaToHtml(post.meta);
+  const isPlaceholder = /this is a comprehensive post about/i.test(stripTags(originalContent));
+  const content = structuredContent
+    ? `${isPlaceholder ? "" : originalContent}${structuredContent}`
+    : originalContent;
   return {
     ...post,
     content,

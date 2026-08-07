@@ -242,7 +242,7 @@ export function SiteHeader() {
           margin-left: 0 !important;
           margin-right: 0 !important;
         }
-        header.site-header, header.site-header a, header.site-header button { color: inherit; border-color: transparent; }
+        header.site-header a, header.site-header button { color: inherit; border-color: transparent; }
         header.site-header a { text-decoration: none; }
         header.site-header, header.site-header * { border-bottom-color: transparent !important; }
         footer.site-footer { color: rgb(212 212 212); background: #0a0a0a; }

@@ -43,6 +43,10 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:description", content: desc },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
+        { name: "geo.region", content: "PK" },
+        { name: "geo.placename", content: "Pakistan" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc },
         ...(image
           ? [
               { property: "og:image", content: image },
@@ -55,20 +59,43 @@ export const Route = createFileRoute("/blog/$slug")({
         },
       ],
       links: [{ rel: "canonical", href: url }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: truncate(rawTitle, 110),
-            datePublished: loaderData.post_date,
-            image: image ? [image] : undefined,
-            author: { "@type": "Person", name: "Usman Jatoi" },
-            mainEntityOfPage: url,
-          }),
-        },
-      ],
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "BlogPosting",
+              "@id": `${url}#article`,
+              headline: truncate(rawTitle, 110),
+              description: desc,
+              datePublished: loaderData.post_date,
+              dateModified: loaderData.post_modified || loaderData.post_date,
+              image: image ? { "@type": "ImageObject", url: image } : undefined,
+              author: { "@id": `${SITE}/#person` },
+              publisher: { "@id": `${SITE}/#person` },
+              mainEntityOfPage: { "@type": "WebPage", "@id": url },
+              articleSection: (loaderData.categories || []).map((category: { name: string }) => category.name),
+              keywords: (loaderData.tags || []).map((tag: { name: string }) => tag.name).join(", "),
+              inLanguage: "en",
+            },
+            {
+              "@type": "Person",
+              "@id": `${SITE}/#person`,
+              name: "Usman Jatoi",
+              url: SITE,
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+                { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE}/blog` },
+                { "@type": "ListItem", position: 3, name: truncate(rawTitle, 110), item: url },
+              ],
+            },
+          ],
+        }),
+      }],
     };
   },
   component: PostPage,
