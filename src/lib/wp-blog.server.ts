@@ -42,7 +42,7 @@ export async function readBlogIndexPage(offset: number, limit: number, search: s
   const client = publicClient();
   let query = client
     .from("wp_posts")
-    .select("id,slug,title,excerpt,content,post_date,featured_media_id,meta", { count: "exact" })
+    .select("id,slug,title,excerpt,content,post_date,featured_media_id,meta", { count: "planned" })
     .eq("post_type", "post")
     .eq("status", "publish")
     .order("post_date", { ascending: false })
