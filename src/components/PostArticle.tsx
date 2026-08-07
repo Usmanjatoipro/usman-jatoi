@@ -137,6 +137,7 @@ export function PostArticle({
   const [showTop, setShowTop] = useState(false);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [heroFailed, setHeroFailed] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [siblings, setSiblings] = useState<{ title: string; href: string }[]>(
     primaryCategoryChildren
@@ -422,7 +423,7 @@ export function PostArticle({
         ]}
       />
 
-      {heroUrl && (
+      {heroUrl && !heroFailed && (
         <figure className="mx-auto mt-8 w-full max-w-7xl px-4 md:px-6">
           <div className="aspect-[16/7] overflow-hidden rounded-xl bg-neutral-100">
             <img
@@ -432,6 +433,7 @@ export function PostArticle({
               height={700}
               fetchPriority="high"
               decoding="async"
+              onError={() => setHeroFailed(true)}
               className="h-full w-full object-cover"
             />
           </div>

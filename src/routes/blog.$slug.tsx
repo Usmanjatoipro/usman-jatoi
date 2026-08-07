@@ -43,6 +43,8 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:description", content: desc },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
+        { name: "geo.region", content: "PK" },
+        { name: "geo.placename", content: "Pakistan" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: desc },
         ...(image
