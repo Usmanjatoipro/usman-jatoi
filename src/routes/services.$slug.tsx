@@ -776,25 +776,18 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Process ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="mx-auto max-w-6xl px-6 py-20">
         <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Step-by-step process
+          <span className="mb-4 inline-block rounded-full bg-[#FF6A00]/10 px-3 py-1 text-xs uppercase tracking-widest text-[#FF6A00]">
+            Our process
+          </span>
+          <h2 className="mb-10 text-3xl font-bold md:text-4xl">
+            How a {s.title.toLowerCase()} engagement runs, step by step
           </h2>
         </Reveal>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {process.map((p, i) => (
-            <Reveal key={p.n} delay={i * 100}>
-              <div className="relative rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full">
-                <div className="text-5xl font-black text-[#FF6A00] mb-3">
-                  {p.n}
-                </div>
-                <h3 className="text-xl font-bold mb-1">{p.t}</h3>
-                <p className="text-neutral-600">{p.d}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={100}>
+          <ProcessSlider steps={process} />
+        </Reveal>
       </section>
 
       {/* ---------- Video highlight ---------- */}
