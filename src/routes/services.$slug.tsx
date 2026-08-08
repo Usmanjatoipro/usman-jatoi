@@ -1071,6 +1071,8 @@ function ServiceDetail() {
           </div>
         </Reveal>
       </section>
+
+      <FloatingDock />
     </div>
   );
 }
