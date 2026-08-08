@@ -997,13 +997,22 @@ export function PostArticle({
 
               <button
                 type="submit"
+                disabled={newsState === "sending"}
                 aria-label="Subscribe"
-                className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100 flex-none"
+                className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100 flex-none disabled:opacity-60"
               >
-                <Send className="h-4 w-4" />
+                {newsState === "done" ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
               </button>
             </form>
+            <p className="mt-2 text-xs text-white/60" role="status">
+              {newsState === "done"
+                ? "You're subscribed — welcome aboard."
+                : newsState === "error"
+                  ? "Couldn't subscribe right now. Try again later."
+                  : "No spam. Unsubscribe anytime."}
+            </p>
           </div>
+
         </aside>
       </div>
 
