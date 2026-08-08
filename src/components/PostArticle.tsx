@@ -78,6 +78,7 @@ function decodeEntities(s: string) {
 function formatDate(iso: string | null | undefined) {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -1143,6 +1144,7 @@ export function PostArticle({
                       <div className="text-[11px] tracking-widest uppercase text-white/70">
                         {r.date
                           ? new Date(r.date).toLocaleDateString("en-US", {
+                              timeZone: "UTC",
                               year: "numeric",
                               month: "long",
                               day: "numeric",
