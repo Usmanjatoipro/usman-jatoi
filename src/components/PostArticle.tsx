@@ -150,6 +150,46 @@ export function PostArticle({
   const [heroFailed, setHeroFailed] = useState(false);
   const [newsEmail, setNewsEmail] = useState("");
   const [newsState, setNewsState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [contactState, setContactState] = useState<"idle" | "sending" | "done" | "error">("idle");
+
+  async function subscribeNewsletter(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newsEmail.trim()) return;
+    setNewsState("sending");
+    const { error } = await supabase.from("newsletter_subscribers").insert({
+      email: newsEmail.trim(),
+      source_path: typeof window !== "undefined" ? window.location.pathname : null,
+    });
+    if (error && !/duplicate|unique/i.test(error.message)) setNewsState("error");
+    else {
+      setNewsState("done");
+      setNewsEmail("");
+    }
+  }
+
+  async function submitContact(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const first = String(fd.get("first_name") || "").trim();
+    const last = String(fd.get("last_name") || "").trim();
+    setContactState("sending");
+    const { error } = await supabase.from("contact_submissions").insert({
+      name: [first, last].filter(Boolean).join(" ") || "Anonymous",
+      email: String(fd.get("email") || "").trim(),
+      phone: String(fd.get("phone") || "").trim() || null,
+      looking_for: String(fd.get("subject") || "").trim() || null,
+      message: String(fd.get("message") || "").trim(),
+      source_path: typeof window !== "undefined" ? window.location.pathname : null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+    if (error) setContactState("error");
+    else {
+      setContactState("done");
+      form.reset();
+    }
+  }
+
 
   const bodyRef = useRef<HTMLDivElement>(null);
   const [siblings, setSiblings] = useState<{ title: string; href: string }[]>(
