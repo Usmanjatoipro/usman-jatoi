@@ -848,23 +848,32 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Delivery transparency ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-16">
         <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            Understanding potential service delivery
+          <h2 className="mb-3 text-3xl font-bold md:text-4xl">
+            Understanding potential delivery delays
           </h2>
-          <p className="text-neutral-600 mb-8 max-w-2xl">
-            These are common situations that may cause short delays in service
-            delivery. We share them openly for full transparency.
+          <p className="mb-8 max-w-2xl text-neutral-600">
+            These are the only situations that can move a deadline. Hover any
+            card to see exactly how I handle it.
           </p>
         </Reveal>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {delays.map((d, i) => (
             <Reveal key={d.t} delay={i * 100}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 h-full">
-                <div className="text-3xl mb-2">{d.icon}</div>
-                <h3 className="font-bold mb-1">{d.t}</h3>
-                <p className="text-neutral-500 text-sm">{d.d}</p>
+              <div
+                tabIndex={0}
+                className="group relative h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-5 outline-none transition hover:border-neutral-300 hover:bg-white focus-visible:ring-2 focus-visible:ring-[#FF6A00]"
+              >
+                <d.icon className="mb-3 h-7 w-7 text-[#FF6A00]" />
+                <h3 className="mb-1 font-bold">{d.t}</h3>
+                <p className="text-sm text-neutral-500">{d.d}</p>
+                <span
+                  role="tooltip"
+                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-3 w-64 -translate-x-1/2 translate-y-2 rounded-xl bg-neutral-950 px-4 py-3 text-xs leading-5 text-white opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+                >
+                  {d.tip}
+                </span>
               </div>
             </Reveal>
           ))}
