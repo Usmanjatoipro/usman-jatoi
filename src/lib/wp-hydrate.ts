@@ -267,18 +267,25 @@ export function metaSectionsToHtml(meta: MetaRecord): string {
     .map(([key, raw]) => {
       const value = toText(raw);
       const parsed = parseJson(value);
+      // Prefer the section's own title from the imported data; only fall back
+      // to the generic field label ("Intro", "What Is It?") when absent.
+      const ownTitle = parsed && !Array.isArray(parsed)
+        ? stripTags(parsed["main-title"] || parsed.section_title || parsed.title || "")
+        : "";
+      const heading = ownTitle || labelFromKey(key);
       const body = parsed
-        ? jsonToHtml(parsed)
+        ? jsonToHtml(parsed, true)
         : /<\/?[a-z][\s\S]*>/i.test(value)
           ? value.replace(/<script[\s\S]*?<\/script>/gi, "")
           : `<p>${escapeHtml(value)}</p>`;
       if (!body.trim()) return "";
       return `<section class="migrated-field" data-field="${escapeHtml(key)}"><h2>${escapeHtml(
-        labelFromKey(key),
+        heading,
       )}</h2>${body}</section>`;
     })
     .filter(Boolean)
     .join("");
+
 }
 
 /** Combine an imported body with its structured meta sections. */
