@@ -970,24 +970,18 @@ export function PostArticle({
           </section>
         )}
 
-        {/* Book a call */}
-        <section className="rounded-3xl border border-neutral-200 bg-white p-8 md:p-12 text-center">
-          <h2 className="text-2xl md:text-3xl font-semibold">
+        {/* Book a call — Cal.com inline */}
+        <section className="rounded-3xl border border-neutral-200 bg-white p-6 md:p-10">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center">
             Book a Call with Me to Discuss Your Project in Detail
           </h2>
-          <p className="mt-3 text-neutral-600 max-w-2xl mx-auto">
+          <p className="mt-3 text-neutral-600 max-w-2xl mx-auto text-center">
             Free 30-minute strategy call. Bring your idea, brief, or the mess
             you want fixed — leave with a plan.
           </p>
-          <a
-            href="https://cal.com/usmanjatoi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-neutral-950 text-white px-6 py-3 text-sm font-semibold hover:bg-neutral-800"
-          >
-            Schedule on Cal.com <ArrowRight className="h-4 w-4" />
-          </a>
+          <CalEmbed className="mt-8 rounded-2xl overflow-hidden" />
         </section>
+
 
         {/* Explore More — 3 more posts */}
         {related.length > 3 && (
@@ -1116,14 +1110,15 @@ export function PostArticle({
               Prefer email? contact@usmanjatoi.com
             </p>
           </form>
-          <div
-            className="hidden md:flex items-end p-8"
-            style={{
-              background:
-                "radial-gradient(ellipse at 40% 40%, rgba(249,115,22,0.55), transparent 55%), radial-gradient(ellipse at 70% 70%, rgba(139,92,246,0.55), transparent 55%), #0a0a0a",
-            }}
-          >
-            <div>
+          <div className="relative hidden md:flex items-end p-8">
+            <img
+              src={contactImg.url}
+              alt="Usman Jatoi — get in touch"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-950/65" aria-hidden />
+            <div className="relative">
               <p className="text-white/85 text-sm leading-relaxed max-w-sm">
                 I believe in collaborating with smart, diverse, and creative
                 people — and giving them the freedom to shine. Let's connect.
@@ -1134,6 +1129,7 @@ export function PostArticle({
               </div>
             </div>
           </div>
+
         </section>
 
         <div className="h-8" />
