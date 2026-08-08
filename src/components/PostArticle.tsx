@@ -431,7 +431,7 @@ export function PostArticle({
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${enc}`;
 
   return (
-    <article className="bg-white text-neutral-900 relative">
+    <article className="bg-neutral-50 text-neutral-900 relative">
       {faqSchema && (
         <script
           type="application/ld+json"
@@ -996,7 +996,7 @@ export function PostArticle({
                     style={{
                       backgroundImage: r.image
                         ? `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%), url(${r.image})`
-                        : `linear-gradient(135deg, #0a0a0a, #1e1b4b)`,
+                        : `linear-gradient(135deg, #0a0a0a, #262626)`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       minHeight: 180,
