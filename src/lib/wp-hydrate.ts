@@ -1,6 +1,6 @@
 // Shared renderer that turns imported WordPress structured meta fields into HTML.
-// Used by the generic page route so migrated sections (FAQ, process, glossary…)
-// render even when the post body itself is empty.
+// Each section keeps the heading that lives inside its own content — we never
+// prepend a generic field label ("Intro", "What Is It?") on top of it.
 
 type MetaValue = unknown;
 export type MetaRecord = Record<string, MetaValue> | null | undefined;
@@ -39,7 +39,8 @@ const LABELS: Record<string, string> = {
   WhatisX: "What Is It?",
   beginners_tips: "Beginner Tips",
   advanced_tips: "Advanced Tips",
-  comparison_tables: "Comparison Tables",
+  comparison_tables: "Comparison",
+  comparison: "Comparison",
   hero_section: "Overview",
   our_services: "Our Services",
   pros_cons: "Pros & Cons",
@@ -51,21 +52,19 @@ const LABELS: Record<string, string> = {
   checklist: "Checklist",
   timeline: "Timeline",
   examples: "Examples",
-  intro: "Introduction",
+  intro: "",
 };
 
 function labelFromKey(key: string) {
-  return (
-    LABELS[key] ||
-    key
-      .replace(/^_+/, "")
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .replace(/[_-]+/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-  );
+  if (key in LABELS) return LABELS[key];
+  return key
+    .replace(/^_+/, "")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function parseJson(value: string) {
+function parseJson(value: string): any {
   const text = value.trim();
   if (!/^[{[]/.test(text)) return null;
   try {
@@ -76,105 +75,222 @@ function parseJson(value: string) {
 }
 
 function itemTitle(item: any, fallback: string) {
-  return stripTags(item?.title || item?.heading || item?.name || item?.topic || item?.term || item?.question || fallback);
+  return stripTags(
+    item?.title || item?.heading || item?.name || item?.topic || item?.term || item?.question || fallback,
+  );
 }
 
 function itemDescription(item: any) {
-  return stripTags(item?.description || item?.subtitle || item?.answer || item?.definition || item?.content || item?.text || "");
+  return stripTags(
+    item?.description || item?.subtitle || item?.answer || item?.definition || item?.content || item?.text || "",
+  );
 }
 
-function listHtml(items: any[]) {
-  return `<ul>${items
-    .map((item) => {
-      if (typeof item === "string") return `<li>${escapeHtml(item)}</li>`;
-      const desc = itemDescription(item);
-      return `<li><strong>${escapeHtml(itemTitle(item, "Item"))}</strong>${desc ? `<p>${escapeHtml(desc)}</p>` : ""}</li>`;
+function cellHtml(value: any): string {
+  if (Array.isArray(value))
+    return `<ul class="cell-list">${value.map((v) => `<li>${escapeHtml(stripTags(String(v)))}</li>`).join("")}</ul>`;
+  return escapeHtml(stripTags(String(value ?? "")));
+}
+
+function keyCandidates(column: string) {
+  const base = stripTags(column).toLowerCase().trim();
+  return [
+    base,
+    base.replace(/\s+/g, "-"),
+    base.replace(/\s+/g, "_"),
+    base.replace(/\s+/g, ""),
+    base.replace(/\s+/g, "-").replace(/s$/, ""),
+  ];
+}
+
+/** Rich comparison table: resolves each column against the row object keys. */
+function comparisonHtml(data: any): string {
+  const columns: string[] = data.columns || data.headers || [];
+  const rows: any[] = data.rows || [];
+  if (!columns.length || !rows.length) return "";
+  const body = rows
+    .map((row) => {
+      const cells = Array.isArray(row)
+        ? row.map((c) => cellHtml(c))
+        : columns.map((col) => {
+            const cands = keyCandidates(col);
+            const found = Object.keys(row).find((k) => cands.includes(k.toLowerCase().replace(/\s+/g, "-")) || cands.includes(k.toLowerCase()));
+            return cellHtml(found ? row[found] : "—");
+          });
+      return `<tr>${cells.map((c, i) => `<td data-label="${escapeHtml(columns[i] || "")}">${c || "—"}</td>`).join("")}</tr>`;
+    })
+    .join("");
+  return `<div class="uj-table"><table><thead><tr>${columns
+    .map((c) => `<th>${escapeHtml(stripTags(c))}</th>`)
+    .join("")}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+function prosConsHtml(data: any): string {
+  const pros: any[] = data.pros || data.benefits || data.advantages || [];
+  const cons: any[] = data.cons || data.drawbacks || data.limitations || [];
+  if (!pros.length && !cons.length) return "";
+  const col = (items: any[], kind: "pro" | "con", label: string) =>
+    `<div class="uj-pc-col uj-pc-${kind}"><div class="uj-pc-head">${label}</div><ul>${items
+      .map((it) => {
+        if (typeof it === "string") return `<li><strong>${escapeHtml(it)}</strong></li>`;
+        const d = itemDescription(it);
+        return `<li><strong>${escapeHtml(itemTitle(it, label))}</strong>${d ? `<p>${escapeHtml(d)}</p>` : ""}</li>`;
+      })
+      .join("")}</ul></div>`;
+  return `<div class="uj-proscons">${pros.length ? col(pros, "pro", "Pros") : ""}${
+    cons.length ? col(cons, "con", "Cons") : ""
+  }</div>`;
+}
+
+function checklistHtml(data: any): string {
+  const items: any[] = data.items || data.checklist || data.steps || [];
+  if (!items.length) return "";
+  return `<ul class="uj-checklist">${items
+    .map((it, i) => {
+      const t = typeof it === "string" ? it : itemTitle(it, `Item ${i + 1}`);
+      const d = typeof it === "string" ? "" : itemDescription(it);
+      return `<li><label><input type="checkbox" /><span class="uj-box"></span><span class="uj-ck-body"><strong>${escapeHtml(
+        t,
+      )}</strong>${d ? `<em>${escapeHtml(d)}</em>` : ""}</span></label></li>`;
     })
     .join("")}</ul>`;
 }
 
-function tableHtml(data: any) {
-  const table = data?.comparison || data;
-  const headers = table?.headers || data?.columns;
-  const rows = table?.rows || data?.rows;
-  if (!Array.isArray(headers) || !Array.isArray(rows)) return "";
-  return `<div class="migrated-table"><table><thead><tr>${headers
-    .map((h: any) => `<th>${escapeHtml(stripTags(String(h)))}</th>`)
-    .join("")}</tr></thead><tbody>${rows
-    .slice(0, 24)
-    .map((row: any) => {
-      const cells = Array.isArray(row) ? row : [row.name || row.topic, ...(row.values || [])];
-      return `<tr>${cells
-        .map(
-          (cell: any) =>
-            `<td>${escapeHtml(Array.isArray(cell) ? cell.map(stripTags).join(", ") : stripTags(String(cell ?? "")))}</td>`,
-        )
-        .join("")}</tr>`;
+function timelineHtml(data: any): string {
+  const items: any[] = data.items || data.timeline || data.events || [];
+  if (!items.length) return "";
+  return `<ol class="uj-timeline">${items
+    .map((it, i) => {
+      const t = itemTitle(it, `Phase ${i + 1}`);
+      const d = itemDescription(it);
+      const when = stripTags(it?.year || it?.date || it?.period || "");
+      return `<li><span class="uj-dot">${i + 1}</span><div class="uj-tl-card">${
+        when ? `<span class="uj-when">${escapeHtml(when)}</span>` : ""
+      }<h3>${escapeHtml(t)}</h3>${d ? `<p>${escapeHtml(d)}</p>` : ""}</div></li>`;
     })
-    .join("")}</tbody></table></div>`;
+    .join("")}</ol>`;
 }
 
-function jsonToHtml(data: any, skipTitle = false): string {
-  if (Array.isArray(data)) return listHtml(data);
-  if (!data || typeof data !== "object") return `<p>${escapeHtml(String(data ?? ""))}</p>`;
+function stepsHtml(data: any): string {
+  const steps: any[] = data.steps || data.items || [];
+  if (!steps.length) return "";
+  return `<div class="uj-steps">${steps
+    .map((it, i) => {
+      const tips: any[] = Array.isArray(it?.tips) ? it.tips : [];
+      return `<article><span class="uj-step-n">${escapeHtml(
+        String(it?.step_number || it?.step || i + 1),
+      )}</span><h3>${escapeHtml(itemTitle(it, `Step ${i + 1}`))}</h3><p>${escapeHtml(
+        itemDescription(it),
+      )}</p>${
+        tips.length
+          ? `<ul class="uj-tips">${tips.map((t) => `<li>${escapeHtml(stripTags(String(t)))}</li>`).join("")}</ul>`
+          : ""
+      }</article>`;
+    })
+    .join("")}</div>`;
+}
 
-  const title = stripTags(data["main-title"] || data.section_title || data.title || "");
-  const subtitle = stripTags(data.section_subtitle || data.subtitle || data.intro || data.description || "");
-  const parts: string[] = [
-    title && !skipTitle ? `<h3>${escapeHtml(title)}</h3>` : "",
-    subtitle ? `<p>${escapeHtml(subtitle)}</p>` : "",
-  ];
+function faqHtml(data: any): string {
+  const items: any[] = Array.isArray(data) ? data : data.faqs || data.items || data.questions || [];
+  if (!items.length) return "";
+  return `<div class="uj-faqs">${items
+    .map(
+      (it) =>
+        `<details><summary><span>${escapeHtml(itemTitle(it, "Question"))}</span></summary><div class="uj-faq-a"><p>${escapeHtml(
+          itemDescription(it),
+        )}</p></div></details>`,
+    )
+    .join("")}</div>`;
+}
 
+function glossaryHtml(data: any): string {
+  const items: any[] = data.terms || data.items || data.glossary || [];
+  if (!items.length) return "";
+  return `<dl class="uj-glossary">${items
+    .map(
+      (it) =>
+        `<div><dt>${escapeHtml(itemTitle(it, "Term"))}</dt><dd>${escapeHtml(itemDescription(it))}</dd></div>`,
+    )
+    .join("")}</dl>`;
+}
 
-  for (const key of ["features", "bullets", "points", "tips", "mistakes", "myths", "terms", "benefits", "drawbacks", "pros", "cons"]) {
-    if (Array.isArray(data[key]) && data[key].length) {
-      parts.push(`<h4>${escapeHtml(labelFromKey(key))}</h4>${listHtml(data[key])}`);
+function bulletsHtml(data: any): string {
+  const out: string[] = [];
+  for (const key of ["features", "bullets", "points", "tips", "mistakes", "myths", "takeaways", "benefits", "drawbacks"]) {
+    const arr = data[key];
+    if (Array.isArray(arr) && arr.length) {
+      out.push(
+        `<ul class="uj-bullets">${arr
+          .map((it: any) => {
+            if (typeof it === "string") return `<li>${escapeHtml(it)}</li>`;
+            const d = itemDescription(it);
+            return `<li><strong>${escapeHtml(itemTitle(it, "Item"))}</strong>${d ? `<p>${escapeHtml(d)}</p>` : ""}</li>`;
+          })
+          .join("")}</ul>`,
+      );
     }
   }
+  return out.join("");
+}
 
-  if (Array.isArray(data.services)) {
-    parts.push(
-      `<div class="migrated-grid">${data.services
-        .map(
-          (item: any, index: number) =>
-            `<article><h3>${escapeHtml(itemTitle(item, `Service ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p>${
-              item?.link ? `<a href="${String(item.link).replace(/^https?:\/\/usmanjatoi\.com/i, "")}">Open service</a>` : ""
-            }</article>`,
-        )
-        .join("")}</div>`,
-    );
+function cardsHtml(items: any[], fallbackLabel: string): string {
+  return `<div class="uj-cards">${items
+    .map(
+      (it, i) =>
+        `<article><h3>${escapeHtml(itemTitle(it, `${fallbackLabel} ${i + 1}`))}</h3><p>${escapeHtml(
+          itemDescription(it),
+        )}</p></article>`,
+    )
+    .join("")}</div>`;
+}
+
+/** Render one structured (JSON) field into its designed markup. */
+function renderJsonSection(key: string, data: any): { heading: string; body: string } {
+  const heading =
+    (data && !Array.isArray(data) && stripTags(data["main-title"] || data.section_title || data.title || "")) ||
+    labelFromKey(key) ||
+    "";
+  const intro =
+    data && !Array.isArray(data)
+      ? stripTags(data.section_subtitle || data.subtitle || data.intro || data.description || "")
+      : "";
+  const lead = intro ? `<p>${escapeHtml(intro)}</p>` : "";
+
+  const k = key.toLowerCase();
+  let body = "";
+
+  if (Array.isArray(data)) {
+    body = cardsHtml(data, "Item");
+  } else if (k.includes("faq")) {
+    body = faqHtml(data);
+  } else if (k.includes("pros") || k.includes("cons")) {
+    body = prosConsHtml(data);
+  } else if (k.includes("comparison")) {
+    body = comparisonHtml(data);
+  } else if (k.includes("checklist")) {
+    body = checklistHtml(data);
+  } else if (k.includes("timeline")) {
+    body = timelineHtml(data);
+  } else if (k.includes("process") || k.includes("step") || k.includes("action")) {
+    body = stepsHtml(data);
+  } else if (k.includes("glossary")) {
+    body = glossaryHtml(data);
   }
 
-  const steps = Array.isArray(data.steps) ? data.steps : Array.isArray(data.items) ? data.items : [];
-  if (steps.length) {
-    parts.push(
-      `<div class="migrated-steps">${steps
-        .map(
-          (item: any, index: number) =>
-            `<article><span>${escapeHtml(String(item?.step_number || item?.step || index + 1))}</span><h3>${escapeHtml(
-              itemTitle(item, `Step ${index + 1}`),
-            )}</h3><p>${escapeHtml(itemDescription(item))}</p></article>`,
-        )
-        .join("")}</div>`,
-    );
+  if (!body) {
+    body =
+      prosConsHtml(data) ||
+      comparisonHtml(data) ||
+      stepsHtml(data) ||
+      timelineHtml(data) ||
+      faqHtml(data) ||
+      glossaryHtml(data) ||
+      bulletsHtml(data) ||
+      (Array.isArray(data?.services) ? cardsHtml(data.services, "Service") : "") ||
+      (Array.isArray(data?.items) ? cardsHtml(data.items, "Item") : "");
   }
 
-  if (Array.isArray(data.faqs)) {
-    parts.push(
-      `<div class="migrated-faqs">${data.faqs
-        .map(
-          (item: any) =>
-            `<details><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(
-              itemDescription(item),
-            )}</p></details>`,
-        )
-        .join("")}</div>`,
-    );
-  }
-
-
-  parts.push(tableHtml(data));
-  return parts.filter(Boolean).join("");
+  return { heading, body: `${lead}${body}` };
 }
 
 const SKIP_KEYS = new Set([
@@ -209,6 +325,11 @@ const SKIP_KEYS = new Set([
   "pcg_last_generated",
   "ekit_post_views_count",
   "promo_video",
+  "schema",
+  "faq_schema",
+  "json_ld",
+  "jsonld",
+  "structured_data",
 ]);
 
 const ORDER = [
@@ -216,6 +337,7 @@ const ORDER = [
   "hero_section",
   "takeaways",
   "WhatisX",
+  "GlossaryRelatedTerms",
   "why_important",
   "aboutexpertise_section",
   "our_services",
@@ -232,7 +354,6 @@ const ORDER = [
   "comparison_tables",
   "case_studies",
   "timeline",
-  "GlossaryRelatedTerms",
   "BenefitsAdvantages",
   "DrawbacksLimitations",
   "StrategiesFrameworks",
@@ -248,11 +369,16 @@ function toText(value: MetaValue): string {
   return "";
 }
 
+function hasOwnHeading(html: string) {
+  return /<h[1-3][\s>]/i.test(html);
+}
+
 /** Render structured meta fields to HTML sections, ordered like the original site. */
 export function metaSectionsToHtml(meta: MetaRecord): string {
   if (!meta || typeof meta !== "object" || Array.isArray(meta)) return "";
   const entries = Object.entries(meta).filter(([key, value]) => {
     if (SKIP_KEYS.has(key) || key.startsWith("_")) return false;
+    if (/schema|json_?ld/i.test(key)) return false;
     return toText(value).trim().length > 0;
   });
   if (!entries.length) return "";
@@ -266,26 +392,29 @@ export function metaSectionsToHtml(meta: MetaRecord): string {
   return entries
     .map(([key, raw]) => {
       const value = toText(raw);
-      const parsed = parseJson(value);
-      // Prefer the section's own title from the imported data; only fall back
-      // to the generic field label ("Intro", "What Is It?") when absent.
-      const ownTitle = parsed && !Array.isArray(parsed)
-        ? stripTags(parsed["main-title"] || parsed.section_title || parsed.title || "")
-        : "";
-      const heading = ownTitle || labelFromKey(key);
-      const body = parsed
-        ? jsonToHtml(parsed, true)
-        : /<\/?[a-z][\s\S]*>/i.test(value)
-          ? value.replace(/<script[\s\S]*?<\/script>/gi, "")
-          : `<p>${escapeHtml(value)}</p>`;
-      if (!body.trim()) return "";
-      return `<section class="migrated-field" data-field="${escapeHtml(key)}"><h2>${escapeHtml(
-        heading,
-      )}</h2>${body}</section>`;
+      const parsed = typeof raw === "object" && raw !== null ? raw : parseJson(value);
+
+      // Structured data → designed component markup with its own title.
+      if (parsed) {
+        const { heading, body } = renderJsonSection(key, parsed);
+        if (!body.trim()) return "";
+        return `<section class="migrated-field" data-field="${escapeHtml(key)}">${
+          heading ? `<h2>${escapeHtml(heading)}</h2>` : ""
+        }${body}</section>`;
+      }
+
+      // HTML content → keep exactly as authored; it already carries its heading.
+      const isHtml = /<\/?[a-z][\s\S]*>/i.test(value);
+      const html = isHtml ? value.replace(/<script[\s\S]*?<\/script>/gi, "") : `<p>${escapeHtml(value)}</p>`;
+      if (!html.trim()) return "";
+      const label = labelFromKey(key);
+      const needsHeading = !hasOwnHeading(html) && !!label;
+      return `<section class="migrated-field" data-field="${escapeHtml(key)}">${
+        needsHeading ? `<h2>${escapeHtml(label)}</h2>` : ""
+      }${html}</section>`;
     })
     .filter(Boolean)
     .join("");
-
 }
 
 /** Combine an imported body with its structured meta sections. */

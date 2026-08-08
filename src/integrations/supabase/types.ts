@@ -44,6 +44,7 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          source_path: string | null
           user_agent: string | null
         }
         Insert: {
@@ -54,6 +55,7 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          source_path?: string | null
           user_agent?: string | null
         }
         Update: {
@@ -64,7 +66,29 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          source_path?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source_path: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source_path?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source_path?: string | null
         }
         Relationships: []
       }

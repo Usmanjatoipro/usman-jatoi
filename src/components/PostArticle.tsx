@@ -148,6 +148,49 @@ export function PostArticle({
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [heroFailed, setHeroFailed] = useState(false);
+  const [newsEmail, setNewsEmail] = useState("");
+  const [newsState, setNewsState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [contactState, setContactState] = useState<"idle" | "sending" | "done" | "error">("idle");
+
+  async function subscribeNewsletter(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newsEmail.trim()) return;
+    setNewsState("sending");
+    const { error } = await supabase.from("newsletter_subscribers").insert({
+      email: newsEmail.trim(),
+      source_path: typeof window !== "undefined" ? window.location.pathname : null,
+    });
+    if (error && !/duplicate|unique/i.test(error.message)) setNewsState("error");
+    else {
+      setNewsState("done");
+      setNewsEmail("");
+    }
+  }
+
+  async function submitContact(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const first = String(fd.get("first_name") || "").trim();
+    const last = String(fd.get("last_name") || "").trim();
+    setContactState("sending");
+    const { error } = await supabase.from("contact_submissions").insert({
+      name: [first, last].filter(Boolean).join(" ") || "Anonymous",
+      email: String(fd.get("email") || "").trim(),
+      phone: String(fd.get("phone") || "").trim() || null,
+      looking_for: String(fd.get("subject") || "").trim() || null,
+      message: String(fd.get("message") || "").trim(),
+      source_path: typeof window !== "undefined" ? window.location.pathname : null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+    if (error) setContactState("error");
+    else {
+      setContactState("done");
+      form.reset();
+    }
+  }
+
+
   const bodyRef = useRef<HTMLDivElement>(null);
   const [siblings, setSiblings] = useState<{ title: string; href: string }[]>(
     primaryCategoryChildren
@@ -169,11 +212,34 @@ export function PostArticle({
   const responses = useMemo(() => (post.id * 7) % 30, [post.id]);
   const totalVotes = useMemo(() => (post.id * 3) % 15, [post.id]);
 
-  const primaryCategory = categories[0];
+  // Deepest (most specific) category wins for breadcrumb + context copy.
+  const primaryCategory =
+    categories.find((c) => c.parent_id) || categories[0];
+  const parentCategory = primaryCategory
+    ? categories.find((c) => c.id === primaryCategory.parent_id)
+    : undefined;
   const primaryCategoryName = primaryCategory?.name || "Article";
   const archiveHref =
     categoryArchivePath ||
     (primaryCategory ? `/category/${primaryCategory.slug}` : "/blog");
+
+  /* Time-aware greeting shown above the intro (client only, no SSR mismatch). */
+  const [greeting, setGreeting] = useState<string | null>(null);
+  useEffect(() => {
+    const h = new Date().getHours();
+    const part =
+      h < 5
+        ? ["Good night", "a quiet night — perfect for deep reading"]
+        : h < 12
+          ? ["Good morning", "a fresh morning — perfect for a focused read"]
+          : h < 17
+            ? ["Good afternoon", "a productive afternoon — perfect for learning something new"]
+            : h < 22
+              ? ["Good evening", "a relaxing evening — perfect for browsing"]
+              : ["Good night", "a calm late hour — perfect for a slow read"];
+    setGreeting(`${part[0]} — ${part[1]}. Let's get started.`);
+  }, []);
+
 
   /* Enrich HTML with heading anchors + extract TOC. */
   const { enrichedHtml, headings, sources } = useMemo(() => {
@@ -457,11 +523,15 @@ export function PostArticle({
         size="sm"
         crumbs={[
           { label: "Home", href: "/" },
+          ...(parentCategory
+            ? [{ label: parentCategory.name, href: `/category/${parentCategory.slug}` }]
+            : []),
           ...(primaryCategory
             ? [{ label: primaryCategoryName, href: archiveHref }]
             : [{ label: "Blog", href: "/blog" }]),
           { label: title },
         ]}
+
       />
 
       <div className="h-10" />
@@ -570,24 +640,24 @@ export function PostArticle({
             </button>
           </div>
 
+          {/* Personalized greeting above the intro */}
+          {greeting && (
+            <p className="mt-8 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-800">
+              {greeting}
+            </p>
+          )}
+
           {/* Article body */}
           <div
             ref={bodyRef}
-            className="post-body mt-10"
+            className="post-body mt-6"
             dangerouslySetInnerHTML={{ __html: enrichedHtml }}
           />
 
 
-          {/* Featured-in-article CTA */}
-          <div className="mt-10 relative overflow-hidden rounded-2xl text-white">
-            <img
-              src={featuredCta.url}
-              alt="Get featured in this article"
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-neutral-950/80" aria-hidden />
-            <div className="relative p-6 md:p-8">
+          {/* Featured-in-article CTA — image beside the copy, not behind it */}
+          <div className="mt-10 grid gap-0 sm:grid-cols-[1fr_220px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white">
+            <div className="p-6 md:p-8">
               <div className="text-lg md:text-xl font-semibold">
                 Get Yourself Featured in This Article
               </div>
@@ -604,7 +674,14 @@ export function PostArticle({
                 APPLY NOW
               </Link>
             </div>
+            <img
+              src={featuredCta.url}
+              alt="Get featured in this article"
+              loading="lazy"
+              className="h-full w-full object-cover min-h-[180px]"
+            />
           </div>
+
 
 
           {/* Prev / Next */}
@@ -649,54 +726,74 @@ export function PostArticle({
             </div>
           )}
 
-          {/* About Author */}
+          {/* Community CTA — photo on the side, dynamic to the category */}
+          <section className="mt-10 grid gap-0 sm:grid-cols-[1fr_240px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white">
+            <div className="p-6 md:p-8">
+              <h2 className="text-xl md:text-2xl font-semibold leading-snug">
+                You&apos;re not alone in exploring {primaryCategoryName}
+              </h2>
+              <p className="mt-3 text-sm text-white/75 leading-relaxed max-w-md">
+                I run a community of forward-thinkers who share ideas, tools and
+                breakthroughs around {primaryCategoryName.toLowerCase()} every
+                week. Want in?
+              </p>
+              <a
+                href="https://discord.gg/usmanjatoi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold hover:bg-orange-600"
+              >
+                Join the community <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+            <img
+              src={communityBg.url}
+              alt={`Join the ${primaryCategoryName} community`}
+              loading="lazy"
+              className="h-full w-full object-cover min-h-[200px]"
+            />
+          </section>
+
+          {/* About Author — clean white card, no background photo */}
           <section className="mt-10">
             <h2 className="text-2xl font-semibold mb-4">About Author</h2>
-            <div className="relative overflow-hidden rounded-2xl border border-neutral-200">
-              <img
-                src={communityBg.url}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-neutral-950/85" aria-hidden />
-              <div className="relative">
-                <div className="p-5 md:p-6 flex gap-5 items-start">
-                  <img
-                    src={authorImg.url}
-                    alt="Usman Jatoi"
-                    width={80}
-                    height={80}
-                    loading="lazy"
-                    className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-white/20"
-                  />
-                  <div className="min-w-0">
-                    <div className="text-lg font-semibold text-white">
-                      Usman Jatoi
-                    </div>
-                    <p className="text-sm text-white/80 mt-1 leading-relaxed">
-                      Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
-                      creative artist, and tech innovator who began his digital
-                      journey at just{" "}
-                      <b className="text-orange-400">7 years old</b> and started
-                      working professionally at{" "}
-                      <b className="text-orange-400">12</b>.
-                    </p>
+            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+              <div className="p-5 md:p-6 flex gap-5 items-start">
+                <img
+                  src={authorImg.url}
+                  alt="Usman Jatoi"
+                  width={80}
+                  height={80}
+                  loading="lazy"
+                  className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-neutral-200"
+                />
+                <div className="min-w-0">
+                  <div className="text-lg font-semibold text-neutral-900">
+                    Usman Jatoi
                   </div>
+                  <p className="text-sm text-neutral-600 mt-1 leading-relaxed">
+                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
+                    creative artist, and tech innovator who began his digital
+                    journey at just{" "}
+                    <b className="text-neutral-900">7 years old</b> and started
+                    working professionally at{" "}
+                    <b className="text-neutral-900">12</b>.
+                  </p>
                 </div>
-                <div className="border-t border-white/15 px-6 py-3 flex items-center gap-3 text-white/60">
-                  {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
-                    <a
-                      key={i}
-                      href="#"
-                      className="h-7 w-7 flex items-center justify-center hover:text-white"
-                      aria-label="social"
-                    >
-                      <Ic className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
+              </div>
+              <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
+                {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
+                  <a
+                    key={i}
+                    href="https://www.linkedin.com/in/usmanjatoi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-7 w-7 flex items-center justify-center hover:text-neutral-900"
+                    aria-label="Usman Jatoi social profile"
+                  >
+                    <Ic className="h-4 w-4" />
+                  </a>
+                ))}
               </div>
             </div>
             <div className="mt-4">
@@ -722,7 +819,8 @@ export function PostArticle({
         </main>
 
         {/* ---------- SIDEBAR ---------- */}
-        <aside className="space-y-6 lg:sticky lg:top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-1 sidebar-scroll">
+        <aside className="space-y-6 self-start">
+
           {/* Meta card — photo background with black overlay */}
           <div className="relative rounded-2xl p-6 text-white overflow-hidden border border-neutral-900">
             <img
@@ -811,6 +909,33 @@ export function PostArticle({
             </div>
           )}
 
+          {/* Sibling categories — other topics at the same level */}
+          {allCats.length > 1 && (
+            <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
+              <div className="px-5 py-3 font-semibold text-sm text-neutral-900 border-b border-neutral-100">
+                Related Categories
+              </div>
+              <ul className="divide-y divide-neutral-100">
+                {allCats
+                  .filter((c) => c.name !== primaryCategoryName)
+                  .slice(0, 8)
+                  .map((c) => (
+                    <li key={c.href}>
+                      <Link
+                        to={c.href as any}
+                        className="flex items-center justify-between px-5 py-2.5 text-sm text-neutral-800 hover:bg-neutral-50 transition"
+                      >
+                        <span className="truncate">{c.name}</span>
+                        <ChevronRight className="h-4 w-4 text-neutral-400 flex-none" />
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+
+
+
           {/* Table of contents */}
           {headings.length > 1 && (
             <details
@@ -886,43 +1011,54 @@ export function PostArticle({
             <div className="mt-1 text-base font-semibold leading-tight">
               Get essays like this in your inbox.
             </div>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-3 flex items-center gap-2"
-            >
+            <form onSubmit={subscribeNewsletter} className="mt-3 flex items-center gap-2">
               <input
                 type="email"
                 required
+                value={newsEmail}
+                onChange={(e) => setNewsEmail(e.target.value)}
                 placeholder="you@domain.com"
                 aria-label="Email address"
                 className="flex-1 min-w-0 rounded-full bg-white/10 border border-white/15 px-3 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:border-white/40"
               />
+
               <button
                 type="submit"
+                disabled={newsState === "sending"}
                 aria-label="Subscribe"
-                className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100 flex-none"
+                className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100 flex-none disabled:opacity-60"
               >
-                <Send className="h-4 w-4" />
+                {newsState === "done" ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
               </button>
             </form>
+            <p className="mt-2 text-xs text-white/60" role="status">
+              {newsState === "done"
+                ? "You're subscribed — welcome aboard."
+                : newsState === "error"
+                  ? "Couldn't subscribe right now. Try again later."
+                  : "No spam. Unsubscribe anytime."}
+            </p>
           </div>
+
         </aside>
       </div>
 
       {/* ================= FULL-WIDTH SECTIONS ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-16 space-y-16">
-        {/* RedsGlow banner */}
-        <section className="relative overflow-hidden rounded-3xl border border-neutral-200">
+        {/* RedsGlow banner — clean image, no dark overlay */}
+        <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-white">
           <img
             src={redsglow.url}
             alt="RedsGlow Creative Agency"
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="h-auto w-full object-cover"
           />
-          <div className="absolute inset-0 bg-neutral-950/75" aria-hidden />
-          <div className="relative p-6 md:p-12 max-w-3xl">
-            <p className="text-sm md:text-base text-white/85 leading-relaxed">
-              From <b className="text-white">marketing to automation, technical development to
+          <div className="p-6 md:p-10 max-w-3xl">
+            <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900">
+              RedsGlow — everything your brand needs, under one roof
+            </h2>
+            <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed">
+              From <b className="text-neutral-900">marketing to automation, technical development to
               management, creative design to operations, consulting to growth
               strategy</b> — we deliver it all under one roof. Whether you're
               launching something new, fixing what's broken, or scaling to the
@@ -939,6 +1075,7 @@ export function PostArticle({
             </a>
           </div>
         </section>
+
 
 
         {/* Explore My All Categories */}
@@ -1086,26 +1223,28 @@ export function PostArticle({
 
         {/* Contact CTA — split form / gradient image */}
         <section className="rounded-3xl border border-neutral-800 bg-neutral-950 text-white overflow-hidden grid md:grid-cols-2">
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="p-6 md:p-8 space-y-4"
-          >
+          <form onSubmit={submitContact} className="p-6 md:p-8 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-first">
                   First Name
                 </label>
                 <input
+                  id="uj-first"
+                  name="first_name"
                   type="text"
+                  required
                   placeholder="Name"
                   className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-last">
                   Last Name
                 </label>
                 <input
+                  id="uj-last"
+                  name="last_name"
                   type="text"
                   placeholder="Name"
                   className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
@@ -1113,40 +1252,52 @@ export function PostArticle({
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-email">
                 Email
               </label>
               <input
+                id="uj-email"
+                name="email"
                 type="email"
+                required
                 placeholder="Email"
                 className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-phone">
                 Phone
               </label>
               <input
+                id="uj-phone"
+                name="phone"
                 type="tel"
                 placeholder="Phone"
                 className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-message">
                 Message
               </label>
               <textarea
+                id="uj-message"
+                name="message"
                 rows={4}
+                required
                 placeholder="Message"
                 className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none resize-y"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-subject">
                 Subject
               </label>
-              <select className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm focus:outline-none">
+              <select
+                id="uj-subject"
+                name="subject"
+                className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm focus:outline-none"
+              >
                 <option>Affiliate</option>
                 <option>Project</option>
                 <option>Partnership</option>
@@ -1155,14 +1306,20 @@ export function PostArticle({
             </div>
             <button
               type="submit"
-              className="w-full rounded-md bg-orange-500 hover:bg-orange-600 text-white font-semibold tracking-widest py-3 text-sm transition"
+              disabled={contactState === "sending"}
+              className="w-full rounded-md bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold tracking-widest py-3 text-sm transition"
             >
-              SEND
+              {contactState === "sending" ? "SENDING…" : contactState === "done" ? "MESSAGE SENT ✓" : "SEND"}
             </button>
-            <p className="text-center text-xs text-white/60">
-              Prefer email? contact@usmanjatoi.com
+            <p className="text-center text-xs text-white/60" role="status">
+              {contactState === "done"
+                ? "Thanks — I'll get back to you shortly."
+                : contactState === "error"
+                  ? "Something went wrong. Please email contact@usmanjatoi.com."
+                  : "Prefer email? contact@usmanjatoi.com"}
             </p>
           </form>
+
           <div className="relative hidden md:flex items-end p-8">
             <img
               src={contactImg.url}
@@ -1413,8 +1570,8 @@ export function PostArticle({
         .post-body [data-field="checklist"] li p { margin: 4px 0 0; color:#525252; font-size:.94em; }
         .post-body .migrated-table { overflow-x: auto; }
 
-        /* FAQ — collapsed by default */
-        .post-body .migrated-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
+        /* FAQ — collapsed by default, black chevron */
+        .post-body .migrated-faqs, .post-body .uj-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
         .post-body details {
           border: 1px solid #ececec; border-radius: 14px;
           background: #fff; padding: 14px 16px; margin: 0;
@@ -1427,11 +1584,104 @@ export function PostArticle({
         }
         .post-body details summary::-webkit-details-marker { display: none; }
         .post-body details summary::after {
-          content: "+"; color: #f97316; font-weight: 700; font-size: 1.2em;
-          transition: transform .2s; line-height: 1;
+          content: ""; flex: none;
+          width: 9px; height: 9px;
+          border-right: 2px solid #111; border-bottom: 2px solid #111;
+          transform: rotate(45deg) translateY(-2px);
+          transition: transform .2s;
         }
-        .post-body details[open] summary::after { transform: rotate(45deg); }
-        .post-body details > p { margin: .8em 0 0; color: #525252; font-size: .96em; }
+        .post-body details[open] summary::after { transform: rotate(225deg) translateY(-2px); }
+        .post-body details > p, .post-body .uj-faq-a p { margin: .8em 0 0; color: #525252; font-size: .96em; }
+
+        /* Comparison tables */
+        .post-body .uj-table { overflow-x: auto; margin: 1.4em 0; }
+        .post-body .uj-table table { margin: 0; }
+        .post-body .uj-table td { vertical-align: top; }
+
+        /* Pros & cons */
+        .post-body .uj-proscons {
+          display: grid; gap: 16px; margin: 1.4em 0;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+        .post-body .uj-pc-col { border-radius: 16px; padding: 18px; border: 1px solid transparent; }
+        .post-body .uj-pc-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+        .post-body .uj-pc-col li { margin: 0; }
+        .post-body .uj-pc-col li p { margin: 3px 0 0; font-size: .92em; color: #4b5563; }
+        .post-body .uj-pc-head { font-weight: 800; font-size: .8em; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+        .post-body .uj-pc-pro { background: #ecfdf3; border-color: #bbf7d0; }
+        .post-body .uj-pc-pro .uj-pc-head { color: #15803d; }
+        .post-body .uj-pc-con { background: #fef2f2; border-color: #fecaca; }
+        .post-body .uj-pc-con .uj-pc-head { color: #b91c1c; }
+
+        /* Interactive checklist */
+        .post-body .uj-checklist { list-style: none; padding: 0; display: grid; gap: 10px; margin: 1.4em 0; }
+        .post-body .uj-checklist li { margin: 0; }
+        .post-body .uj-checklist label {
+          display: flex; gap: 12px; align-items: flex-start; cursor: pointer;
+          border: 1px solid #ececec; border-radius: 12px; background: #fafafa; padding: 12px 14px;
+          transition: background .15s, border-color .15s;
+        }
+        .post-body .uj-checklist label:hover { border-color: #d4d4d4; background: #fff; }
+        .post-body .uj-checklist input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .post-body .uj-box {
+          flex: none; width: 20px; height: 20px; border-radius: 6px; margin-top: 2px;
+          border: 2px solid #111; display: inline-flex; align-items: center; justify-content: center;
+          transition: background .15s;
+        }
+        .post-body .uj-box::after {
+          content: ""; width: 5px; height: 9px; border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+          transform: rotate(45deg) scale(0); transition: transform .15s;
+        }
+        .post-body .uj-checklist input:checked + .uj-box { background: #111; }
+        .post-body .uj-checklist input:checked + .uj-box::after { transform: rotate(45deg) scale(1); }
+        .post-body .uj-checklist input:checked ~ .uj-ck-body strong { text-decoration: line-through; color: #9ca3af; }
+        .post-body .uj-ck-body { display: block; }
+        .post-body .uj-ck-body em { display: block; font-style: normal; margin-top: 3px; color: #6b7280; font-size: .93em; }
+
+        /* Timeline */
+        .post-body .uj-timeline { list-style: none; padding: 0 0 0 26px; margin: 1.4em 0; position: relative; display: grid; gap: 14px; }
+        .post-body .uj-timeline::before { content: ""; position: absolute; left: 11px; top: 6px; bottom: 6px; width: 2px; background: #ececec; }
+        .post-body .uj-timeline li { position: relative; margin: 0; }
+        .post-body .uj-dot {
+          position: absolute; left: -26px; top: 14px;
+          width: 24px; height: 24px; border-radius: 999px; background: #0a0a0a; color: #fff;
+          display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;
+        }
+        .post-body .uj-tl-card { border: 1px solid #ececec; border-radius: 14px; background: #fff; padding: 16px 18px; }
+        .post-body .uj-tl-card h3 { margin: 0 0 6px; font-size: 1.05em; }
+        .post-body .uj-tl-card p { margin: 0; color: #525252; font-size: .95em; }
+        .post-body .uj-when { display: inline-block; margin-bottom: 6px; font-size: .72em; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #f97316; }
+
+        /* Step-by-step */
+        .post-body .uj-steps { display: grid; gap: 16px; margin: 1.4em 0; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+        .post-body .uj-steps article { border: 1px solid #ececec; border-top: 3px solid #0a0a0a; border-radius: 16px; background: #fff; padding: 20px 18px; }
+        .post-body .uj-step-n {
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px; border-radius: 999px; background: #0a0a0a; color: #fff;
+          font-size: 13px; font-weight: 800; margin-bottom: 12px;
+        }
+        .post-body .uj-steps h3 { margin: 0 0 8px; font-size: 1.05em; }
+        .post-body .uj-steps p { margin: 0; font-size: .95em; color: #525252; }
+        .post-body .uj-tips { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+        .post-body .uj-tips li { margin: 0; padding-left: 18px; position: relative; font-size: .9em; color: #6b7280; }
+        .post-body .uj-tips li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 999px; background: #f97316; }
+
+        /* Glossary */
+        .post-body .uj-glossary { display: grid; gap: 10px; margin: 1.4em 0; }
+        .post-body .uj-glossary > div { border: 1px solid #ececec; border-radius: 12px; background: #fafafa; padding: 14px 16px; }
+        .post-body .uj-glossary dt { font-weight: 700; color: #111; }
+        .post-body .uj-glossary dd { margin: 4px 0 0; color: #525252; font-size: .95em; }
+
+        /* Bullets & cards */
+        .post-body .uj-bullets { list-style: none; padding: 0; display: grid; gap: 10px; margin: 1.2em 0; }
+        .post-body .uj-bullets li { margin: 0; padding-left: 20px; position: relative; }
+        .post-body .uj-bullets li::before { content: ""; position: absolute; left: 0; top: .6em; width: 7px; height: 7px; border-radius: 2px; background: #0a0a0a; }
+        .post-body .uj-bullets li p { margin: 3px 0 0; color: #525252; font-size: .94em; }
+        .post-body .uj-cards { display: grid; gap: 16px; margin: 1.4em 0; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        .post-body .uj-cards article { border: 1px solid #ececec; border-radius: 16px; background: #fff; padding: 20px 18px; }
+        .post-body .uj-cards h3 { margin: 0 0 8px; font-size: 1.05em; }
+        .post-body .uj-cards p { margin: 0; font-size: .95em; color: #525252; }
+
 
 
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
