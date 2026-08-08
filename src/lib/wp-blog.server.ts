@@ -40,18 +40,46 @@ function publicClient() {
 
 export async function readBlogIndexPage(offset: number, limit: number, search: string) {
   const client = publicClient();
+  // Only light columns: `content` and the whole `meta` JSONB are huge after the
+  // WordPress import and detoasting them for the listing caused query timeouts.
+  const select = (s: string): string => s;
   let query = client
     .from("wp_posts")
-    .select("id,slug,title,excerpt,content,post_date,featured_media_id,meta", { count: "planned" })
+    .select(
+      select(
+        "id,slug,title,excerpt,post_date,featured_media_id,fifu_image_url:meta->>fifu_image_url,og_image:meta->>og_image,thumbnail_url:meta->>_thumbnail_url",
+      ),
+      { count: "planned" },
+    )
     .eq("post_type", "post")
     .eq("status", "publish")
     .order("post_date", { ascending: false })
     .range(offset, offset + limit - 1);
   if (search) query = query.ilike("title", `%${search}%`);
 
-  const { data, count, error } = await query;
+  const { data, count, error } = await query.returns<
+    (Omit<BlogIndexPost, "content" | "meta"> & {
+      fifu_image_url: string | null;
+      og_image: string | null;
+      thumbnail_url: string | null;
+    })[]
+  >();
   if (error) throw new Error(error.message);
-  const posts = (data ?? []) as BlogIndexPost[];
+  const posts: BlogIndexPost[] = (data ?? []).map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    content: null,
+    post_date: row.post_date,
+    featured_media_id: row.featured_media_id,
+    meta: {
+      fifu_image_url: row.fifu_image_url,
+      og_image: row.og_image,
+      _thumbnail_url: row.thumbnail_url,
+    } as unknown as Json,
+  }));
+
   const mediaIds = posts
     .map((post) => post.featured_media_id)
     .filter((id): id is number => typeof id === "number" && id > 0);
