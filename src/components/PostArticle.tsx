@@ -984,17 +984,17 @@ export function PostArticle({
             <div className="mt-1 text-base font-semibold leading-tight">
               Get essays like this in your inbox.
             </div>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-3 flex items-center gap-2"
-            >
+            <form onSubmit={subscribeNewsletter} className="mt-3 flex items-center gap-2">
               <input
                 type="email"
                 required
+                value={newsEmail}
+                onChange={(e) => setNewsEmail(e.target.value)}
                 placeholder="you@domain.com"
                 aria-label="Email address"
                 className="flex-1 min-w-0 rounded-full bg-white/10 border border-white/15 px-3 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:border-white/40"
               />
+
               <button
                 type="submit"
                 aria-label="Subscribe"
