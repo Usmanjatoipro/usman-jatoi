@@ -201,6 +201,30 @@ export function PostArticle({
     };
   }, [post.content]);
 
+  /* FAQ structured data — questions stay collapsed visually but indexed. */
+  const faqSchema = useMemo(() => {
+    const items: { q: string; a: string }[] = [];
+    const re = /<details[^>]*>\s*<summary[^>]*>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(enrichedHtml))) {
+      const q = decodeEntities(stripHtml(m[1]));
+      const a = decodeEntities(stripHtml(m[2]));
+      if (q && a) items.push({ q, a });
+    }
+    if (!items.length) return null;
+    return JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: items.map((i) => ({
+        "@type": "Question",
+        name: i.q,
+        acceptedAnswer: { "@type": "Answer", text: i.a },
+      })),
+    });
+  }, [enrichedHtml]);
+
+
+
   /* Reading progress + active heading + back-to-top. */
   useEffect(() => {
     const onScroll = () => {
