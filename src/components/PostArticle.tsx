@@ -966,18 +966,20 @@ export function PostArticle({
 
       {/* ================= FULL-WIDTH SECTIONS ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-16 space-y-16">
-        {/* RedsGlow banner */}
-        <section className="relative overflow-hidden rounded-3xl border border-neutral-200">
+        {/* RedsGlow banner — clean image, no dark overlay */}
+        <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-white">
           <img
             src={redsglow.url}
             alt="RedsGlow Creative Agency"
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="h-auto w-full object-cover"
           />
-          <div className="absolute inset-0 bg-neutral-950/75" aria-hidden />
-          <div className="relative p-6 md:p-12 max-w-3xl">
-            <p className="text-sm md:text-base text-white/85 leading-relaxed">
-              From <b className="text-white">marketing to automation, technical development to
+          <div className="p-6 md:p-10 max-w-3xl">
+            <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900">
+              RedsGlow — everything your brand needs, under one roof
+            </h2>
+            <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed">
+              From <b className="text-neutral-900">marketing to automation, technical development to
               management, creative design to operations, consulting to growth
               strategy</b> — we deliver it all under one roof. Whether you're
               launching something new, fixing what's broken, or scaling to the
@@ -994,6 +996,7 @@ export function PostArticle({
             </a>
           </div>
         </section>
+
 
 
         {/* Explore My All Categories */}
