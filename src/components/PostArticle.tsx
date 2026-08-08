@@ -846,10 +846,17 @@ export function PostArticle({
       {/* ================= FULL-WIDTH SECTIONS ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-16 space-y-16">
         {/* RedsGlow banner */}
-        <section className="rounded-3xl border border-neutral-200 bg-gradient-to-br from-sky-50 via-white to-neutral-50 overflow-hidden grid md:grid-cols-[1.1fr_1fr]">
-          <div className="p-6 md:p-10 flex flex-col justify-center">
-            <p className="text-sm md:text-base text-neutral-800 leading-relaxed">
-              From <b>marketing to automation, technical development to
+        <section className="relative overflow-hidden rounded-3xl border border-neutral-200">
+          <img
+            src={redsglow.url}
+            alt="RedsGlow Creative Agency"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-neutral-950/75" aria-hidden />
+          <div className="relative p-6 md:p-12 max-w-3xl">
+            <p className="text-sm md:text-base text-white/85 leading-relaxed">
+              From <b className="text-white">marketing to automation, technical development to
               management, creative design to operations, consulting to growth
               strategy</b> — we deliver it all under one roof. Whether you're
               launching something new, fixing what's broken, or scaling to the
@@ -860,33 +867,13 @@ export function PostArticle({
               href="https://redsglow.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-neutral-950 text-white text-sm font-semibold px-5 py-2.5 hover:bg-neutral-800 self-start"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 hover:bg-orange-600"
             >
               VISIT NOW <ArrowRight className="h-4 w-4" />
             </a>
           </div>
-          <div
-            className="min-h-[220px] md:min-h-full flex items-center justify-center p-8"
-            style={{
-              background:
-                "linear-gradient(135deg, #d9e6f4 0%, #b8d0e8 100%)",
-            }}
-          >
-            <div className="rounded-xl bg-neutral-950 border-2 border-neutral-800 shadow-2xl px-10 py-8 flex items-center gap-4">
-              <div className="text-3xl font-black tracking-tighter text-white">
-                R<span className="text-rose-500">G</span>
-              </div>
-              <div>
-                <div className="text-2xl font-black text-white leading-none tracking-tight">
-                  RED<span className="text-rose-500">S</span>GLOW
-                </div>
-                <div className="text-[10px] tracking-[0.35em] text-neutral-400 mt-1">
-                  CREATIVE AGENCY
-                </div>
-              </div>
-            </div>
-          </div>
         </section>
+
 
         {/* Explore My All Categories */}
         {allCats.length > 0 && (
