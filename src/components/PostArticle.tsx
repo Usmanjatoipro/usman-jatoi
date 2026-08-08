@@ -480,11 +480,15 @@ export function PostArticle({
         size="sm"
         crumbs={[
           { label: "Home", href: "/" },
+          ...(parentCategory
+            ? [{ label: parentCategory.name, href: `/category/${parentCategory.slug}` }]
+            : []),
           ...(primaryCategory
             ? [{ label: primaryCategoryName, href: archiveHref }]
             : [{ label: "Blog", href: "/blog" }]),
           { label: title },
         ]}
+
       />
 
       <div className="h-10" />
