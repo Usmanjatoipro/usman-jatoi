@@ -164,13 +164,14 @@ function jsonToHtml(data: any, skipTitle = false): string {
       `<div class="migrated-faqs">${data.faqs
         .map(
           (item: any) =>
-            `<details open><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(
+            `<details><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(
               itemDescription(item),
             )}</p></details>`,
         )
         .join("")}</div>`,
     );
   }
+
 
   parts.push(tableHtml(data));
   return parts.filter(Boolean).join("");
