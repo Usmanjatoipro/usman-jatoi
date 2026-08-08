@@ -872,27 +872,33 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Book a Call ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-20 text-center">
-        <Reveal>
-          <div className="rounded-3xl border border-neutral-200 bg-neutral-950 text-white p-12">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-[#FF6A00]" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Book a call with me to discuss your project in detail
-            </h2>
-            <p className="text-neutral-600 mb-6 max-w-xl mx-auto">
-              30 minutes on Cal.com — free, no obligation. We map scope and
-              next steps together.
-            </p>
-            <a
-              href="https://cal.com/usmanjatoi"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF6A00] text-white font-semibold hover:opacity-90 transition"
-            >
-              Open Cal.com <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-        </Reveal>
+      <section id="book-a-call" className="bg-neutral-950 text-white">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <Reveal>
+            <div className="mb-8 text-center">
+              <Calendar className="mx-auto mb-4 h-12 w-12 text-[#FF6A00]" />
+              <h2 className="text-3xl font-bold md:text-4xl">
+                Book a call to discuss your {s.title.toLowerCase()} project
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-white/70">
+                30 minutes, free, no obligation. Pick a slot below and we'll map
+                scope, timeline and next steps together.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/60 p-2">
+              <CalEmbed />
+            </div>
+          </Reveal>
+          <p className="mt-6 text-center text-sm text-white/60">
+            Can't find a time?{" "}
+            <Link to="/call" className="text-[#FF6A00] hover:underline">
+              See the full booking page
+            </Link>
+            .
+          </p>
+        </div>
       </section>
 
       {/* ---------- Awards ---------- */}
