@@ -909,6 +909,33 @@ export function PostArticle({
             </div>
           )}
 
+          {/* Sibling categories — other topics at the same level */}
+          {allCats.length > 1 && (
+            <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
+              <div className="px-5 py-3 font-semibold text-sm text-neutral-900 border-b border-neutral-100">
+                Related Categories
+              </div>
+              <ul className="divide-y divide-neutral-100">
+                {allCats
+                  .filter((c) => c.name !== primaryCategoryName)
+                  .slice(0, 8)
+                  .map((c) => (
+                    <li key={c.href}>
+                      <Link
+                        to={c.href as any}
+                        className="flex items-center justify-between px-5 py-2.5 text-sm text-neutral-800 hover:bg-neutral-50 transition"
+                      >
+                        <span className="truncate">{c.name}</span>
+                        <ChevronRight className="h-4 w-4 text-neutral-400 flex-none" />
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+
+
+
           {/* Table of contents */}
           {headings.length > 1 && (
             <details
