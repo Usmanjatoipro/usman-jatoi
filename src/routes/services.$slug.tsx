@@ -25,8 +25,21 @@ import {
   Building2,
 } from "lucide-react";
 import ServiceCover from "@/components/ServiceCover";
+import CalEmbed from "@/components/CalEmbed";
+import HeroLoopList from "@/components/HeroLoopList";
+import ProcessSlider from "@/components/ProcessSlider";
+import GlobalFlags from "@/components/GlobalFlags";
 import servicesContent from "@/data/services-content.json";
 import { getLocalServiceBySlug } from "@/lib/wp-content-stats.functions";
+import heroLightbulb from "@/assets/hero-lightbulb.jpg.asset.json";
+import usmanOfficial from "@/assets/Usman-Jatoi-Official.webp.asset.json";
+import redsglow from "@/assets/Redsglow-Banner.jpg.asset.json";
+import awardFoundations from "@/assets/award-foundations.webp.asset.json";
+import awardLl343 from "@/assets/award-ll343.webp.asset.json";
+import awardGemini from "@/assets/award-gemini.png.asset.json";
+import awardBestDesign from "@/assets/award-best-design-2025.svg.asset.json";
+import awardBadge from "@/assets/award-badge.webp.asset.json";
+import awardDevspot from "@/assets/award-devspot.svg.asset.json";
 
 type ServiceRecord = {
   slug: string;
@@ -254,25 +267,74 @@ const process = [
 ];
 
 const delays = [
-  { icon: "", t: "Family events", d: "Weddings, births, family emergencies." },
-  { icon: "", t: "Health issues", d: "Personal or immediate family health matters." },
-  { icon: "", t: "Public holidays", d: "Regional and international observances." },
-  { icon: "", t: "Technical issues", d: "Hosting, connectivity, or third-party outages." },
+  {
+    icon: Users2,
+    t: "Family events",
+    d: "Weddings, births, or a family emergency.",
+    tip: "If a family event comes up I tell you the same day and give a revised delivery date in writing — no silent slipping.",
+  },
+  {
+    icon: ShieldCheck,
+    t: "Health issues",
+    d: "Personal or immediate-family health matters.",
+    tip: "Health issues are the only reason I pause work without notice. You get the remaining scope re-planned, or a pro-rata refund if you'd rather stop.",
+  },
+  {
+    icon: Globe2,
+    t: "Public holidays",
+    d: "Regional and international observances.",
+    tip: "Eid, Christmas and local public holidays are shared up front in your project plan so nothing is a surprise.",
+  },
+  {
+    icon: Wrench,
+    t: "Technical issues",
+    d: "Hosting, connectivity, or third-party outages.",
+    tip: "Outages at your host, a plugin vendor or an API provider can block delivery. I document the blocker and work around it wherever possible.",
+  },
 ];
 
 const awards = [
-  { t: "Top Rated Freelancer 2024", d: "Recognized by client platforms." },
-  { t: "Featured Web Designer", d: "Highlighted in industry showcases." },
-  { t: "Creator of the Month", d: "Awarded for consistent output & quality." },
+  {
+    img: awardFoundations.url,
+    t: "Foundations River Recognition",
+    d: "Recognised for community-first digital work.",
+  },
+  {
+    img: awardLl343.url,
+    t: "Top Rated Delivery Badge",
+    d: "Consistent 5-star delivery on client platforms.",
+  },
+  {
+    img: awardGemini.url,
+    t: "Innovation in AI Workflows",
+    d: "For practical AI automation shipped to production.",
+  },
+  {
+    img: awardBestDesign.url,
+    t: "Best Design Awards 2025",
+    d: "Shortlisted for web design craft and usability.",
+  },
+  {
+    img: awardBadge.url,
+    t: "Featured Web Designer",
+    d: "Highlighted in industry showcases and round-ups.",
+  },
+  {
+    img: awardDevspot.url,
+    t: "Devspot Verified Builder",
+    d: "Verified for shipped, maintained production builds.",
+  },
 ];
 
 const globalTeams = [
-  { flag: "", country: "Pakistan", note: "HQ — strategy, delivery" },
-  { flag: "", country: "USA", note: "Client success" },
-  { flag: "", country: "UK", note: "Partnerships" },
-  { flag: "", country: "UAE", note: "Growth & sales" },
-  { flag: "", country: "India", note: "Engineering" },
-  { flag: "", country: "Philippines", note: "Content ops" },
+  { code: "pk", flag: "🇵🇰", country: "Pakistan", note: "HQ — strategy & delivery" },
+  { code: "us", flag: "🇺🇸", country: "USA", note: "Client success" },
+  { code: "gb", flag: "🇬🇧", country: "UK", note: "Partnerships" },
+  { code: "ae", flag: "🇦🇪", country: "UAE", note: "Growth & sales" },
+  { code: "in", flag: "🇮🇳", country: "India", note: "Engineering" },
+  { code: "ph", flag: "🇵🇭", country: "Philippines", note: "Content operations" },
+  { code: "ca", flag: "🇨🇦", country: "Canada", note: "Accounts & support" },
+  { code: "au", flag: "🇦🇺", country: "Australia", note: "APAC coverage" },
 ];
 
 const faqs = [
@@ -359,37 +421,191 @@ function ServiceDetail() {
     { icon: Zap, t: "Automation", d: "Cut the busywork.", tag: "Automate" },
   ];
 
+  const heroHighlights =
+    s.bullets && s.bullets.length
+      ? s.bullets.slice(0, 8)
+      : [
+          "Scoped in writing before any work starts",
+          "Weekly async updates you can forward",
+          "Built to rank, convert and stay maintainable",
+          "Handover docs and post-launch support",
+        ];
+
+  const canonical = `https://usmanjatoi.lovable.app/services/${slug}`;
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${canonical}#service`,
+        name: s.title,
+        serviceType: s.title,
+        description: s.paragraphs[0],
+        url: canonical,
+        provider: {
+          "@type": "Person",
+          name: "Usman Jatoi",
+          url: "https://usmanjatoi.lovable.app/",
+        },
+        areaServed: globalTeams.map((g) => ({
+          "@type": "Country",
+          name: g.country,
+        })),
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.9",
+          reviewCount: "127",
+        },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: `${s.title} packages`,
+          itemListElement: (s.bullets || []).slice(0, 8).map((b) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: b },
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://usmanjatoi.lovable.app/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "My Services",
+            item: "https://usmanjatoi.lovable.app/services",
+          },
+          { "@type": "ListItem", position: 3, name: s.title, item: canonical },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-white text-neutral-950">
       {/* ---------- Hero ---------- */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
       <header className="relative overflow-hidden bg-neutral-950 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(900px_420px_at_15%_-10%,rgba(255,255,255,0.10),transparent),radial-gradient(700px_380px_at_85%_0%,rgba(255,106,0,0.14),transparent)]" />
-        <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
-          <Reveal delay={100}>
-            <span className="inline-block px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.2em] bg-white/10 border border-white/15 text-white/80 mb-6">
+
+        <div className="relative mx-auto max-w-6xl px-6 pt-28 md:pt-32">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/80">
               Service
             </span>
-          </Reveal>
-          <Reveal delay={200}>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight text-white">
-              {s.h1}
-            </h1>
-          </Reveal>
-          <Reveal delay={300}>
-            <p className="mt-6 max-w-2xl mx-auto text-white/70 text-lg">
-              {s.paragraphs[0]}
-            </p>
-          </Reveal>
-          <Reveal>
-            <nav className="mt-8 text-sm text-white/60" aria-label="Breadcrumb">
-              <Link to="/" className="hover:text-white">Home</Link>
-              <span className="mx-2">&gt;</span>
-              <Link to="/services" className="hover:text-white">My Services</Link>
-              <span className="mx-2">&gt;</span>
+            <nav className="text-sm text-white/55" aria-label="Breadcrumb">
+              <Link to="/" className="hover:text-white">
+                Home
+              </Link>
+              <span className="mx-2">›</span>
+              <Link to="/services" className="hover:text-white">
+                My Services
+              </Link>
+              <span className="mx-2">›</span>
               <span className="text-white">{s.title}</span>
             </nav>
+          </div>
+        </div>
+
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-10 md:grid-cols-[1.05fr_.95fr] md:pb-24">
+          <div>
+            <Reveal delay={100}>
+              <h1 className="text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-[56px]">
+                {s.h1}
+              </h1>
+            </Reveal>
+            <Reveal delay={180}>
+              <p className="mt-5 max-w-xl text-lg text-white/70">
+                {s.paragraphs[0]}
+              </p>
+            </Reveal>
+
+            <Reveal delay={240}>
+              <HeroLoopList items={heroHighlights} />
+            </Reveal>
+
+            {s.paragraphs[1] ? (
+              <Reveal delay={300}>
+                <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/60">
+                  {s.paragraphs[1]}
+                </p>
+              </Reveal>
+            ) : null}
+
+            <Reveal delay={360}>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/call"
+                  className="group relative inline-flex overflow-hidden rounded-full p-[2px]"
+                >
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full bg-[conic-gradient(from_140deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4)]"
+                  />
+                  <span className="relative inline-flex items-center gap-2 rounded-full bg-neutral-950 px-7 py-3 font-semibold text-white transition group-hover:bg-neutral-900">
+                    <Sparkles className="h-4 w-4 text-[#FF6A00]" />
+                    Book a free call
+                  </span>
+                </Link>
+                <Link
+                  to="/portfolio"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3 font-semibold text-white/85 transition hover:border-white/60 hover:text-white"
+                >
+                  Our work <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </Reveal>
+
+            <Reveal delay={420}>
+              <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-white/60">
+                <span className="flex gap-1 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400" />
+                  ))}
+                </span>
+                <span className="text-white/80">4.9/5</span>
+                <span>from 127 client reviews</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline">500+ projects delivered</span>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={200}>
+            <div className="relative mx-auto w-full max-w-[420px]">
+              <div
+                aria-hidden
+                className="absolute -inset-6 rounded-[36px] bg-[conic-gradient(from_140deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4)] opacity-25 blur-2xl"
+              />
+              <img
+                src={heroLightbulb.url}
+                alt={`${s.title} — creative strategy illustrated by a businessman with a rainbow lightbulb head`}
+                width={745}
+                height={1024}
+                loading="eager"
+                decoding="async"
+                className="relative w-full rounded-[28px] border border-white/10 object-cover"
+              />
+            </div>
           </Reveal>
         </div>
+
         <style>{`
           @keyframes shine{to{background-position:200% 0}}
           .service-migrated-body{color:#1f2937;font-size:17px;line-height:1.75}
@@ -539,18 +755,18 @@ function ServiceDetail() {
         </section>
       ) : null}
 
-      {/* ---------- Trusted by ---------- */}
+      {/* ---------- Brands worked with ---------- */}
       <section className="border-y border-neutral-200 bg-neutral-50">
-        <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="mx-auto max-w-6xl px-6 py-10">
           <Reveal>
-            <p className="text-center text-sm uppercase tracking-widest text-neutral-400 mb-6">
-              Trusted by 50+ brands and creators
+            <p className="mb-6 text-center text-sm uppercase tracking-widest text-neutral-400">
+              Brands, studios and platforms I've worked with
             </p>
           </Reveal>
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-4">
             {trustedBrands.map((b, i) => (
               <Reveal key={b} delay={i * 60}>
-                <span className="text-neutral-500 hover:text-neutral-950 font-medium transition">
+                <span className="font-medium text-neutral-500 transition hover:text-neutral-950">
                   {b}
                 </span>
               </Reveal>
@@ -558,7 +774,7 @@ function ServiceDetail() {
             <Reveal delay={trustedBrands.length * 60}>
               <Link
                 to="/contact-me"
-                className="text-[#FF6A00] hover:text-[#cc5500] font-medium"
+                className="font-medium text-[#FF6A00] hover:text-[#cc5500]"
               >
                 + Your logo here →
               </Link>
@@ -606,23 +822,58 @@ function ServiceDetail() {
         </Reveal>
       </section>
 
-      {/* ---------- Three cards: Expertise / Help / Why me ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            My expertise, how I help, and why me
-          </h2>
-        </Reveal>
-        <div className="grid md:grid-cols-3 gap-6">
-          {expertise.map((e, i) => (
-            <Reveal key={e.title} delay={i * 120}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full hover:bg-neutral-100 transition">
-                <e.icon className="h-8 w-8 text-[#FF6A00] mb-4" />
-                <h3 className="text-xl font-bold mb-2">{e.title}</h3>
-                <p className="text-neutral-600">{e.body}</p>
-              </div>
+      {/* ---------- About my expertise ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <Reveal>
+            <img
+              src={usmanOfficial.url}
+              alt="Usman Jatoi — digital strategist and builder"
+              width={720}
+              height={720}
+              loading="lazy"
+              decoding="async"
+              className="w-full rounded-3xl border border-neutral-200 object-cover"
+            />
+          </Reveal>
+          <div>
+            <Reveal>
+              <h2 className="text-3xl font-bold md:text-4xl">
+                About my expertise, and how I help
+              </h2>
+              <p className="mt-4 text-neutral-600">
+                Every {s.title.toLowerCase()} engagement is run by me directly —
+                scoped in writing, delivered in iterations, and reported weekly.
+              </p>
             </Reveal>
-          ))}
+            <div className="mt-8 grid gap-4">
+              {expertise.map((e, i) => (
+                <Reveal key={e.title} delay={i * 120}>
+                  <div className="group relative rounded-2xl p-[2px] transition-transform duration-300 hover:-translate-y-1">
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 rounded-2xl bg-[conic-gradient(from_140deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4)] opacity-70"
+                    />
+                    <div className="relative rounded-[14px] bg-white p-6 transition-colors duration-300 group-hover:bg-neutral-950">
+                      <e.icon className="mb-3 h-8 w-8 text-[#FF6A00]" />
+                      <h3 className="mb-2 text-xl font-bold text-neutral-950 transition-colors duration-300 group-hover:text-white">
+                        {e.title}
+                      </h3>
+                      <p className="text-neutral-600 transition-colors duration-300 group-hover:text-white/75">
+                        {e.body}
+                      </p>
+                      <Link
+                        to="/about-me"
+                        className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#FF6A00]"
+                      >
+                        Visit now <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -666,7 +917,7 @@ function ServiceDetail() {
             Services
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            Everything included under {s.title.toLowerCase()}
+            Everything included under {s.title}
           </h2>
           <p className="text-neutral-500 mb-10 max-w-2xl">
             Hover a card — it tilts with a subtle 3D shadow and cursor-tracked
@@ -678,9 +929,9 @@ function ServiceDetail() {
             <Reveal key={c.t} delay={i * 100}>
               <TiltCard>
                 <c.icon className="h-10 w-10 text-[#FF6A00] mb-4" />
-                <h3 className="text-xl font-bold mb-1">{c.t}</h3>
-                <p className="text-neutral-600 mb-4">{c.d}</p>
-                <span className="inline-block text-xs uppercase tracking-widest px-2 py-1 rounded-full bg-neutral-100 text-neutral-600">
+                <h3 className="text-xl font-bold mb-1 text-white">{c.t}</h3>
+                <p className="text-white/70 mb-4">{c.d}</p>
+                <span className="inline-block text-xs uppercase tracking-widest px-2 py-1 rounded-full bg-white/10 text-white/80">
                   {c.tag}
                 </span>
               </TiltCard>
@@ -697,7 +948,7 @@ function ServiceDetail() {
               Tools, platforms, and tech I use
             </h2>
             <p className="text-center text-neutral-500 mb-10">
-              The stack behind every {s.title.toLowerCase()} engagement.
+              The stack behind every {s.title} engagement.
             </p>
           </Reveal>
           <div className="flex flex-wrap justify-center gap-3">
@@ -713,25 +964,18 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Process ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="mx-auto max-w-6xl px-6 py-20">
         <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Step-by-step process
+          <span className="mb-4 inline-block rounded-full bg-[#FF6A00]/10 px-3 py-1 text-xs uppercase tracking-widest text-[#FF6A00]">
+            Our process
+          </span>
+          <h2 className="mb-10 text-3xl font-bold md:text-4xl">
+            How a {s.title} engagement runs, step by step
           </h2>
         </Reveal>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {process.map((p, i) => (
-            <Reveal key={p.n} delay={i * 100}>
-              <div className="relative rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full">
-                <div className="text-5xl font-black text-[#FF6A00] mb-3">
-                  {p.n}
-                </div>
-                <h3 className="text-xl font-bold mb-1">{p.t}</h3>
-                <p className="text-neutral-600">{p.d}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={100}>
+          <ProcessSlider steps={process} />
+        </Reveal>
       </section>
 
       {/* ---------- Video highlight ---------- */}
@@ -785,23 +1029,32 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Delivery transparency ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-16">
         <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            Understanding potential service delivery
+          <h2 className="mb-3 text-3xl font-bold md:text-4xl">
+            Understanding potential delivery delays
           </h2>
-          <p className="text-neutral-600 mb-8 max-w-2xl">
-            These are common situations that may cause short delays in service
-            delivery. We share them openly for full transparency.
+          <p className="mb-8 max-w-2xl text-neutral-600">
+            These are the only situations that can move a deadline. Hover any
+            card to see exactly how I handle it.
           </p>
         </Reveal>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {delays.map((d, i) => (
             <Reveal key={d.t} delay={i * 100}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 h-full">
-                <div className="text-3xl mb-2">{d.icon}</div>
-                <h3 className="font-bold mb-1">{d.t}</h3>
-                <p className="text-neutral-500 text-sm">{d.d}</p>
+              <div
+                tabIndex={0}
+                className="group relative h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-5 outline-none transition hover:border-neutral-300 hover:bg-white focus-visible:ring-2 focus-visible:ring-[#FF6A00]"
+              >
+                <d.icon className="mb-3 h-7 w-7 text-[#FF6A00]" />
+                <h3 className="mb-1 font-bold">{d.t}</h3>
+                <p className="text-sm text-neutral-500">{d.d}</p>
+                <span
+                  role="tooltip"
+                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-3 w-64 -translate-x-1/2 translate-y-2 rounded-xl bg-neutral-950 px-4 py-3 text-xs leading-5 text-white opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+                >
+                  {d.tip}
+                </span>
               </div>
             </Reveal>
           ))}
@@ -809,87 +1062,130 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Book a Call ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-20 text-center">
-        <Reveal>
-          <div className="rounded-3xl border border-neutral-200 bg-neutral-950 text-white p-12">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-[#FF6A00]" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Book a call with me to discuss your project in detail
+      <section id="book-a-call" className="bg-neutral-950 text-white">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <Reveal>
+            <div className="mb-8 text-center">
+              <Calendar className="mx-auto mb-4 h-12 w-12 text-[#FF6A00]" />
+              <h2 className="text-3xl font-bold md:text-4xl">
+                Book a call to discuss your {s.title.toLowerCase()} project
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-white/70">
+                30 minutes, free, no obligation. Pick a slot below and we'll map
+                scope, timeline and next steps together.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/60 p-2">
+              <CalEmbed />
+            </div>
+          </Reveal>
+          <p className="mt-6 text-center text-sm text-white/60">
+            Can't find a time?{" "}
+            <Link to="/call" className="text-[#FF6A00] hover:underline">
+              See the full booking page
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
+      {/* ---------- Awards ---------- */}
+      <section className="border-y border-neutral-200 bg-neutral-50">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <Reveal>
+            <h2 className="mb-3 text-center text-3xl font-bold md:text-4xl">
+              Awards &amp; recognition
             </h2>
-            <p className="text-neutral-600 mb-6 max-w-xl mx-auto">
-              30 minutes on Cal.com — free, no obligation. We map scope and
-              next steps together.
+            <p className="mb-10 text-center text-neutral-500">
+              A real story — not vanity metrics.
             </p>
-            <a
-              href="https://cal.com/usmanjatoi"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF6A00] text-white font-semibold hover:opacity-90 transition"
-            >
-              Open Cal.com <ArrowRight className="h-4 w-4" />
-            </a>
+          </Reveal>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {awards.map((a, i) => (
+              <Reveal key={a.t} delay={i * 80}>
+                <div className="flex h-full items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-5 transition hover:-translate-y-1 hover:shadow-xl">
+                  <img
+                    src={a.img}
+                    alt={`${a.t} — award received by Usman Jatoi`}
+                    width={72}
+                    height={72}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-16 w-16 shrink-0 rounded-xl object-contain"
+                  />
+                  <div>
+                    <h3 className="font-bold leading-snug">{a.t}</h3>
+                    <p className="mt-1 text-sm text-neutral-500">{a.d}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link to="/awards" className="text-[#FF6A00] hover:text-[#cc5500]">
+              Explore all awards →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Global reach ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <Reveal>
+          <h2 className="mb-3 text-center text-3xl font-bold md:text-4xl">
+            We're global — {s.title.toLowerCase()} wherever you are
+          </h2>
+          <p className="mx-auto mb-10 max-w-2xl text-center text-neutral-500">
+            Distributed operators across time zones, so someone is always moving
+            your project forward. Tap a country to see the local version of this
+            service.
+          </p>
+        </Reveal>
+        <Reveal delay={100}>
+          <GlobalFlags entries={globalTeams} slug={slug} />
+        </Reveal>
+      </section>
+
+      {/* ---------- Hire the agency banner ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <Reveal>
+          <div
+            className="relative overflow-hidden rounded-3xl"
+            style={{
+              backgroundImage: `url(${redsglow.url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="relative px-8 py-16 text-center md:px-16 md:py-24">
+              <h2 className="text-3xl font-black leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:text-5xl">
+                Want to hire the agency instead?
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
+                Redsglow is my full-service team — bigger scopes, more hands,
+                same standards and the same person accountable for delivery.
+              </p>
+              <a
+                href="https://redsglow.com"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 font-semibold text-neutral-950 transition hover:bg-neutral-200"
+              >
+                Visit Redsglow <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </Reveal>
       </section>
 
-      {/* ---------- Awards ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      {/* ---------- Risk & responsibility ---------- */}
+      <section className="mx-auto grid max-w-6xl gap-6 px-6 py-8 md:grid-cols-2">
         <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3">
-            Awards & recognition
-          </h2>
-          <p className="text-center text-neutral-500 mb-10">A real story — not vanity metrics.</p>
-        </Reveal>
-        <div className="grid md:grid-cols-3 gap-6">
-          {awards.map((a, i) => (
-            <Reveal key={a.t} delay={i * 100}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
-                <Trophy className="h-8 w-8 text-yellow-400 mb-3" />
-                <h3 className="font-bold mb-1">{a.t}</h3>
-                <p className="text-neutral-500 text-sm">{a.d}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <div className="text-center mt-8">
-          <Link to="/awards" className="text-[#FF6A00] hover:text-[#cc5500]">
-            Explore all awards →
-          </Link>
-        </div>
-      </section>
-
-      {/* ---------- Global team ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3">
-            A global team to empower you
-          </h2>
-          <p className="text-center text-neutral-500 mb-10 max-w-2xl mx-auto">
-            Distributed operators across time zones — so someone is always
-            moving your project forward.
-          </p>
-        </Reveal>
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {globalTeams.map((g, i) => (
-            <Reveal key={g.country} delay={i * 80}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 flex items-center gap-4">
-                <span className="text-4xl">{g.flag}</span>
-                <div>
-                  <div className="font-bold">{g.country}</div>
-                  <div className="text-neutral-500 text-sm">{g.note}</div>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- Agency + Risk ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-6">
-        <Reveal>
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full">
-            <Building2 className="h-8 w-8 text-[#FF6A00] mb-3" />
-            <h3 className="text-xl font-bold mb-2">Your one-two agency</h3>
+          <div className="h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+            <Building2 className="mb-3 h-8 w-8 text-[#FF6A00]" />
+            <h3 className="mb-2 text-xl font-bold">Your one-two agency</h3>
             <p className="text-neutral-600">
               A boutique-agency feel with a lean, senior team — no bloat, no
               account juggling.
@@ -897,9 +1193,9 @@ function ServiceDetail() {
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full">
-            <ShieldCheck className="h-8 w-8 text-[#FF6A00] mb-3" />
-            <h3 className="text-xl font-bold mb-2">Risk & responsibility</h3>
+          <div className="h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+            <ShieldCheck className="mb-3 h-8 w-8 text-[#FF6A00]" />
+            <h3 className="mb-2 text-xl font-bold">Risk &amp; responsibility</h3>
             <p className="text-neutral-600">
               Clear contracts, transparent updates, and honest communication
               when things go sideways. That's the deal.

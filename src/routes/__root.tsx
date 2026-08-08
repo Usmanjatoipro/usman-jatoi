@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "../components/SiteChrome";
+import FloatingDock from "../components/FloatingDock";
 import favicon32 from "../assets/favicon-32.webp.asset.json";
 import favicon192 from "../assets/favicon-192.webp.asset.json";
 import faviconApple from "../assets/apple-touch-icon.webp.asset.json";
@@ -141,12 +142,25 @@ function RootComponent() {
     pathname.startsWith("/import") ||
     pathname.startsWith("/auth");
 
+  // Floating pill dock on the top pillar pages only.
+  const dockPrefixes = [
+    "/services",
+    "/blog",
+    "/portfolio",
+    "/about-me",
+    "/skills-expertise",
+    "/case-studies",
+    "/call",
+  ];
+  const showDock =
+    !hideChrome && dockPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   return (
     <QueryClientProvider client={queryClient}>
       {!hideChrome && <SiteHeader />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      {showDock && <FloatingDock />}
       {!hideChrome && <SiteFooter />}
     </QueryClientProvider>
   );
