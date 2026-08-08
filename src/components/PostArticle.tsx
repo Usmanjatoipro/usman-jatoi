@@ -1288,18 +1288,21 @@ export function PostArticle({
         .post-body tr:last-child td { border-bottom: none; }
         .post-body iframe, .post-body video { max-width: 100%; border-radius: 14px; margin: 1.5em 0; }
         .post-body .migrated-field {
-          margin: 1.4em 0;
-          border: 1px solid #e5e7eb;
-          border-radius: 18px;
-          background: #fff;
-          padding: clamp(18px, 3vw, 30px);
-          box-shadow: 0 18px 50px rgba(15, 23, 42, 0.05);
+          margin: 2.2em 0;
+          border: 0;
+          border-top: 1px solid #ececec;
+          border-radius: 0;
+          background: transparent;
+          padding: 1.6em 0 0;
+          box-shadow: none;
         }
+        .post-body .migrated-field:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
         .post-body .migrated-field > h2 {
           margin-top: 0;
-          font-size: clamp(24px, 3vw, 36px);
-          line-height: 1.08;
+          font-size: clamp(22px, 2.4vw, 32px);
+          line-height: 1.12;
         }
+
         .post-body .migrated-grid,
         .post-body .migrated-steps {
           display: grid;
