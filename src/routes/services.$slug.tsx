@@ -896,28 +896,42 @@ function ServiceDetail() {
       </section>
 
       {/* ---------- Awards ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3">
-            Awards & recognition
-          </h2>
-          <p className="text-center text-neutral-500 mb-10">A real story — not vanity metrics.</p>
-        </Reveal>
-        <div className="grid md:grid-cols-3 gap-6">
-          {awards.map((a, i) => (
-            <Reveal key={a.t} delay={i * 100}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
-                <Trophy className="h-8 w-8 text-yellow-400 mb-3" />
-                <h3 className="font-bold mb-1">{a.t}</h3>
-                <p className="text-neutral-500 text-sm">{a.d}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <div className="text-center mt-8">
-          <Link to="/awards" className="text-[#FF6A00] hover:text-[#cc5500]">
-            Explore all awards →
-          </Link>
+      <section className="border-y border-neutral-200 bg-neutral-50">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <Reveal>
+            <h2 className="mb-3 text-center text-3xl font-bold md:text-4xl">
+              Awards &amp; recognition
+            </h2>
+            <p className="mb-10 text-center text-neutral-500">
+              A real story — not vanity metrics.
+            </p>
+          </Reveal>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {awards.map((a, i) => (
+              <Reveal key={a.t} delay={i * 80}>
+                <div className="flex h-full items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-5 transition hover:-translate-y-1 hover:shadow-xl">
+                  <img
+                    src={a.img}
+                    alt={`${a.t} — award received by Usman Jatoi`}
+                    width={72}
+                    height={72}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-16 w-16 shrink-0 rounded-xl object-contain"
+                  />
+                  <div>
+                    <h3 className="font-bold leading-snug">{a.t}</h3>
+                    <p className="mt-1 text-sm text-neutral-500">{a.d}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link to="/awards" className="text-[#FF6A00] hover:text-[#cc5500]">
+              Explore all awards →
+            </Link>
+          </div>
         </div>
       </section>
 
