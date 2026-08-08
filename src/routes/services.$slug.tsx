@@ -268,25 +268,74 @@ const process = [
 ];
 
 const delays = [
-  { icon: "", t: "Family events", d: "Weddings, births, family emergencies." },
-  { icon: "", t: "Health issues", d: "Personal or immediate family health matters." },
-  { icon: "", t: "Public holidays", d: "Regional and international observances." },
-  { icon: "", t: "Technical issues", d: "Hosting, connectivity, or third-party outages." },
+  {
+    icon: Users2,
+    t: "Family events",
+    d: "Weddings, births, or a family emergency.",
+    tip: "If a family event comes up I tell you the same day and give a revised delivery date in writing — no silent slipping.",
+  },
+  {
+    icon: ShieldCheck,
+    t: "Health issues",
+    d: "Personal or immediate-family health matters.",
+    tip: "Health issues are the only reason I pause work without notice. You get the remaining scope re-planned, or a pro-rata refund if you'd rather stop.",
+  },
+  {
+    icon: Globe2,
+    t: "Public holidays",
+    d: "Regional and international observances.",
+    tip: "Eid, Christmas and local public holidays are shared up front in your project plan so nothing is a surprise.",
+  },
+  {
+    icon: Wrench,
+    t: "Technical issues",
+    d: "Hosting, connectivity, or third-party outages.",
+    tip: "Outages at your host, a plugin vendor or an API provider can block delivery. I document the blocker and work around it wherever possible.",
+  },
 ];
 
 const awards = [
-  { t: "Top Rated Freelancer 2024", d: "Recognized by client platforms." },
-  { t: "Featured Web Designer", d: "Highlighted in industry showcases." },
-  { t: "Creator of the Month", d: "Awarded for consistent output & quality." },
+  {
+    img: awardFoundations.url,
+    t: "Foundations River Recognition",
+    d: "Recognised for community-first digital work.",
+  },
+  {
+    img: awardLl343.url,
+    t: "Top Rated Delivery Badge",
+    d: "Consistent 5-star delivery on client platforms.",
+  },
+  {
+    img: awardGemini.url,
+    t: "Innovation in AI Workflows",
+    d: "For practical AI automation shipped to production.",
+  },
+  {
+    img: awardBestDesign.url,
+    t: "Best Design Awards 2025",
+    d: "Shortlisted for web design craft and usability.",
+  },
+  {
+    img: awardBadge.url,
+    t: "Featured Web Designer",
+    d: "Highlighted in industry showcases and round-ups.",
+  },
+  {
+    img: awardDevspot.url,
+    t: "Devspot Verified Builder",
+    d: "Verified for shipped, maintained production builds.",
+  },
 ];
 
 const globalTeams = [
-  { flag: "", country: "Pakistan", note: "HQ — strategy, delivery" },
-  { flag: "", country: "USA", note: "Client success" },
-  { flag: "", country: "UK", note: "Partnerships" },
-  { flag: "", country: "UAE", note: "Growth & sales" },
-  { flag: "", country: "India", note: "Engineering" },
-  { flag: "", country: "Philippines", note: "Content ops" },
+  { code: "pk", flag: "🇵🇰", country: "Pakistan", note: "HQ — strategy & delivery" },
+  { code: "us", flag: "🇺🇸", country: "USA", note: "Client success" },
+  { code: "gb", flag: "🇬🇧", country: "UK", note: "Partnerships" },
+  { code: "ae", flag: "🇦🇪", country: "UAE", note: "Growth & sales" },
+  { code: "in", flag: "🇮🇳", country: "India", note: "Engineering" },
+  { code: "ph", flag: "🇵🇭", country: "Philippines", note: "Content operations" },
+  { code: "ca", flag: "🇨🇦", country: "Canada", note: "Accounts & support" },
+  { code: "au", flag: "🇦🇺", country: "Australia", note: "APAC coverage" },
 ];
 
 const faqs = [
