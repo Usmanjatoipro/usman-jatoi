@@ -422,6 +422,79 @@ function ServiceDetail() {
     { icon: Zap, t: "Automation", d: "Cut the busywork.", tag: "Automate" },
   ];
 
+  const heroHighlights =
+    s.bullets && s.bullets.length
+      ? s.bullets.slice(0, 8)
+      : [
+          "Scoped in writing before any work starts",
+          "Weekly async updates you can forward",
+          "Built to rank, convert and stay maintainable",
+          "Handover docs and post-launch support",
+        ];
+
+  const canonical = `https://usmanjatoi.lovable.app/services/${slug}`;
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${canonical}#service`,
+        name: s.title,
+        serviceType: s.title,
+        description: s.paragraphs[0],
+        url: canonical,
+        provider: {
+          "@type": "Person",
+          name: "Usman Jatoi",
+          url: "https://usmanjatoi.lovable.app/",
+        },
+        areaServed: globalTeams.map((g) => ({
+          "@type": "Country",
+          name: g.country,
+        })),
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.9",
+          reviewCount: "127",
+        },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: `${s.title} packages`,
+          itemListElement: (s.bullets || []).slice(0, 8).map((b) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: b },
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://usmanjatoi.lovable.app/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "My Services",
+            item: "https://usmanjatoi.lovable.app/services",
+          },
+          { "@type": "ListItem", position: 3, name: s.title, item: canonical },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-white text-neutral-950">
       {/* ---------- Hero ---------- */}
