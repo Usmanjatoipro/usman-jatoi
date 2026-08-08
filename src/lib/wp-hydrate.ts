@@ -114,16 +114,17 @@ function tableHtml(data: any) {
     .join("")}</tbody></table></div>`;
 }
 
-function jsonToHtml(data: any): string {
+function jsonToHtml(data: any, skipTitle = false): string {
   if (Array.isArray(data)) return listHtml(data);
   if (!data || typeof data !== "object") return `<p>${escapeHtml(String(data ?? ""))}</p>`;
 
   const title = stripTags(data["main-title"] || data.section_title || data.title || "");
   const subtitle = stripTags(data.section_subtitle || data.subtitle || data.intro || data.description || "");
   const parts: string[] = [
-    title ? `<h3>${escapeHtml(title)}</h3>` : "",
+    title && !skipTitle ? `<h3>${escapeHtml(title)}</h3>` : "",
     subtitle ? `<p>${escapeHtml(subtitle)}</p>` : "",
   ];
+
 
   for (const key of ["features", "bullets", "points", "tips", "mistakes", "myths", "terms", "benefits", "drawbacks", "pros", "cons"]) {
     if (Array.isArray(data[key]) && data[key].length) {
