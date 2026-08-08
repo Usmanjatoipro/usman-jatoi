@@ -1356,47 +1356,83 @@ export function PostArticle({
         .post-body .migrated-grid,
         .post-body .migrated-steps {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 14px;
-          margin: 1.2em 0;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 16px;
+          margin: 1.4em 0;
         }
         .post-body .migrated-grid article,
         .post-body .migrated-steps article {
-          border: 1px solid #e5e7eb;
-          border-radius: 14px;
-          background: #f9fafb;
-          padding: 16px;
+          position: relative;
+          border: 1px solid #ececec;
+          border-radius: 16px;
+          background: #fff;
+          padding: 20px 18px 18px;
+          transition: box-shadow .2s, transform .2s;
         }
+        .post-body .migrated-grid article:hover,
+        .post-body .migrated-steps article:hover {
+          box-shadow: 0 12px 30px rgba(15,23,42,.08);
+          transform: translateY(-2px);
+        }
+        .post-body .migrated-steps article { border-top: 3px solid #f97316; }
         .post-body .migrated-grid article h3,
         .post-body .migrated-steps article h3 {
           margin: 0 0 8px;
           font-size: 1.05em;
+          letter-spacing: -.01em;
         }
+        .post-body .migrated-grid article p,
+        .post-body .migrated-steps article p { margin: 0; font-size: .95em; color:#525252; }
         .post-body .migrated-steps article span {
-          display: inline-flex;
-          margin-bottom: 10px;
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px;
+          margin-bottom: 12px;
           border-radius: 999px;
-          background: #111827;
+          background: #0a0a0a;
           color: #fff;
-          padding: 3px 9px;
-          font-size: 12px;
-          font-weight: 700;
+          font-size: 13px;
+          font-weight: 800;
         }
+        /* Checklist items */
+        .post-body [data-field="checklist"] ul { list-style: none; padding: 0; display: grid; gap: 10px; }
+        .post-body [data-field="checklist"] li {
+          position: relative;
+          border: 1px solid #ececec;
+          border-radius: 12px;
+          background: #fafafa;
+          padding: 12px 14px 12px 42px;
+          margin: 0;
+        }
+        .post-body [data-field="checklist"] li::before {
+          content: "✓";
+          position: absolute; left: 13px; top: 12px;
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 20px; height: 20px; border-radius: 6px;
+          background: #f97316; color: #fff; font-size: 12px; font-weight: 700;
+        }
+        .post-body [data-field="checklist"] li p { margin: 4px 0 0; color:#525252; font-size:.94em; }
         .post-body .migrated-table { overflow-x: auto; }
 
-        /* Auto-decorated FAQ (WP details/summary or dt/dd style) */
+        /* FAQ — collapsed by default */
+        .post-body .migrated-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
         .post-body details {
-          border-bottom: 1px solid #e5e7eb; padding: 1em 0; margin: 0;
+          border: 1px solid #ececec; border-radius: 14px;
+          background: #fff; padding: 14px 16px; margin: 0;
         }
+        .post-body details[open] { background: #fafafa; }
         .post-body details summary {
-          cursor: pointer; font-weight: 600; font-size: 0.95em;
-          text-transform: uppercase; letter-spacing: 0.02em;
-          color: #111; list-style: none; display: flex; justify-content: space-between; align-items: center;
+          cursor: pointer; font-weight: 650; font-size: 1em;
+          color: #111; list-style: none; display: flex; gap: 12px;
+          justify-content: space-between; align-items: center;
         }
+        .post-body details summary::-webkit-details-marker { display: none; }
         .post-body details summary::after {
-          content: "▾"; color: #999; transition: transform .2s;
+          content: "+"; color: #f97316; font-weight: 700; font-size: 1.2em;
+          transition: transform .2s; line-height: 1;
         }
-        .post-body details[open] summary::after { transform: rotate(180deg); }
+        .post-body details[open] summary::after { transform: rotate(45deg); }
+        .post-body details > p { margin: .8em 0 0; color: #525252; font-size: .96em; }
+
 
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
