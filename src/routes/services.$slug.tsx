@@ -947,12 +947,44 @@ function ServiceDetail() {
         </div>
       </section>
 
-      {/* ---------- Agency + Risk ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-6">
+      {/* ---------- Hire the agency banner ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
         <Reveal>
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full">
-            <Building2 className="h-8 w-8 text-[#FF6A00] mb-3" />
-            <h3 className="text-xl font-bold mb-2">Your one-two agency</h3>
+          <div
+            className="relative overflow-hidden rounded-3xl"
+            style={{
+              backgroundImage: `url(${redsglow.url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="relative px-8 py-16 text-center md:px-16 md:py-24">
+              <h2 className="text-3xl font-black leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:text-5xl">
+                Want to hire the agency instead?
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
+                Redsglow is my full-service team — bigger scopes, more hands,
+                same standards and the same person accountable for delivery.
+              </p>
+              <a
+                href="https://redsglow.com"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 font-semibold text-neutral-950 transition hover:bg-neutral-200"
+              >
+                Visit Redsglow <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ---------- Risk & responsibility ---------- */}
+      <section className="mx-auto grid max-w-6xl gap-6 px-6 py-8 md:grid-cols-2">
+        <Reveal>
+          <div className="h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+            <Building2 className="mb-3 h-8 w-8 text-[#FF6A00]" />
+            <h3 className="mb-2 text-xl font-bold">Your one-two agency</h3>
             <p className="text-neutral-600">
               A boutique-agency feel with a lean, senior team — no bloat, no
               account juggling.
@@ -960,9 +992,9 @@ function ServiceDetail() {
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full">
-            <ShieldCheck className="h-8 w-8 text-[#FF6A00] mb-3" />
-            <h3 className="text-xl font-bold mb-2">Risk & responsibility</h3>
+          <div className="h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+            <ShieldCheck className="mb-3 h-8 w-8 text-[#FF6A00]" />
+            <h3 className="mb-2 text-xl font-bold">Risk &amp; responsibility</h3>
             <p className="text-neutral-600">
               Clear contracts, transparent updates, and honest communication
               when things go sideways. That's the deal.
