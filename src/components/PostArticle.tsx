@@ -716,12 +716,9 @@ export function PostArticle({
                 Read Disclaimer
               </Link>
             </p>
-            <div className="mt-3 rounded-lg overflow-hidden bg-gradient-to-br from-rose-200 via-fuchsia-200 to-violet-300 aspect-[4/5] flex items-end p-3">
-              <span className="text-sm font-semibold text-neutral-900 bg-white/80 backdrop-blur px-2.5 py-1 rounded-md">
-                Your ad here
-              </span>
-            </div>
+            <AdSlot className="mt-3 min-h-[250px] overflow-hidden rounded-lg bg-white" />
           </div>
+
 
           {/* Explore More Under {Category} — subcategories list */}
           {subcats.length > 0 && (
@@ -766,7 +763,7 @@ export function PostArticle({
                           : "text-neutral-800"
                       } ${
                         activeId === h.id
-                          ? "border-violet-500 bg-violet-50 text-violet-900"
+                          ? "border-orange-500 bg-neutral-50 text-neutral-900 font-medium"
                           : "border-transparent hover:border-neutral-200 hover:bg-neutral-50"
                       }`}
                     >
