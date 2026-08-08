@@ -202,10 +202,14 @@ export const Route = createFileRoute("/$")({
     const splat = (params as { _splat?: string })._splat ?? "";
     if (!splat) throw notFound();
 
-    // 1) Local WordPress manifests. This keeps the imported site working even
-    // after WordPress/Supabase are gone.
-    const local = await getLocalContentByPath({ data: { path: splat } });
-    if (local) return { kind: "post" as const, ...local };
+    // 1) Local WordPress manifests (optional). If the shards are unavailable,
+    // fall through to the database, which is the authoritative source.
+    try {
+      const local = await getLocalContentByPath({ data: { path: splat } });
+      if (local) return { kind: "post" as const, ...local };
+    } catch {
+      /* shards unavailable — use the database */
+    }
 
     // 2) Try wp_posts (page/post/product/course)
     const result = await loadPage(splat);
