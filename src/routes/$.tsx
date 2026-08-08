@@ -7,6 +7,7 @@ import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-catego
 import { PostArticle, type PostArticleTerm } from "@/components/PostArticle";
 import PageHero from "@/components/PageHero";
 import { getLocalContentByPath } from "@/lib/wp-content-stats.functions";
+import { hydrateContentHtml } from "@/lib/wp-hydrate";
 
 
 type WpPost = {
@@ -599,12 +600,18 @@ function DynamicPage() {
     return <CategoryArchivePage archive={loaderData.archive} />;
   }
   const { post, media, children, childrenMedia } = loaderData;
-  const contentHtml = rewriteContentHtml(post.content || "");
   const heroUrl = media?.source_url || media?.storage_url || null;
   const date = post.post_date ? new Date(post.post_date) : null;
   const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
   const hasStructured =
     !!(structured.hero || structured.about || structured.process || structured.services || structured.faqs);
+  // When no dedicated structured template applies, fold the imported meta
+  // sections (FAQ, glossary, checklist…) into the body so nothing is lost.
+  const contentHtml = rewriteContentHtml(
+    hasStructured
+      ? post.content || ""
+      : hydrateContentHtml(post.content, (post.meta ?? null) as Record<string, unknown> | null),
+  );
 
   const { data: related } = useQuery({
     queryKey: ["related", post.id, post.post_type],
