@@ -669,23 +669,58 @@ function ServiceDetail() {
         </Reveal>
       </section>
 
-      {/* ---------- Three cards: Expertise / Help / Why me ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            My expertise, how I help, and why me
-          </h2>
-        </Reveal>
-        <div className="grid md:grid-cols-3 gap-6">
-          {expertise.map((e, i) => (
-            <Reveal key={e.title} delay={i * 120}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 h-full hover:bg-neutral-100 transition">
-                <e.icon className="h-8 w-8 text-[#FF6A00] mb-4" />
-                <h3 className="text-xl font-bold mb-2">{e.title}</h3>
-                <p className="text-neutral-600">{e.body}</p>
-              </div>
+      {/* ---------- About my expertise ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <Reveal>
+            <img
+              src={usmanOfficial.url}
+              alt="Usman Jatoi — digital strategist and builder"
+              width={720}
+              height={720}
+              loading="lazy"
+              decoding="async"
+              className="w-full rounded-3xl border border-neutral-200 object-cover"
+            />
+          </Reveal>
+          <div>
+            <Reveal>
+              <h2 className="text-3xl font-bold md:text-4xl">
+                About my expertise, and how I help
+              </h2>
+              <p className="mt-4 text-neutral-600">
+                Every {s.title.toLowerCase()} engagement is run by me directly —
+                scoped in writing, delivered in iterations, and reported weekly.
+              </p>
             </Reveal>
-          ))}
+            <div className="mt-8 grid gap-4">
+              {expertise.map((e, i) => (
+                <Reveal key={e.title} delay={i * 120}>
+                  <div className="group relative rounded-2xl p-[2px] transition-transform duration-300 hover:-translate-y-1">
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 rounded-2xl bg-[conic-gradient(from_140deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4)] opacity-70"
+                    />
+                    <div className="relative rounded-[14px] bg-white p-6 transition-colors duration-300 group-hover:bg-neutral-950">
+                      <e.icon className="mb-3 h-8 w-8 text-[#FF6A00]" />
+                      <h3 className="mb-2 text-xl font-bold text-neutral-950 transition-colors duration-300 group-hover:text-white">
+                        {e.title}
+                      </h3>
+                      <p className="text-neutral-600 transition-colors duration-300 group-hover:text-white/75">
+                        {e.body}
+                      </p>
+                      <Link
+                        to="/about-me"
+                        className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#FF6A00]"
+                      >
+                        Visit now <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
