@@ -1267,18 +1267,19 @@ export function PostArticle({
         .post-body h2 { font-size: 1.85em; font-weight: 700; margin: 1.9em 0 .6em; color:#111; scroll-margin-top: 120px; letter-spacing:-0.01em; }
         .post-body h3 { font-size: 1.35em; font-weight: 700; margin: 1.5em 0 .4em; color:#111; scroll-margin-top: 120px; }
         .post-body h4 { font-size: 1.1em; font-weight: 700; margin: 1.3em 0 .3em; color:#111; }
-        .post-body a { color:#2563eb; text-decoration: underline; text-underline-offset: 3px; }
+        .post-body a { color:#111; text-decoration: underline; text-decoration-color:#f97316; text-underline-offset: 3px; }
         .post-body img, .post-body figure img { max-width: 100%; height: auto; border-radius: 14px; margin: 1.5em auto; display:block; }
         .post-body ul, .post-body ol { padding-left: 1.5em; margin: 1em 0; }
         .post-body ul { list-style: disc; } .post-body ol { list-style: decimal; }
         .post-body li { margin: .35em 0; }
         .post-body blockquote {
-          border-left: 3px solid #a06cff;
+          border-left: 3px solid #f97316;
           padding: 1em 1.25em; margin: 1.5em 0;
-          font-style: italic; color:#444;
-          background: linear-gradient(90deg, #faf7ff 0%, #fff 100%);
+          font-style: italic; color:#333;
+          background: #fafafa;
           border-radius: 0 12px 12px 0;
         }
+
         .post-body pre { background:#0b0b12; color:#e2e8f0; padding:1em; border-radius:12px; overflow-x:auto; font-size:.9em; }
         .post-body code { background:#f3f4f6; padding: .15em .4em; border-radius: 4px; font-size:.9em; color:#111; }
         .post-body pre code { background: transparent; padding: 0; color:inherit; }
