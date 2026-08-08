@@ -732,7 +732,7 @@ export function PostArticle({
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-neutral-950/80" aria-hidden />
+            <div className="absolute inset-0 bg-neutral-950/70" aria-hidden />
             <dl className="relative space-y-2.5 text-sm">
 
               <div>
