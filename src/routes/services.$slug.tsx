@@ -921,30 +921,21 @@ function ServiceDetail() {
         </div>
       </section>
 
-      {/* ---------- Global team ---------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      {/* ---------- Global reach ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
         <Reveal>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3">
-            A global team to empower you
+          <h2 className="mb-3 text-center text-3xl font-bold md:text-4xl">
+            We're global — {s.title.toLowerCase()} wherever you are
           </h2>
-          <p className="text-center text-neutral-500 mb-10 max-w-2xl mx-auto">
-            Distributed operators across time zones — so someone is always
-            moving your project forward.
+          <p className="mx-auto mb-10 max-w-2xl text-center text-neutral-500">
+            Distributed operators across time zones, so someone is always moving
+            your project forward. Tap a country to see the local version of this
+            service.
           </p>
         </Reveal>
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {globalTeams.map((g, i) => (
-            <Reveal key={g.country} delay={i * 80}>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 flex items-center gap-4">
-                <span className="text-4xl">{g.flag}</span>
-                <div>
-                  <div className="font-bold">{g.country}</div>
-                  <div className="text-neutral-500 text-sm">{g.note}</div>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={100}>
+          <GlobalFlags entries={globalTeams} slug={slug} />
+        </Reveal>
       </section>
 
       {/* ---------- Hire the agency banner ---------- */}
