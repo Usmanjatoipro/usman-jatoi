@@ -917,7 +917,7 @@ function ServiceDetail() {
             Services
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            Everything included under {s.title.toLowerCase()}
+            Everything included under {s.title}
           </h2>
           <p className="text-neutral-500 mb-10 max-w-2xl">
             Hover a card — it tilts with a subtle 3D shadow and cursor-tracked
@@ -948,7 +948,7 @@ function ServiceDetail() {
               Tools, platforms, and tech I use
             </h2>
             <p className="text-center text-neutral-500 mb-10">
-              The stack behind every {s.title.toLowerCase()} engagement.
+              The stack behind every {s.title} engagement.
             </p>
           </Reveal>
           <div className="flex flex-wrap justify-center gap-3">
@@ -970,7 +970,7 @@ function ServiceDetail() {
             Our process
           </span>
           <h2 className="mb-10 text-3xl font-bold md:text-4xl">
-            How a {s.title.toLowerCase()} engagement runs, step by step
+            How a {s.title} engagement runs, step by step
           </h2>
         </Reveal>
         <Reveal delay={100}>
