@@ -414,10 +414,8 @@ function ServiceDetail() {
       {/* ---------- Zigzag intro ---------- */}
       <section className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
         <Reveal>
-          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-neutral-100 border border-neutral-200">
-            <div className="absolute inset-0 flex items-center justify-center text-8xl">
-              
-            </div>
+          <div className="relative overflow-hidden rounded-3xl border border-neutral-200">
+            <ServiceCover title={s.title} kicker="Service" slug={slug} eager />
           </div>
         </Reveal>
         <div>
