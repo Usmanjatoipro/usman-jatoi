@@ -25,8 +25,22 @@ import {
   Building2,
 } from "lucide-react";
 import ServiceCover from "@/components/ServiceCover";
+import CalEmbed from "@/components/CalEmbed";
+import FloatingDock from "@/components/FloatingDock";
+import HeroLoopList from "@/components/HeroLoopList";
+import ProcessSlider from "@/components/ProcessSlider";
+import GlobalFlags from "@/components/GlobalFlags";
 import servicesContent from "@/data/services-content.json";
 import { getLocalServiceBySlug } from "@/lib/wp-content-stats.functions";
+import heroLightbulb from "@/assets/hero-lightbulb.jpg.asset.json";
+import usmanOfficial from "@/assets/Usman-Jatoi-Official.webp.asset.json";
+import redsglow from "@/assets/Redsglow-Banner.jpg.asset.json";
+import awardFoundations from "@/assets/award-foundations.webp.asset.json";
+import awardLl343 from "@/assets/award-ll343.webp.asset.json";
+import awardGemini from "@/assets/award-gemini.png.asset.json";
+import awardBestDesign from "@/assets/award-best-design-2025.svg.asset.json";
+import awardBadge from "@/assets/award-badge.webp.asset.json";
+import awardDevspot from "@/assets/award-devspot.svg.asset.json";
 
 type ServiceRecord = {
   slug: string;
