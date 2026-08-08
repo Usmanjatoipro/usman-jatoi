@@ -1570,8 +1570,8 @@ export function PostArticle({
         .post-body [data-field="checklist"] li p { margin: 4px 0 0; color:#525252; font-size:.94em; }
         .post-body .migrated-table { overflow-x: auto; }
 
-        /* FAQ — collapsed by default */
-        .post-body .migrated-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
+        /* FAQ — collapsed by default, black chevron */
+        .post-body .migrated-faqs, .post-body .uj-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
         .post-body details {
           border: 1px solid #ececec; border-radius: 14px;
           background: #fff; padding: 14px 16px; margin: 0;
@@ -1584,11 +1584,104 @@ export function PostArticle({
         }
         .post-body details summary::-webkit-details-marker { display: none; }
         .post-body details summary::after {
-          content: "+"; color: #f97316; font-weight: 700; font-size: 1.2em;
-          transition: transform .2s; line-height: 1;
+          content: ""; flex: none;
+          width: 9px; height: 9px;
+          border-right: 2px solid #111; border-bottom: 2px solid #111;
+          transform: rotate(45deg) translateY(-2px);
+          transition: transform .2s;
         }
-        .post-body details[open] summary::after { transform: rotate(45deg); }
-        .post-body details > p { margin: .8em 0 0; color: #525252; font-size: .96em; }
+        .post-body details[open] summary::after { transform: rotate(225deg) translateY(-2px); }
+        .post-body details > p, .post-body .uj-faq-a p { margin: .8em 0 0; color: #525252; font-size: .96em; }
+
+        /* Comparison tables */
+        .post-body .uj-table { overflow-x: auto; margin: 1.4em 0; }
+        .post-body .uj-table table { margin: 0; }
+        .post-body .uj-table td { vertical-align: top; }
+
+        /* Pros & cons */
+        .post-body .uj-proscons {
+          display: grid; gap: 16px; margin: 1.4em 0;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+        .post-body .uj-pc-col { border-radius: 16px; padding: 18px; border: 1px solid transparent; }
+        .post-body .uj-pc-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+        .post-body .uj-pc-col li { margin: 0; }
+        .post-body .uj-pc-col li p { margin: 3px 0 0; font-size: .92em; color: #4b5563; }
+        .post-body .uj-pc-head { font-weight: 800; font-size: .8em; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+        .post-body .uj-pc-pro { background: #ecfdf3; border-color: #bbf7d0; }
+        .post-body .uj-pc-pro .uj-pc-head { color: #15803d; }
+        .post-body .uj-pc-con { background: #fef2f2; border-color: #fecaca; }
+        .post-body .uj-pc-con .uj-pc-head { color: #b91c1c; }
+
+        /* Interactive checklist */
+        .post-body .uj-checklist { list-style: none; padding: 0; display: grid; gap: 10px; margin: 1.4em 0; }
+        .post-body .uj-checklist li { margin: 0; }
+        .post-body .uj-checklist label {
+          display: flex; gap: 12px; align-items: flex-start; cursor: pointer;
+          border: 1px solid #ececec; border-radius: 12px; background: #fafafa; padding: 12px 14px;
+          transition: background .15s, border-color .15s;
+        }
+        .post-body .uj-checklist label:hover { border-color: #d4d4d4; background: #fff; }
+        .post-body .uj-checklist input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .post-body .uj-box {
+          flex: none; width: 20px; height: 20px; border-radius: 6px; margin-top: 2px;
+          border: 2px solid #111; display: inline-flex; align-items: center; justify-content: center;
+          transition: background .15s;
+        }
+        .post-body .uj-box::after {
+          content: ""; width: 5px; height: 9px; border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+          transform: rotate(45deg) scale(0); transition: transform .15s;
+        }
+        .post-body .uj-checklist input:checked + .uj-box { background: #111; }
+        .post-body .uj-checklist input:checked + .uj-box::after { transform: rotate(45deg) scale(1); }
+        .post-body .uj-checklist input:checked ~ .uj-ck-body strong { text-decoration: line-through; color: #9ca3af; }
+        .post-body .uj-ck-body { display: block; }
+        .post-body .uj-ck-body em { display: block; font-style: normal; margin-top: 3px; color: #6b7280; font-size: .93em; }
+
+        /* Timeline */
+        .post-body .uj-timeline { list-style: none; padding: 0 0 0 26px; margin: 1.4em 0; position: relative; display: grid; gap: 14px; }
+        .post-body .uj-timeline::before { content: ""; position: absolute; left: 11px; top: 6px; bottom: 6px; width: 2px; background: #ececec; }
+        .post-body .uj-timeline li { position: relative; margin: 0; }
+        .post-body .uj-dot {
+          position: absolute; left: -26px; top: 14px;
+          width: 24px; height: 24px; border-radius: 999px; background: #0a0a0a; color: #fff;
+          display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;
+        }
+        .post-body .uj-tl-card { border: 1px solid #ececec; border-radius: 14px; background: #fff; padding: 16px 18px; }
+        .post-body .uj-tl-card h3 { margin: 0 0 6px; font-size: 1.05em; }
+        .post-body .uj-tl-card p { margin: 0; color: #525252; font-size: .95em; }
+        .post-body .uj-when { display: inline-block; margin-bottom: 6px; font-size: .72em; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #f97316; }
+
+        /* Step-by-step */
+        .post-body .uj-steps { display: grid; gap: 16px; margin: 1.4em 0; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+        .post-body .uj-steps article { border: 1px solid #ececec; border-top: 3px solid #0a0a0a; border-radius: 16px; background: #fff; padding: 20px 18px; }
+        .post-body .uj-step-n {
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px; border-radius: 999px; background: #0a0a0a; color: #fff;
+          font-size: 13px; font-weight: 800; margin-bottom: 12px;
+        }
+        .post-body .uj-steps h3 { margin: 0 0 8px; font-size: 1.05em; }
+        .post-body .uj-steps p { margin: 0; font-size: .95em; color: #525252; }
+        .post-body .uj-tips { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+        .post-body .uj-tips li { margin: 0; padding-left: 18px; position: relative; font-size: .9em; color: #6b7280; }
+        .post-body .uj-tips li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 999px; background: #f97316; }
+
+        /* Glossary */
+        .post-body .uj-glossary { display: grid; gap: 10px; margin: 1.4em 0; }
+        .post-body .uj-glossary > div { border: 1px solid #ececec; border-radius: 12px; background: #fafafa; padding: 14px 16px; }
+        .post-body .uj-glossary dt { font-weight: 700; color: #111; }
+        .post-body .uj-glossary dd { margin: 4px 0 0; color: #525252; font-size: .95em; }
+
+        /* Bullets & cards */
+        .post-body .uj-bullets { list-style: none; padding: 0; display: grid; gap: 10px; margin: 1.2em 0; }
+        .post-body .uj-bullets li { margin: 0; padding-left: 20px; position: relative; }
+        .post-body .uj-bullets li::before { content: ""; position: absolute; left: 0; top: .6em; width: 7px; height: 7px; border-radius: 2px; background: #0a0a0a; }
+        .post-body .uj-bullets li p { margin: 3px 0 0; color: #525252; font-size: .94em; }
+        .post-body .uj-cards { display: grid; gap: 16px; margin: 1.4em 0; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        .post-body .uj-cards article { border: 1px solid #ececec; border-radius: 16px; background: #fff; padding: 20px 18px; }
+        .post-body .uj-cards h3 { margin: 0 0 8px; font-size: 1.05em; }
+        .post-body .uj-cards p { margin: 0; font-size: .95em; color: #525252; }
+
 
 
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
