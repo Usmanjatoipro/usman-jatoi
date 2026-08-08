@@ -27,6 +27,16 @@ import {
   Rss,
 } from "lucide-react";
 import PageHero from "@/components/PageHero";
+import PostCover from "@/components/PostCover";
+import AdSlot from "@/components/AdSlot";
+import CalEmbed from "@/components/CalEmbed";
+import metaBg from "@/assets/Metas_of_my_posts.webp.asset.json";
+import communityBg from "@/assets/Usman_Jatoi.webp.asset.json";
+import authorImg from "@/assets/Usman-Jatoi-Official.webp.asset.json";
+import contactImg from "@/assets/Usman-Jatoi-Contact-Us-image.webp.asset.json";
+import redsglow from "@/assets/Redsglow-Banner.jpg.asset.json";
+import featuredCta from "@/assets/featured-cta.jpg.asset.json";
+
 
 export type PostArticleData = {
   id: number;
