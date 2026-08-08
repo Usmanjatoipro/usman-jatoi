@@ -132,9 +132,20 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+@theme {
+  --font-sans: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
   }
 
   body {
@@ -142,3 +153,4 @@
     color: var(--color-foreground);
   }
 }
+
