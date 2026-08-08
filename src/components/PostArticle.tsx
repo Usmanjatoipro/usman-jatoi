@@ -657,15 +657,18 @@ export function PostArticle({
 
         {/* ---------- SIDEBAR ---------- */}
         <aside className="space-y-6 lg:sticky lg:top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-1 sidebar-scroll">
-          {/* Meta card — dark rainbow gradient */}
-          <div
-            className="relative rounded-2xl p-6 text-white overflow-hidden border border-white/10"
-            style={{
-              background:
-                "radial-gradient(500px 300px at 100% 0%, rgba(139,92,246,0.55), transparent), radial-gradient(400px 300px at 0% 100%, rgba(6,182,212,0.35), transparent), #0a0a0a",
-            }}
-          >
-            <dl className="space-y-2.5 text-sm">
+          {/* Meta card — photo background with black overlay */}
+          <div className="relative rounded-2xl p-6 text-white overflow-hidden border border-neutral-900">
+            <img
+              src={metaBg.url}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-950/80" aria-hidden />
+            <dl className="relative space-y-2.5 text-sm">
+
               <div>
                 <span className="font-semibold">Published:</span>{" "}
                 <span className="text-white/85">
