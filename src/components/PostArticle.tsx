@@ -1147,26 +1147,28 @@ export function PostArticle({
 
         {/* Contact CTA — split form / gradient image */}
         <section className="rounded-3xl border border-neutral-800 bg-neutral-950 text-white overflow-hidden grid md:grid-cols-2">
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="p-6 md:p-8 space-y-4"
-          >
+          <form onSubmit={submitContact} className="p-6 md:p-8 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-first">
                   First Name
                 </label>
                 <input
+                  id="uj-first"
+                  name="first_name"
                   type="text"
+                  required
                   placeholder="Name"
                   className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-last">
                   Last Name
                 </label>
                 <input
+                  id="uj-last"
+                  name="last_name"
                   type="text"
                   placeholder="Name"
                   className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
@@ -1174,40 +1176,52 @@ export function PostArticle({
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-email">
                 Email
               </label>
               <input
+                id="uj-email"
+                name="email"
                 type="email"
+                required
                 placeholder="Email"
                 className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-phone">
                 Phone
               </label>
               <input
+                id="uj-phone"
+                name="phone"
                 type="tel"
                 placeholder="Phone"
                 className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-message">
                 Message
               </label>
               <textarea
+                id="uj-message"
+                name="message"
                 rows={4}
+                required
                 placeholder="Message"
                 className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:outline-none resize-y"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5">
+              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-subject">
                 Subject
               </label>
-              <select className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm focus:outline-none">
+              <select
+                id="uj-subject"
+                name="subject"
+                className="w-full rounded-md bg-white text-neutral-900 px-3 py-2.5 text-sm focus:outline-none"
+              >
                 <option>Affiliate</option>
                 <option>Project</option>
                 <option>Partnership</option>
@@ -1216,14 +1230,20 @@ export function PostArticle({
             </div>
             <button
               type="submit"
-              className="w-full rounded-md bg-orange-500 hover:bg-orange-600 text-white font-semibold tracking-widest py-3 text-sm transition"
+              disabled={contactState === "sending"}
+              className="w-full rounded-md bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold tracking-widest py-3 text-sm transition"
             >
-              SEND
+              {contactState === "sending" ? "SENDING…" : contactState === "done" ? "MESSAGE SENT ✓" : "SEND"}
             </button>
-            <p className="text-center text-xs text-white/60">
-              Prefer email? contact@usmanjatoi.com
+            <p className="text-center text-xs text-white/60" role="status">
+              {contactState === "done"
+                ? "Thanks — I'll get back to you shortly."
+                : contactState === "error"
+                  ? "Something went wrong. Please email contact@usmanjatoi.com."
+                  : "Prefer email? contact@usmanjatoi.com"}
             </p>
           </form>
+
           <div className="relative hidden md:flex items-end p-8">
             <img
               src={contactImg.url}
