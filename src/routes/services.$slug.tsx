@@ -316,11 +316,11 @@ function Accordion({
         <div key={i}>
           <button
             onClick={() => setOpen(open === i ? null : i)}
-            className="w-full flex items-center justify-between text-left px-5 py-4 hover:bg-neutral-100 transition"
+            className="w-full flex items-center justify-between text-left px-5 py-4 hover:bg-neutral-50 transition"
           >
-            <span className="font-medium text-white">{it.q}</span>
+            <span className="font-medium text-neutral-950">{it.q}</span>
             <ChevronDown
-              className={`h-5 w-5 text-neutral-500 transition-transform ${
+              className={`h-5 w-5 text-neutral-900 transition-transform ${
                 open === i ? "rotate-180" : ""
               }`}
             />
@@ -480,16 +480,13 @@ function ServiceDetail() {
           <div className="mx-auto max-w-6xl px-6 py-20">
             <Reveal>
               <span className="inline-block rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-500">
-                Imported WordPress Fields
+                What this service covers
               </span>
               <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl">
-                Complete imported service content
+                Everything included in this service
               </h2>
               <p className="mt-4 max-w-3xl text-neutral-600">
-                This section is generated from the original WordPress custom
-                fields for this service, including service blocks, processes,
-                FAQs, locations, industries, glossary sections, and other
-                preserved meta content.
+                A full breakdown of the work: service blocks, process, industries, locations, glossary and frequently asked questions.
               </p>
             </Reveal>
             <Reveal delay={120}>
@@ -666,7 +663,7 @@ function ServiceDetail() {
       {/* ---------- Sub-services grid with 3D tilt ---------- */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <Reveal>
-          <span className="inline-block px-3 py-1 rounded-full text-xs uppercase tracking-widest bg-fuchsia-500/20 text-[#FF6A00] mb-4">
+          <span className="inline-block px-3 py-1 rounded-full text-xs uppercase tracking-widest bg-[#FF6A00]/10 text-[#FF6A00] mb-4">
             Services
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
