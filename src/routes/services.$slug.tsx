@@ -929,9 +929,9 @@ function ServiceDetail() {
             <Reveal key={c.t} delay={i * 100}>
               <TiltCard>
                 <c.icon className="h-10 w-10 text-[#FF6A00] mb-4" />
-                <h3 className="text-xl font-bold mb-1">{c.t}</h3>
-                <p className="text-neutral-600 mb-4">{c.d}</p>
-                <span className="inline-block text-xs uppercase tracking-widest px-2 py-1 rounded-full bg-neutral-100 text-neutral-600">
+                <h3 className="text-xl font-bold mb-1 text-white">{c.t}</h3>
+                <p className="text-white/70 mb-4">{c.d}</p>
+                <span className="inline-block text-xs uppercase tracking-widest px-2 py-1 rounded-full bg-white/10 text-white/80">
                   {c.tag}
                 </span>
               </TiltCard>
