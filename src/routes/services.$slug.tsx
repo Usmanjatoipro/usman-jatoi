@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import ServiceCover from "@/components/ServiceCover";
 import CalEmbed from "@/components/CalEmbed";
-import FloatingDock from "@/components/FloatingDock";
 import HeroLoopList from "@/components/HeroLoopList";
 import ProcessSlider from "@/components/ProcessSlider";
 import GlobalFlags from "@/components/GlobalFlags";
@@ -1305,8 +1304,6 @@ function ServiceDetail() {
           </div>
         </Reveal>
       </section>
-
-      <FloatingDock />
     </div>
   );
 }

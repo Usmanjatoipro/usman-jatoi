@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, Clock, ShieldCheck, Video } from "lucide-react";
 import CalEmbed from "@/components/CalEmbed";
-import FloatingDock from "@/components/FloatingDock";
 import PageHero from "@/components/PageHero";
 
 export const Route = createFileRoute("/call")({
@@ -88,8 +87,6 @@ export default function CallPage() {
           </p>
         </div>
       </section>
-
-      <FloatingDock />
     </div>
   );
 }
