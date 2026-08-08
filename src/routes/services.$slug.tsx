@@ -425,34 +425,115 @@ function ServiceDetail() {
   return (
     <div className="min-h-screen bg-white text-neutral-950">
       {/* ---------- Hero ---------- */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
       <header className="relative overflow-hidden bg-neutral-950 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(900px_420px_at_15%_-10%,rgba(255,255,255,0.10),transparent),radial-gradient(700px_380px_at_85%_0%,rgba(255,106,0,0.14),transparent)]" />
-        <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
-          <Reveal delay={100}>
-            <span className="inline-block px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.2em] bg-white/10 border border-white/15 text-white/80 mb-6">
+
+        <div className="relative mx-auto max-w-6xl px-6 pt-28 md:pt-32">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/80">
               Service
             </span>
-          </Reveal>
-          <Reveal delay={200}>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight text-white">
-              {s.h1}
-            </h1>
-          </Reveal>
-          <Reveal delay={300}>
-            <p className="mt-6 max-w-2xl mx-auto text-white/70 text-lg">
-              {s.paragraphs[0]}
-            </p>
-          </Reveal>
-          <Reveal>
-            <nav className="mt-8 text-sm text-white/60" aria-label="Breadcrumb">
-              <Link to="/" className="hover:text-white">Home</Link>
-              <span className="mx-2">&gt;</span>
-              <Link to="/services" className="hover:text-white">My Services</Link>
-              <span className="mx-2">&gt;</span>
+            <nav className="text-sm text-white/55" aria-label="Breadcrumb">
+              <Link to="/" className="hover:text-white">
+                Home
+              </Link>
+              <span className="mx-2">›</span>
+              <Link to="/services" className="hover:text-white">
+                My Services
+              </Link>
+              <span className="mx-2">›</span>
               <span className="text-white">{s.title}</span>
             </nav>
+          </div>
+        </div>
+
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-10 md:grid-cols-[1.05fr_.95fr] md:pb-24">
+          <div>
+            <Reveal delay={100}>
+              <h1 className="text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-[56px]">
+                {s.h1}
+              </h1>
+            </Reveal>
+            <Reveal delay={180}>
+              <p className="mt-5 max-w-xl text-lg text-white/70">
+                {s.paragraphs[0]}
+              </p>
+            </Reveal>
+
+            <Reveal delay={240}>
+              <HeroLoopList items={heroHighlights} />
+            </Reveal>
+
+            {s.paragraphs[1] ? (
+              <Reveal delay={300}>
+                <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/60">
+                  {s.paragraphs[1]}
+                </p>
+              </Reveal>
+            ) : null}
+
+            <Reveal delay={360}>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/call"
+                  className="group relative inline-flex overflow-hidden rounded-full p-[2px]"
+                >
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full bg-[conic-gradient(from_140deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4)]"
+                  />
+                  <span className="relative inline-flex items-center gap-2 rounded-full bg-neutral-950 px-7 py-3 font-semibold text-white transition group-hover:bg-neutral-900">
+                    <Sparkles className="h-4 w-4 text-[#FF6A00]" />
+                    Book a free call
+                  </span>
+                </Link>
+                <Link
+                  to="/portfolio"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3 font-semibold text-white/85 transition hover:border-white/60 hover:text-white"
+                >
+                  Our work <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </Reveal>
+
+            <Reveal delay={420}>
+              <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-white/60">
+                <span className="flex gap-1 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400" />
+                  ))}
+                </span>
+                <span className="text-white/80">4.9/5</span>
+                <span>from 127 client reviews</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline">500+ projects delivered</span>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={200}>
+            <div className="relative mx-auto w-full max-w-[420px]">
+              <div
+                aria-hidden
+                className="absolute -inset-6 rounded-[36px] bg-[conic-gradient(from_140deg,#ff6ec4,#7873f5,#1fd1f9,#ff6ec4)] opacity-25 blur-2xl"
+              />
+              <img
+                src={heroLightbulb.url}
+                alt={`${s.title} — creative strategy illustrated by a businessman with a rainbow lightbulb head`}
+                width={745}
+                height={1024}
+                loading="eager"
+                decoding="async"
+                className="relative w-full rounded-[28px] border border-white/10 object-cover"
+              />
+            </div>
           </Reveal>
         </div>
+
         <style>{`
           @keyframes shine{to{background-position:200% 0}}
           .service-migrated-body{color:#1f2937;font-size:17px;line-height:1.75}
