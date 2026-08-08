@@ -603,42 +603,58 @@ export function PostArticle({
           {/* About Author */}
           <section className="mt-10">
             <h2 className="text-2xl font-semibold mb-4">About Author</h2>
-            <div className="rounded-2xl border border-neutral-200 overflow-hidden">
-              <div className="p-5 md:p-6 flex gap-5 items-start">
-                <div className="h-20 w-20 rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center text-white text-xl font-bold flex-none">
-                  UJ
-                </div>
-                <div className="min-w-0">
-                  <div className="text-lg font-semibold text-blue-700">
-                    Usman Jatoi
+            <div className="relative overflow-hidden rounded-2xl border border-neutral-200">
+              <img
+                src={communityBg.url}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-neutral-950/85" aria-hidden />
+              <div className="relative">
+                <div className="p-5 md:p-6 flex gap-5 items-start">
+                  <img
+                    src={authorImg.url}
+                    alt="Usman Jatoi"
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                    className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-white/20"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-lg font-semibold text-white">
+                      Usman Jatoi
+                    </div>
+                    <p className="text-sm text-white/80 mt-1 leading-relaxed">
+                      Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
+                      creative artist, and tech innovator who began his digital
+                      journey at just{" "}
+                      <b className="text-orange-400">7 years old</b> and started
+                      working professionally at{" "}
+                      <b className="text-orange-400">12</b>.
+                    </p>
                   </div>
-                  <p className="text-sm text-neutral-700 mt-1 leading-relaxed">
-                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
-                    creative artist, and tech innovator who began his digital
-                    journey at just{" "}
-                    <b className="text-blue-700">7 years old</b> and started
-                    working professionally at <b className="text-blue-700">12</b>.
-                  </p>
                 </div>
-              </div>
-              <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
-                {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="h-7 w-7 flex items-center justify-center hover:text-neutral-900"
-                    aria-label="social"
-                  >
-                    <Ic className="h-4 w-4" />
-                  </a>
-                ))}
+                <div className="border-t border-white/15 px-6 py-3 flex items-center gap-3 text-white/60">
+                  {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
+                    <a
+                      key={i}
+                      href="#"
+                      className="h-7 w-7 flex items-center justify-center hover:text-white"
+                      aria-label="social"
+                    >
+                      <Ic className="h-4 w-4" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="mt-4">
               <div className="text-sm font-semibold text-neutral-900 mb-2">
                 Quick Links:
               </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-blue-700">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-900">
                 <Link to="/about-me" className="hover:underline">
                   About Me
                 </Link>
@@ -653,6 +669,7 @@ export function PostArticle({
               </div>
             </div>
           </section>
+
         </main>
 
         {/* ---------- SIDEBAR ---------- */}
