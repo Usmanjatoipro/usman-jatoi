@@ -404,7 +404,7 @@ export function PostArticle({
         aria-hidden
       >
         <div
-          className="h-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 transition-[width] duration-150"
+          className="h-full bg-orange-500 transition-[width] duration-150"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -423,29 +423,36 @@ export function PostArticle({
         ]}
       />
 
-      {heroUrl && !heroFailed && (
-        <figure className="mx-auto mt-8 w-full max-w-7xl px-4 md:px-6">
-          <div className="aspect-[16/7] overflow-hidden rounded-xl bg-neutral-100">
-            <img
-              src={heroUrl}
-              alt={title}
-              width={1600}
-              height={700}
-              fetchPriority="high"
-              decoding="async"
-              onError={() => setHeroFailed(true)}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </figure>
-      )}
-
-      <div className="h-8" />
+      <div className="h-10" />
 
       {/* ================= 70/30 ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
-        {/* ---------- MAIN ---------- */}
-        <main className="min-w-0">
+        {/* ---------- MAIN — one continuous white surface ---------- */}
+        <main className="min-w-0 rounded-2xl border border-neutral-200 bg-white p-5 md:p-8 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+          {/* Featured image lives inside the 70% column */}
+          {heroUrl && !heroFailed ? (
+            <figure className="mb-8">
+              <img
+                src={heroUrl}
+                alt={title}
+                width={1200}
+                height={630}
+                fetchPriority="high"
+                decoding="async"
+                onError={() => setHeroFailed(true)}
+                className="aspect-[16/9] w-full rounded-2xl object-cover bg-neutral-100"
+              />
+            </figure>
+          ) : (
+            <PostCover
+              className="mb-8"
+              seed={post.slug || String(post.id)}
+              title={title}
+              excerpt={excerpt}
+              categories={categories.map((c) => c.name)}
+            />
+          )}
+
           {excerpt && (
             <p className="max-w-3xl text-lg leading-relaxed text-neutral-600">{excerpt}</p>
           )}
@@ -502,7 +509,7 @@ export function PostArticle({
                     <Star
                       className={`h-5 w-5 transition ${
                         n <= rating
-                          ? "fill-yellow-400 text-yellow-400"
+                          ? "fill-orange-500 text-orange-500"
                           : "text-neutral-300"
                       }`}
                     />
@@ -528,6 +535,7 @@ export function PostArticle({
             className="post-body mt-10"
             dangerouslySetInnerHTML={{ __html: enrichedHtml }}
           />
+
 
           {/* Featured-in-article CTA */}
           <div className="mt-10 relative overflow-hidden rounded-2xl text-white">
