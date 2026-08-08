@@ -36,7 +36,9 @@ export const Route = createFileRoute("/blog/$slug")({
       loaderData.seo_description || loaderData.excerpt || rawTitle,
       158
     );
-    const image = loaderData.image || undefined;
+    const image =
+      loaderData.image || `${SITE}${coverImageUrl(params.slug)}`;
+
     return {
       meta: [
         { title },
