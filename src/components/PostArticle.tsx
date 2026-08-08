@@ -683,54 +683,74 @@ export function PostArticle({
             </div>
           )}
 
-          {/* About Author */}
+          {/* Community CTA — photo on the side, dynamic to the category */}
+          <section className="mt-10 grid gap-0 sm:grid-cols-[1fr_240px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white">
+            <div className="p-6 md:p-8">
+              <h2 className="text-xl md:text-2xl font-semibold leading-snug">
+                You&apos;re not alone in exploring {primaryCategoryName}
+              </h2>
+              <p className="mt-3 text-sm text-white/75 leading-relaxed max-w-md">
+                I run a community of forward-thinkers who share ideas, tools and
+                breakthroughs around {primaryCategoryName.toLowerCase()} every
+                week. Want in?
+              </p>
+              <a
+                href="https://discord.gg/usmanjatoi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold hover:bg-orange-600"
+              >
+                Join the community <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+            <img
+              src={communityBg.url}
+              alt={`Join the ${primaryCategoryName} community`}
+              loading="lazy"
+              className="h-full w-full object-cover min-h-[200px]"
+            />
+          </section>
+
+          {/* About Author — clean white card, no background photo */}
           <section className="mt-10">
             <h2 className="text-2xl font-semibold mb-4">About Author</h2>
-            <div className="relative overflow-hidden rounded-2xl border border-neutral-200">
-              <img
-                src={communityBg.url}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-neutral-950/85" aria-hidden />
-              <div className="relative">
-                <div className="p-5 md:p-6 flex gap-5 items-start">
-                  <img
-                    src={authorImg.url}
-                    alt="Usman Jatoi"
-                    width={80}
-                    height={80}
-                    loading="lazy"
-                    className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-white/20"
-                  />
-                  <div className="min-w-0">
-                    <div className="text-lg font-semibold text-white">
-                      Usman Jatoi
-                    </div>
-                    <p className="text-sm text-white/80 mt-1 leading-relaxed">
-                      Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
-                      creative artist, and tech innovator who began his digital
-                      journey at just{" "}
-                      <b className="text-orange-400">7 years old</b> and started
-                      working professionally at{" "}
-                      <b className="text-orange-400">12</b>.
-                    </p>
+            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+              <div className="p-5 md:p-6 flex gap-5 items-start">
+                <img
+                  src={authorImg.url}
+                  alt="Usman Jatoi"
+                  width={80}
+                  height={80}
+                  loading="lazy"
+                  className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-neutral-200"
+                />
+                <div className="min-w-0">
+                  <div className="text-lg font-semibold text-neutral-900">
+                    Usman Jatoi
                   </div>
+                  <p className="text-sm text-neutral-600 mt-1 leading-relaxed">
+                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
+                    creative artist, and tech innovator who began his digital
+                    journey at just{" "}
+                    <b className="text-neutral-900">7 years old</b> and started
+                    working professionally at{" "}
+                    <b className="text-neutral-900">12</b>.
+                  </p>
                 </div>
-                <div className="border-t border-white/15 px-6 py-3 flex items-center gap-3 text-white/60">
-                  {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
-                    <a
-                      key={i}
-                      href="#"
-                      className="h-7 w-7 flex items-center justify-center hover:text-white"
-                      aria-label="social"
-                    >
-                      <Ic className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
+              </div>
+              <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
+                {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
+                  <a
+                    key={i}
+                    href="https://www.linkedin.com/in/usmanjatoi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-7 w-7 flex items-center justify-center hover:text-neutral-900"
+                    aria-label="Usman Jatoi social profile"
+                  >
+                    <Ic className="h-4 w-4" />
+                  </a>
+                ))}
               </div>
             </div>
             <div className="mt-4">
@@ -756,7 +776,8 @@ export function PostArticle({
         </main>
 
         {/* ---------- SIDEBAR ---------- */}
-        <aside className="space-y-6 lg:sticky lg:top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-1 sidebar-scroll">
+        <aside className="space-y-6 self-start">
+
           {/* Meta card — photo background with black overlay */}
           <div className="relative rounded-2xl p-6 text-white overflow-hidden border border-neutral-900">
             <img
