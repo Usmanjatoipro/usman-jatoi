@@ -24,6 +24,7 @@ import {
   Zap,
   Building2,
 } from "lucide-react";
+import ServiceCover from "@/components/ServiceCover";
 import servicesContent from "@/data/services-content.json";
 import { getLocalServiceBySlug } from "@/lib/wp-content-stats.functions";
 
@@ -599,8 +600,8 @@ function ServiceDetail() {
           </Reveal>
         </div>
         <Reveal className="order-1 md:order-2">
-          <div className="relative aspect-square rounded-3xl overflow-hidden bg-neutral-100 border border-neutral-200 flex items-center justify-center text-8xl">
-            
+          <div className="relative overflow-hidden rounded-3xl border border-neutral-200">
+            <ServiceCover title={`About ${s.title}`} kicker="Expertise" slug={`${slug}-about`} />
           </div>
         </Reveal>
       </section>
