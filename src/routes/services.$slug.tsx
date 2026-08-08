@@ -361,45 +361,33 @@ function ServiceDetail() {
   return (
     <div className="min-h-screen bg-white text-neutral-950">
       {/* ---------- Hero ---------- */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(1000px_500px_at_20%_0%,rgba(139,92,246,0.35),transparent),radial-gradient(800px_400px_at_80%_10%,rgba(6,182,212,0.25),transparent)]" />
-        <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-16 text-center">
-          <Reveal>
-            <nav className="text-sm text-neutral-500 mb-6" aria-label="Breadcrumb">
-              <Link to="/" className="hover:text-neutral-950">Home</Link>
-              <span className="mx-2">/</span>
-              <Link to="/services" className="hover:text-neutral-950">Services</Link>
-              <span className="mx-2">/</span>
-              <span className="text-white">{s.title}</span>
-            </nav>
-          </Reveal>
+      <header className="relative overflow-hidden bg-neutral-950 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_420px_at_15%_-10%,rgba(255,255,255,0.10),transparent),radial-gradient(700px_380px_at_85%_0%,rgba(255,106,0,0.14),transparent)]" />
+        <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
           <Reveal delay={100}>
-            <span className="inline-block px-3 py-1 rounded-full text-xs uppercase tracking-widest bg-neutral-100 border border-neutral-300 mb-5">
-              Service — {s.title}
+            <span className="inline-block px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.2em] bg-white/10 border border-white/15 text-white/80 mb-6">
+              Service
             </span>
           </Reveal>
           <Reveal delay={200}>
-            <h1 className="text-4xl md:text-6xl font-black leading-tight bg-clip-text text-transparent bg-[linear-gradient(90deg,#fff,#c4b5fd,#67e8f9,#fff)] bg-[length:200%_100%] animate-[shine_6s_linear_infinite]">
+            <h1 className="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight text-white">
               {s.h1}
             </h1>
           </Reveal>
           <Reveal delay={300}>
-            <p className="mt-6 max-w-2xl mx-auto text-neutral-600 text-lg">
+            <p className="mt-6 max-w-2xl mx-auto text-white/70 text-lg">
               {s.paragraphs[0]}
             </p>
           </Reveal>
-          {local ? (
-            <Reveal delay={380}>
-              <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm text-neutral-600">
-                <span className="rounded-full border border-neutral-200 bg-neutral-100 px-4 py-2">
-                  {local.childCount.toLocaleString()} child service pages
-                </span>
-                <span className="rounded-full border border-neutral-200 bg-neutral-100 px-4 py-2">
-                  Local WordPress fields loaded
-                </span>
-              </div>
-            </Reveal>
-          ) : null}
+          <Reveal>
+            <nav className="mt-8 text-sm text-white/60" aria-label="Breadcrumb">
+              <Link to="/" className="hover:text-white">Home</Link>
+              <span className="mx-2">&gt;</span>
+              <Link to="/services" className="hover:text-white">My Services</Link>
+              <span className="mx-2">&gt;</span>
+              <span className="text-white">{s.title}</span>
+            </nav>
+          </Reveal>
         </div>
         <style>{`
           @keyframes shine{to{background-position:200% 0}}
