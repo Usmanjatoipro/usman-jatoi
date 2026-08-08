@@ -27,6 +27,16 @@ import {
   Rss,
 } from "lucide-react";
 import PageHero from "@/components/PageHero";
+import PostCover from "@/components/PostCover";
+import AdSlot from "@/components/AdSlot";
+import CalEmbed from "@/components/CalEmbed";
+import metaBg from "@/assets/Metas_of_my_posts.webp.asset.json";
+import communityBg from "@/assets/Usman_Jatoi.webp.asset.json";
+import authorImg from "@/assets/Usman-Jatoi-Official.webp.asset.json";
+import contactImg from "@/assets/Usman-Jatoi-Contact-Us-image.webp.asset.json";
+import redsglow from "@/assets/Redsglow-Banner.jpg.asset.json";
+import featuredCta from "@/assets/featured-cta.jpg.asset.json";
+
 
 export type PostArticleData = {
   id: number;
@@ -190,6 +200,30 @@ export function PostArticle({
       sources: extractSources(raw),
     };
   }, [post.content]);
+
+  /* FAQ structured data — questions stay collapsed visually but indexed. */
+  const faqSchema = useMemo(() => {
+    const items: { q: string; a: string }[] = [];
+    const re = /<details[^>]*>\s*<summary[^>]*>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(enrichedHtml))) {
+      const q = decodeEntities(stripHtml(m[1]));
+      const a = decodeEntities(stripHtml(m[2]));
+      if (q && a) items.push({ q, a });
+    }
+    if (!items.length) return null;
+    return JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: items.map((i) => ({
+        "@type": "Question",
+        name: i.q,
+        acceptedAnswer: { "@type": "Answer", text: i.a },
+      })),
+    });
+  }, [enrichedHtml]);
+
+
 
   /* Reading progress + active heading + back-to-top. */
   useEffect(() => {
@@ -397,14 +431,21 @@ export function PostArticle({
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${enc}`;
 
   return (
-    <article className="bg-white text-neutral-900 relative">
+    <article className="bg-neutral-50 text-neutral-900 relative">
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: faqSchema }}
+        />
+      )}
+
       {/* Reading progress */}
       <div
         className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent"
         aria-hidden
       >
         <div
-          className="h-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 transition-[width] duration-150"
+          className="h-full bg-orange-500 transition-[width] duration-150"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -423,29 +464,36 @@ export function PostArticle({
         ]}
       />
 
-      {heroUrl && !heroFailed && (
-        <figure className="mx-auto mt-8 w-full max-w-7xl px-4 md:px-6">
-          <div className="aspect-[16/7] overflow-hidden rounded-xl bg-neutral-100">
-            <img
-              src={heroUrl}
-              alt={title}
-              width={1600}
-              height={700}
-              fetchPriority="high"
-              decoding="async"
-              onError={() => setHeroFailed(true)}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </figure>
-      )}
-
-      <div className="h-8" />
+      <div className="h-10" />
 
       {/* ================= 70/30 ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
-        {/* ---------- MAIN ---------- */}
-        <main className="min-w-0">
+        {/* ---------- MAIN — one continuous white surface ---------- */}
+        <main className="min-w-0 rounded-2xl border border-neutral-200 bg-white p-5 md:p-8 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+          {/* Featured image lives inside the 70% column */}
+          {heroUrl && !heroFailed ? (
+            <figure className="mb-8">
+              <img
+                src={heroUrl}
+                alt={title}
+                width={1200}
+                height={630}
+                fetchPriority="high"
+                decoding="async"
+                onError={() => setHeroFailed(true)}
+                className="aspect-[16/9] w-full rounded-2xl object-cover bg-neutral-100"
+              />
+            </figure>
+          ) : (
+            <PostCover
+              className="mb-8"
+              seed={post.slug || String(post.id)}
+              title={title}
+              excerpt={excerpt}
+              categories={categories.map((c) => c.name)}
+            />
+          )}
+
           {excerpt && (
             <p className="max-w-3xl text-lg leading-relaxed text-neutral-600">{excerpt}</p>
           )}
@@ -502,7 +550,7 @@ export function PostArticle({
                     <Star
                       className={`h-5 w-5 transition ${
                         n <= rating
-                          ? "fill-yellow-400 text-yellow-400"
+                          ? "fill-orange-500 text-orange-500"
                           : "text-neutral-300"
                       }`}
                     />
@@ -529,34 +577,35 @@ export function PostArticle({
             dangerouslySetInnerHTML={{ __html: enrichedHtml }}
           />
 
+
           {/* Featured-in-article CTA */}
-          <div className="mt-10 rounded-2xl overflow-hidden bg-neutral-950 text-white grid md:grid-cols-[1fr_260px]">
-            <div className="p-6 md:p-8">
+          <div className="mt-10 relative overflow-hidden rounded-2xl text-white">
+            <img
+              src={featuredCta.url}
+              alt="Get featured in this article"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-950/80" aria-hidden />
+            <div className="relative p-6 md:p-8">
               <div className="text-lg md:text-xl font-semibold">
                 Get Yourself Featured in This Article
               </div>
-              <p className="mt-2 text-sm text-white/70 max-w-md">
+              <p className="mt-2 text-sm text-white/75 max-w-md">
                 Want your name, brand, or service listed right here? We offer
                 sponsored mentions and do-follow links starting from{" "}
-                <b className="text-white">$49 up to $500</b> depending on
+                <b className="text-orange-400">$49 up to $500</b> depending on
                 placement.
               </p>
               <Link
                 to="/contact-me"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-5 py-2.5 text-sm font-semibold hover:bg-neutral-100"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-500 text-white px-5 py-2.5 text-sm font-semibold hover:bg-orange-600"
               >
                 APPLY NOW
               </Link>
             </div>
-            <div
-              className="hidden md:block"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 30%, #f97316 0%, transparent 55%), radial-gradient(circle at 70% 70%, #7c3aed 0%, transparent 55%), #0a0a0a",
-              }}
-              aria-hidden
-            />
           </div>
+
 
           {/* Prev / Next */}
           {(prevNext.prev || prevNext.next) && (
@@ -603,42 +652,58 @@ export function PostArticle({
           {/* About Author */}
           <section className="mt-10">
             <h2 className="text-2xl font-semibold mb-4">About Author</h2>
-            <div className="rounded-2xl border border-neutral-200 overflow-hidden">
-              <div className="p-5 md:p-6 flex gap-5 items-start">
-                <div className="h-20 w-20 rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center text-white text-xl font-bold flex-none">
-                  UJ
-                </div>
-                <div className="min-w-0">
-                  <div className="text-lg font-semibold text-blue-700">
-                    Usman Jatoi
+            <div className="relative overflow-hidden rounded-2xl border border-neutral-200">
+              <img
+                src={communityBg.url}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-neutral-950/85" aria-hidden />
+              <div className="relative">
+                <div className="p-5 md:p-6 flex gap-5 items-start">
+                  <img
+                    src={authorImg.url}
+                    alt="Usman Jatoi"
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                    className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-white/20"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-lg font-semibold text-white">
+                      Usman Jatoi
+                    </div>
+                    <p className="text-sm text-white/80 mt-1 leading-relaxed">
+                      Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
+                      creative artist, and tech innovator who began his digital
+                      journey at just{" "}
+                      <b className="text-orange-400">7 years old</b> and started
+                      working professionally at{" "}
+                      <b className="text-orange-400">12</b>.
+                    </p>
                   </div>
-                  <p className="text-sm text-neutral-700 mt-1 leading-relaxed">
-                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
-                    creative artist, and tech innovator who began his digital
-                    journey at just{" "}
-                    <b className="text-blue-700">7 years old</b> and started
-                    working professionally at <b className="text-blue-700">12</b>.
-                  </p>
                 </div>
-              </div>
-              <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
-                {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="h-7 w-7 flex items-center justify-center hover:text-neutral-900"
-                    aria-label="social"
-                  >
-                    <Ic className="h-4 w-4" />
-                  </a>
-                ))}
+                <div className="border-t border-white/15 px-6 py-3 flex items-center gap-3 text-white/60">
+                  {[Instagram, Linkedin, Github, Twitter].map((Ic, i) => (
+                    <a
+                      key={i}
+                      href="#"
+                      className="h-7 w-7 flex items-center justify-center hover:text-white"
+                      aria-label="social"
+                    >
+                      <Ic className="h-4 w-4" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="mt-4">
               <div className="text-sm font-semibold text-neutral-900 mb-2">
                 Quick Links:
               </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-blue-700">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-900">
                 <Link to="/about-me" className="hover:underline">
                   About Me
                 </Link>
@@ -653,19 +718,23 @@ export function PostArticle({
               </div>
             </div>
           </section>
+
         </main>
 
         {/* ---------- SIDEBAR ---------- */}
         <aside className="space-y-6 lg:sticky lg:top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-1 sidebar-scroll">
-          {/* Meta card — dark rainbow gradient */}
-          <div
-            className="relative rounded-2xl p-6 text-white overflow-hidden border border-white/10"
-            style={{
-              background:
-                "radial-gradient(500px 300px at 100% 0%, rgba(139,92,246,0.55), transparent), radial-gradient(400px 300px at 0% 100%, rgba(6,182,212,0.35), transparent), #0a0a0a",
-            }}
-          >
-            <dl className="space-y-2.5 text-sm">
+          {/* Meta card — photo background with black overlay */}
+          <div className="relative rounded-2xl p-6 text-white overflow-hidden border border-neutral-900">
+            <img
+              src={metaBg.url}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-950/70" aria-hidden />
+            <dl className="relative space-y-2.5 text-sm">
+
               <div>
                 <span className="font-semibold">Published:</span>{" "}
                 <span className="text-white/85">
@@ -716,12 +785,9 @@ export function PostArticle({
                 Read Disclaimer
               </Link>
             </p>
-            <div className="mt-3 rounded-lg overflow-hidden bg-gradient-to-br from-rose-200 via-fuchsia-200 to-violet-300 aspect-[4/5] flex items-end p-3">
-              <span className="text-sm font-semibold text-neutral-900 bg-white/80 backdrop-blur px-2.5 py-1 rounded-md">
-                Your ad here
-              </span>
-            </div>
+            <AdSlot className="mt-3 min-h-[250px] overflow-hidden rounded-lg bg-white" />
           </div>
+
 
           {/* Explore More Under {Category} — subcategories list */}
           {subcats.length > 0 && (
@@ -766,7 +832,7 @@ export function PostArticle({
                           : "text-neutral-800"
                       } ${
                         activeId === h.id
-                          ? "border-violet-500 bg-violet-50 text-violet-900"
+                          ? "border-orange-500 bg-neutral-50 text-neutral-900 font-medium"
                           : "border-transparent hover:border-neutral-200 hover:bg-neutral-50"
                       }`}
                     >
@@ -846,10 +912,17 @@ export function PostArticle({
       {/* ================= FULL-WIDTH SECTIONS ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-16 space-y-16">
         {/* RedsGlow banner */}
-        <section className="rounded-3xl border border-neutral-200 bg-gradient-to-br from-sky-50 via-white to-neutral-50 overflow-hidden grid md:grid-cols-[1.1fr_1fr]">
-          <div className="p-6 md:p-10 flex flex-col justify-center">
-            <p className="text-sm md:text-base text-neutral-800 leading-relaxed">
-              From <b>marketing to automation, technical development to
+        <section className="relative overflow-hidden rounded-3xl border border-neutral-200">
+          <img
+            src={redsglow.url}
+            alt="RedsGlow Creative Agency"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-neutral-950/75" aria-hidden />
+          <div className="relative p-6 md:p-12 max-w-3xl">
+            <p className="text-sm md:text-base text-white/85 leading-relaxed">
+              From <b className="text-white">marketing to automation, technical development to
               management, creative design to operations, consulting to growth
               strategy</b> — we deliver it all under one roof. Whether you're
               launching something new, fixing what's broken, or scaling to the
@@ -860,33 +933,13 @@ export function PostArticle({
               href="https://redsglow.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-neutral-950 text-white text-sm font-semibold px-5 py-2.5 hover:bg-neutral-800 self-start"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 hover:bg-orange-600"
             >
               VISIT NOW <ArrowRight className="h-4 w-4" />
             </a>
           </div>
-          <div
-            className="min-h-[220px] md:min-h-full flex items-center justify-center p-8"
-            style={{
-              background:
-                "linear-gradient(135deg, #d9e6f4 0%, #b8d0e8 100%)",
-            }}
-          >
-            <div className="rounded-xl bg-neutral-950 border-2 border-neutral-800 shadow-2xl px-10 py-8 flex items-center gap-4">
-              <div className="text-3xl font-black tracking-tighter text-white">
-                R<span className="text-rose-500">G</span>
-              </div>
-              <div>
-                <div className="text-2xl font-black text-white leading-none tracking-tight">
-                  RED<span className="text-rose-500">S</span>GLOW
-                </div>
-                <div className="text-[10px] tracking-[0.35em] text-neutral-400 mt-1">
-                  CREATIVE AGENCY
-                </div>
-              </div>
-            </div>
-          </div>
         </section>
+
 
         {/* Explore My All Categories */}
         {allCats.length > 0 && (
@@ -943,7 +996,7 @@ export function PostArticle({
                     style={{
                       backgroundImage: r.image
                         ? `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%), url(${r.image})`
-                        : `linear-gradient(135deg, #0a0a0a, #1e1b4b)`,
+                        : `linear-gradient(135deg, #0a0a0a, #262626)`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       minHeight: 180,
@@ -970,24 +1023,18 @@ export function PostArticle({
           </section>
         )}
 
-        {/* Book a call */}
-        <section className="rounded-3xl border border-neutral-200 bg-white p-8 md:p-12 text-center">
-          <h2 className="text-2xl md:text-3xl font-semibold">
+        {/* Book a call — Cal.com inline */}
+        <section className="rounded-3xl border border-neutral-200 bg-white p-6 md:p-10">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center">
             Book a Call with Me to Discuss Your Project in Detail
           </h2>
-          <p className="mt-3 text-neutral-600 max-w-2xl mx-auto">
+          <p className="mt-3 text-neutral-600 max-w-2xl mx-auto text-center">
             Free 30-minute strategy call. Bring your idea, brief, or the mess
             you want fixed — leave with a plan.
           </p>
-          <a
-            href="https://cal.com/usmanjatoi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-neutral-950 text-white px-6 py-3 text-sm font-semibold hover:bg-neutral-800"
-          >
-            Schedule on Cal.com <ArrowRight className="h-4 w-4" />
-          </a>
+          <CalEmbed className="mt-8 rounded-2xl overflow-hidden" />
         </section>
+
 
         {/* Explore More — 3 more posts */}
         {related.length > 3 && (
@@ -1116,14 +1163,15 @@ export function PostArticle({
               Prefer email? contact@usmanjatoi.com
             </p>
           </form>
-          <div
-            className="hidden md:flex items-end p-8"
-            style={{
-              background:
-                "radial-gradient(ellipse at 40% 40%, rgba(249,115,22,0.55), transparent 55%), radial-gradient(ellipse at 70% 70%, rgba(139,92,246,0.55), transparent 55%), #0a0a0a",
-            }}
-          >
-            <div>
+          <div className="relative hidden md:flex items-end p-8">
+            <img
+              src={contactImg.url}
+              alt="Usman Jatoi — get in touch"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-950/65" aria-hidden />
+            <div className="relative">
               <p className="text-white/85 text-sm leading-relaxed max-w-sm">
                 I believe in collaborating with smart, diverse, and creative
                 people — and giving them the freedom to shine. Let's connect.
@@ -1134,6 +1182,7 @@ export function PostArticle({
               </div>
             </div>
           </div>
+
         </section>
 
         <div className="h-8" />
@@ -1267,18 +1316,19 @@ export function PostArticle({
         .post-body h2 { font-size: 1.85em; font-weight: 700; margin: 1.9em 0 .6em; color:#111; scroll-margin-top: 120px; letter-spacing:-0.01em; }
         .post-body h3 { font-size: 1.35em; font-weight: 700; margin: 1.5em 0 .4em; color:#111; scroll-margin-top: 120px; }
         .post-body h4 { font-size: 1.1em; font-weight: 700; margin: 1.3em 0 .3em; color:#111; }
-        .post-body a { color:#2563eb; text-decoration: underline; text-underline-offset: 3px; }
+        .post-body a { color:#111; text-decoration: underline; text-decoration-color:#f97316; text-underline-offset: 3px; }
         .post-body img, .post-body figure img { max-width: 100%; height: auto; border-radius: 14px; margin: 1.5em auto; display:block; }
         .post-body ul, .post-body ol { padding-left: 1.5em; margin: 1em 0; }
         .post-body ul { list-style: disc; } .post-body ol { list-style: decimal; }
         .post-body li { margin: .35em 0; }
         .post-body blockquote {
-          border-left: 3px solid #a06cff;
+          border-left: 3px solid #f97316;
           padding: 1em 1.25em; margin: 1.5em 0;
-          font-style: italic; color:#444;
-          background: linear-gradient(90deg, #faf7ff 0%, #fff 100%);
+          font-style: italic; color:#333;
+          background: #fafafa;
           border-radius: 0 12px 12px 0;
         }
+
         .post-body pre { background:#0b0b12; color:#e2e8f0; padding:1em; border-radius:12px; overflow-x:auto; font-size:.9em; }
         .post-body code { background:#f3f4f6; padding: .15em .4em; border-radius: 4px; font-size:.9em; color:#111; }
         .post-body pre code { background: transparent; padding: 0; color:inherit; }
@@ -1288,62 +1338,101 @@ export function PostArticle({
         .post-body tr:last-child td { border-bottom: none; }
         .post-body iframe, .post-body video { max-width: 100%; border-radius: 14px; margin: 1.5em 0; }
         .post-body .migrated-field {
-          margin: 1.4em 0;
-          border: 1px solid #e5e7eb;
-          border-radius: 18px;
-          background: #fff;
-          padding: clamp(18px, 3vw, 30px);
-          box-shadow: 0 18px 50px rgba(15, 23, 42, 0.05);
+          margin: 2.2em 0;
+          border: 0;
+          border-top: 1px solid #ececec;
+          border-radius: 0;
+          background: transparent;
+          padding: 1.6em 0 0;
+          box-shadow: none;
         }
+        .post-body .migrated-field:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
         .post-body .migrated-field > h2 {
           margin-top: 0;
-          font-size: clamp(24px, 3vw, 36px);
-          line-height: 1.08;
+          font-size: clamp(22px, 2.4vw, 32px);
+          line-height: 1.12;
         }
+
         .post-body .migrated-grid,
         .post-body .migrated-steps {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 14px;
-          margin: 1.2em 0;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 16px;
+          margin: 1.4em 0;
         }
         .post-body .migrated-grid article,
         .post-body .migrated-steps article {
-          border: 1px solid #e5e7eb;
-          border-radius: 14px;
-          background: #f9fafb;
-          padding: 16px;
+          position: relative;
+          border: 1px solid #ececec;
+          border-radius: 16px;
+          background: #fff;
+          padding: 20px 18px 18px;
+          transition: box-shadow .2s, transform .2s;
         }
+        .post-body .migrated-grid article:hover,
+        .post-body .migrated-steps article:hover {
+          box-shadow: 0 12px 30px rgba(15,23,42,.08);
+          transform: translateY(-2px);
+        }
+        .post-body .migrated-steps article { border-top: 3px solid #f97316; }
         .post-body .migrated-grid article h3,
         .post-body .migrated-steps article h3 {
           margin: 0 0 8px;
           font-size: 1.05em;
+          letter-spacing: -.01em;
         }
+        .post-body .migrated-grid article p,
+        .post-body .migrated-steps article p { margin: 0; font-size: .95em; color:#525252; }
         .post-body .migrated-steps article span {
-          display: inline-flex;
-          margin-bottom: 10px;
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px;
+          margin-bottom: 12px;
           border-radius: 999px;
-          background: #111827;
+          background: #0a0a0a;
           color: #fff;
-          padding: 3px 9px;
-          font-size: 12px;
-          font-weight: 700;
+          font-size: 13px;
+          font-weight: 800;
         }
+        /* Checklist items */
+        .post-body [data-field="checklist"] ul { list-style: none; padding: 0; display: grid; gap: 10px; }
+        .post-body [data-field="checklist"] li {
+          position: relative;
+          border: 1px solid #ececec;
+          border-radius: 12px;
+          background: #fafafa;
+          padding: 12px 14px 12px 42px;
+          margin: 0;
+        }
+        .post-body [data-field="checklist"] li::before {
+          content: "✓";
+          position: absolute; left: 13px; top: 12px;
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 20px; height: 20px; border-radius: 6px;
+          background: #f97316; color: #fff; font-size: 12px; font-weight: 700;
+        }
+        .post-body [data-field="checklist"] li p { margin: 4px 0 0; color:#525252; font-size:.94em; }
         .post-body .migrated-table { overflow-x: auto; }
 
-        /* Auto-decorated FAQ (WP details/summary or dt/dd style) */
+        /* FAQ — collapsed by default */
+        .post-body .migrated-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
         .post-body details {
-          border-bottom: 1px solid #e5e7eb; padding: 1em 0; margin: 0;
+          border: 1px solid #ececec; border-radius: 14px;
+          background: #fff; padding: 14px 16px; margin: 0;
         }
+        .post-body details[open] { background: #fafafa; }
         .post-body details summary {
-          cursor: pointer; font-weight: 600; font-size: 0.95em;
-          text-transform: uppercase; letter-spacing: 0.02em;
-          color: #111; list-style: none; display: flex; justify-content: space-between; align-items: center;
+          cursor: pointer; font-weight: 650; font-size: 1em;
+          color: #111; list-style: none; display: flex; gap: 12px;
+          justify-content: space-between; align-items: center;
         }
+        .post-body details summary::-webkit-details-marker { display: none; }
         .post-body details summary::after {
-          content: "▾"; color: #999; transition: transform .2s;
+          content: "+"; color: #f97316; font-weight: 700; font-size: 1.2em;
+          transition: transform .2s; line-height: 1;
         }
-        .post-body details[open] summary::after { transform: rotate(180deg); }
+        .post-body details[open] summary::after { transform: rotate(45deg); }
+        .post-body details > p { margin: .8em 0 0; color: #525252; font-size: .96em; }
+
 
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }

@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PostArticle, PostArticleTerm } from "@/components/PostArticle";
 import { getLocalPostBySlug } from "@/lib/wp-content-stats.functions";
+import { coverImageUrl } from "@/components/PostCover";
 
 const SITE = "https://usmanjatoi.lovable.app";
+
 
 function truncate(s: string, n: number) {
   const clean = s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
@@ -34,7 +36,9 @@ export const Route = createFileRoute("/blog/$slug")({
       loaderData.seo_description || loaderData.excerpt || rawTitle,
       158
     );
-    const image = loaderData.image || undefined;
+    const image =
+      loaderData.image || `${SITE}${coverImageUrl(params.slug)}`;
+
     return {
       meta: [
         { title },

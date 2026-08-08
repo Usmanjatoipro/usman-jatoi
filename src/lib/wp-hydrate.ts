@@ -114,16 +114,17 @@ function tableHtml(data: any) {
     .join("")}</tbody></table></div>`;
 }
 
-function jsonToHtml(data: any): string {
+function jsonToHtml(data: any, skipTitle = false): string {
   if (Array.isArray(data)) return listHtml(data);
   if (!data || typeof data !== "object") return `<p>${escapeHtml(String(data ?? ""))}</p>`;
 
   const title = stripTags(data["main-title"] || data.section_title || data.title || "");
   const subtitle = stripTags(data.section_subtitle || data.subtitle || data.intro || data.description || "");
   const parts: string[] = [
-    title ? `<h3>${escapeHtml(title)}</h3>` : "",
+    title && !skipTitle ? `<h3>${escapeHtml(title)}</h3>` : "",
     subtitle ? `<p>${escapeHtml(subtitle)}</p>` : "",
   ];
+
 
   for (const key of ["features", "bullets", "points", "tips", "mistakes", "myths", "terms", "benefits", "drawbacks", "pros", "cons"]) {
     if (Array.isArray(data[key]) && data[key].length) {
@@ -163,13 +164,14 @@ function jsonToHtml(data: any): string {
       `<div class="migrated-faqs">${data.faqs
         .map(
           (item: any) =>
-            `<details open><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(
+            `<details><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(
               itemDescription(item),
             )}</p></details>`,
         )
         .join("")}</div>`,
     );
   }
+
 
   parts.push(tableHtml(data));
   return parts.filter(Boolean).join("");
@@ -265,18 +267,25 @@ export function metaSectionsToHtml(meta: MetaRecord): string {
     .map(([key, raw]) => {
       const value = toText(raw);
       const parsed = parseJson(value);
+      // Prefer the section's own title from the imported data; only fall back
+      // to the generic field label ("Intro", "What Is It?") when absent.
+      const ownTitle = parsed && !Array.isArray(parsed)
+        ? stripTags(parsed["main-title"] || parsed.section_title || parsed.title || "")
+        : "";
+      const heading = ownTitle || labelFromKey(key);
       const body = parsed
-        ? jsonToHtml(parsed)
+        ? jsonToHtml(parsed, true)
         : /<\/?[a-z][\s\S]*>/i.test(value)
           ? value.replace(/<script[\s\S]*?<\/script>/gi, "")
           : `<p>${escapeHtml(value)}</p>`;
       if (!body.trim()) return "";
       return `<section class="migrated-field" data-field="${escapeHtml(key)}"><h2>${escapeHtml(
-        labelFromKey(key),
+        heading,
       )}</h2>${body}</section>`;
     })
     .filter(Boolean)
     .join("");
+
 }
 
 /** Combine an imported body with its structured meta sections. */
