@@ -148,6 +148,9 @@ export function PostArticle({
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [heroFailed, setHeroFailed] = useState(false);
+  const [newsEmail, setNewsEmail] = useState("");
+  const [newsState, setNewsState] = useState<"idle" | "sending" | "done" | "error">("idle");
+
   const bodyRef = useRef<HTMLDivElement>(null);
   const [siblings, setSiblings] = useState<{ title: string; href: string }[]>(
     primaryCategoryChildren
