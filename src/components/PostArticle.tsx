@@ -530,33 +530,33 @@ export function PostArticle({
           />
 
           {/* Featured-in-article CTA */}
-          <div className="mt-10 rounded-2xl overflow-hidden bg-neutral-950 text-white grid md:grid-cols-[1fr_260px]">
-            <div className="p-6 md:p-8">
+          <div className="mt-10 relative overflow-hidden rounded-2xl text-white">
+            <img
+              src={featuredCta.url}
+              alt="Get featured in this article"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-950/80" aria-hidden />
+            <div className="relative p-6 md:p-8">
               <div className="text-lg md:text-xl font-semibold">
                 Get Yourself Featured in This Article
               </div>
-              <p className="mt-2 text-sm text-white/70 max-w-md">
+              <p className="mt-2 text-sm text-white/75 max-w-md">
                 Want your name, brand, or service listed right here? We offer
                 sponsored mentions and do-follow links starting from{" "}
-                <b className="text-white">$49 up to $500</b> depending on
+                <b className="text-orange-400">$49 up to $500</b> depending on
                 placement.
               </p>
               <Link
                 to="/contact-me"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-5 py-2.5 text-sm font-semibold hover:bg-neutral-100"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-500 text-white px-5 py-2.5 text-sm font-semibold hover:bg-orange-600"
               >
                 APPLY NOW
               </Link>
             </div>
-            <div
-              className="hidden md:block"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 30%, #f97316 0%, transparent 55%), radial-gradient(circle at 70% 70%, #7c3aed 0%, transparent 55%), #0a0a0a",
-              }}
-              aria-hidden
-            />
           </div>
+
 
           {/* Prev / Next */}
           {(prevNext.prev || prevNext.next) && (
