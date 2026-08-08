@@ -141,12 +141,25 @@ function RootComponent() {
     pathname.startsWith("/import") ||
     pathname.startsWith("/auth");
 
+  // Floating pill dock on the top pillar pages only.
+  const dockPrefixes = [
+    "/services",
+    "/blog",
+    "/portfolio",
+    "/about-me",
+    "/skills-expertise",
+    "/case-studies",
+    "/call",
+  ];
+  const showDock =
+    !hideChrome && dockPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   return (
     <QueryClientProvider client={queryClient}>
       {!hideChrome && <SiteHeader />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      {showDock && <FloatingDock />}
       {!hideChrome && <SiteFooter />}
     </QueryClientProvider>
   );
