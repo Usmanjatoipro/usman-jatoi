@@ -432,6 +432,13 @@ export function PostArticle({
 
   return (
     <article className="bg-white text-neutral-900 relative">
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: faqSchema }}
+        />
+      )}
+
       {/* Reading progress */}
       <div
         className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent"
