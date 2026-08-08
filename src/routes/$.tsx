@@ -634,7 +634,7 @@ function DynamicPage() {
   if (post.post_type === "post") {
     return (
       <PostArticleFromWp
-        post={post}
+        post={post as any}
         heroUrl={heroUrl}
         related={related as any[] | undefined}
       />
@@ -645,7 +645,7 @@ function DynamicPage() {
   if (hasStructured) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        {structured.hero && <StructuredHero hero={structured.hero} post={post} media={media} />}
+        {structured.hero && <StructuredHero hero={structured.hero} post={post as any} media={media} />}
         {structured.about && <AboutBlock about={structured.about} />}
         {structured.services && <ServicesBlock services={structured.services} />}
         {structured.process && <ProcessBlock process={structured.process} />}
