@@ -597,24 +597,24 @@ export function PostArticle({
             </button>
           </div>
 
+          {/* Personalized greeting above the intro */}
+          {greeting && (
+            <p className="mt-8 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-800">
+              {greeting}
+            </p>
+          )}
+
           {/* Article body */}
           <div
             ref={bodyRef}
-            className="post-body mt-10"
+            className="post-body mt-6"
             dangerouslySetInnerHTML={{ __html: enrichedHtml }}
           />
 
 
-          {/* Featured-in-article CTA */}
-          <div className="mt-10 relative overflow-hidden rounded-2xl text-white">
-            <img
-              src={featuredCta.url}
-              alt="Get featured in this article"
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-neutral-950/80" aria-hidden />
-            <div className="relative p-6 md:p-8">
+          {/* Featured-in-article CTA — image beside the copy, not behind it */}
+          <div className="mt-10 grid gap-0 sm:grid-cols-[1fr_220px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white">
+            <div className="p-6 md:p-8">
               <div className="text-lg md:text-xl font-semibold">
                 Get Yourself Featured in This Article
               </div>
@@ -631,7 +631,14 @@ export function PostArticle({
                 APPLY NOW
               </Link>
             </div>
+            <img
+              src={featuredCta.url}
+              alt="Get featured in this article"
+              loading="lazy"
+              className="h-full w-full object-cover min-h-[180px]"
+            />
           </div>
+
 
 
           {/* Prev / Next */}
