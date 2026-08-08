@@ -1,71 +1,91 @@
-## Current state (verified in your Lovable Cloud DB)
+# Complete WordPress content recovery and rendering
 
-- **Pages**: 21,607 published · **Posts**: 13,000 · **Products**: 3 · **Courses**: 1
-- **Media**: 609/609 rehosted on Lovable Cloud storage (0 depend on WordPress)
-- **Categories/tags**: 451 terms imported
-- **URL paths**: 100% of published items have a `path` (WP-identical URLs preserved)
-- **229 blog posts** have no featured image assigned
-- **171 pages/posts** still contain inline `usmanjatoi.com` or `/wp-content/uploads/...` URLs baked into their HTML body — these load images from WordPress
-- **No service taxonomy** exists — services are pages nested by URL (e.g. `/services/web/cms/wordpress/{child}/`), not by parent_id
+## Verified current state
 
-## What I'll fix
+- The backend contains **21,607 published pages**, **16,919 published posts**, 3 products, 1 course, and 609 media records.
+- Page bodies are mostly present: 20,413 published pages have at least 200 content characters; 1,194 are empty or thin.
+- Post bodies are not complete: only 132 posts have at least 200 content characters; 16,787 are empty or thin. The two supplied sample posts currently have empty bodies.
+- 9,541 posts are missing SEO titles/descriptions, 3,919 posts have no saved path/permalink, and only 13,000 posts currently have category relationships.
+- The large post/page manifests and every `public/wp-data` shard in this checkout are **Git LFS pointer text**, not the actual JSON/gzip payload. The only usable local manifest is the 609-item media manifest.
+- Rendering currently tries those unusable local shards before the database. Its hydration helper can also discard valid markup and ignores custom metadata outside a fixed whitelist.
 
-### 1. Kill every remaining WordPress dependency in post/page HTML
-One-time server function that scans all published `wp_posts.content`:
-- Find every `https?://usmanjatoi.com/wp-content/uploads/...` and every relative `/wp-content/uploads/...`
-- Download each missing asset into the `wp-media` bucket (dedupe by filename hash)
-- Rewrite the HTML to the Cloud storage URL and `UPDATE wp_posts` in place
-- Also strip absolute `https://usmanjatoi.com` prefixes from inline `<a href>` so internal links stay SPA-routed
-- Progress UI on `/admin` so you can watch it finish
+## Recovery source order
 
-Result: 0 references to `usmanjatoi.com` or `wp-content/uploads` anywhere in the DB.
+Use one deterministic precedence for every field, without replacing good data with weaker data:
 
-### 2. Backfill featured images for the 229 orphan posts
-Extract the first `<img>` inside `content`, resolve it to a `wp_media` row (or import it), and set `featured_media_id`. Posts render with hero images everywhere.
+1. Full WordPress export payload, if the real LFS/Drive object can be recovered.
+2. Existing complete database fields.
+3. Rendered live page/post HTML scraped from the original canonical URL for fields still missing or demonstrably thin.
+4. Safe generated fallbacks only for metadata such as an excerpt; never invent article body content.
 
-### 3. Services hub — parent → children hierarchy from URL paths
-Because services are pages nested by URL, I'll:
-- Rebuild `/services` to list only top-level lines (`/services/web/`, `/services/seo/`, `/services/game/`, `/services/pr/`, `/services/lead-generaton/`, etc.) with the page's own hero image + excerpt
-- On any `/services/{parent}/` page, auto-render a "Sub-services" grid listing all pages whose `path` starts with that prefix + one segment deeper
-- Same recursion for `/services/web/cms/`, `/services/web/location/`, etc.
-- Each node uses the WP page's real title, excerpt, featured image, and SEO fields
+The original compressed export will be archived in private cloud storage when available. Public rendering will not read the 500 MB export or repository shards at runtime.
 
-Result: browse from `/services` → any leaf without a dead end.
+## Implementation
 
-### 4. Structured data (schema.org JSON-LD)
-Add per-route JSON-LD in `head()`:
-- Posts → `Article` (headline, image, datePublished, author)
-- Services / pages → `Service` or `WebPage` with breadcrumbs
-- Homepage → `Person` (Usman Jatoi) + `WebSite` with SearchAction
+### 1. Make the database the only runtime content source
 
-### 5. Head/meta cleanup on every route
-- Unique `title`, `description`, `og:title`, `og:description`, `og:image` (from featured media, absolute https URL), `twitter:card` per route
-- Canonical URL set to the same path as WP had (no changes to URL structure)
+- Replace the local-shard-first readers with database-backed fetchers for post slug, exact path, services, category archives, child pages, and related content.
+- Keep server functions thin and move parsing/normalization helpers into server-only modules.
+- Preserve the canonical `content` HTML exactly; remove logic that blanks markup-only content or drops bodies based on a placeholder phrase.
+- Parse structured custom fields only as additive sections. Never replace a non-empty canonical body with generated HTML.
+- Ensure the blog list, blog detail, splat page route, service templates, categories, sitemap, and CMS all use the same normalized records.
 
-### 6. Strip Elementor/WP CSS residue without touching visuals
-`SiteChrome` already filters some junk stylesheets. I'll:
-- Extend `HEAD_JUNK_PATTERNS` to drop every Elementor `frontend.min.css`, `widget-*.min.css`, `motion-fx`, `swiper`, `photoswipe`, `woocommerce*`, `tutor*` sheet that isn't actually used by native routes
-- Keep only what's needed: fonts (inter, manrope, zeyada), the FontAwesome pack, and the tiny custom bits that drive the hero animations
-- Rebuild home hero styles as scoped CSS so removing the Elementor sheets can't regress the look
+### 2. Build a resumable recovery pipeline
 
-### 7. Search visibility inside the Lovable preview chrome
-The Lovable preview's page-search reads `<title>` and rendered text. Because 34K+ dynamic pages render through the `$.tsx` splat, they're all crawlable/searchable once the head metadata in step 5 lands.
+- Add import-job and per-record health state with stages for export ingestion, live recovery, metadata normalization, taxonomy linking, media migration, and validation.
+- Process by stable `id` cursor rather than offset so interrupted jobs resume safely and reruns are idempotent.
+- Parse the real export in a streaming fashion when it becomes available; do not load the full 500 MB archive into memory.
+- For every page and post still incomplete, scrape its rendered canonical URL, isolate the real article/page body, sanitize scripts and unsafe markup, and save the recovered HTML.
+- Discover missing canonical paths from exported links, existing permalinks, sitemaps, and live canonical tags. Preserve the current WordPress URL hierarchy.
+- Record source, recovery time, content hash, status, and failure reason so failed URLs can be retried without reprocessing completed records.
+- Run the recovery in controlled batches with retries/backoff and an admin progress view; execute the initial full recovery as part of this work rather than requiring manual per-page imports.
 
-### 8. 404 sweep
-Automated crawl of every internal link found in `wp_posts.content` after step 1. Any URL that still 404s gets logged to a `broken_links` table with a suggested redirect (nearest matching slug). I'll ship a `redirects` table + splat fallback that consults it before returning 404.
+### 3. Preserve rich sections and metadata without bloat
 
-## Technical section
+- Retain the canonical article/page HTML once in `wp_posts.content`.
+- Keep only useful structured fields in `meta` (FAQs, steps, checklists, comparisons, takeaways, glossary, ACF/Rank Math/Yoast values); archive oversized raw provider responses in compressed cloud storage instead of duplicating them in every database row.
+- Normalize title, excerpt, SEO title, SEO description, canonical URL, robots directives, social image, dates, author, and schema source fields during ingestion.
+- Deduplicate recovered content and media by hash and skip unchanged records on reruns.
 
-- New server fns in `src/lib/wp-cleanup.functions.ts`: `rewriteInlineMedia`, `backfillFeaturedImages`, `crawlBrokenLinks` — all `.middleware([requireSupabaseAuth])` and admin-role gated
-- Migration adds `redirects (from_path text pk, to_path text)` and `broken_links (path text pk, suggested text, checked_at timestamptz)` with RLS + GRANTs
-- Update `src/routes/$.tsx`: on notFound, look up `redirects` and 301-navigate; also inject JSON-LD in `head()`
-- Update `src/routes/services.index.tsx` + new `src/routes/services.$.tsx` splat to render the recursive services tree from `wp_posts` paths
-- Update `src/routes/blog.$slug.tsx` and `$.tsx` to include Article/WebPage JSON-LD
-- Extend `HEAD_JUNK_PATTERNS` in `src/components/SiteChrome.tsx`; move required hero CSS into `src/styles.css` (scoped) before removing sheets
-- Admin dashboard at `/admin` gains three run buttons + live progress for the three cleanup jobs
+### 4. Recover taxonomy, links, and media
 
-No URL structure changes. No design regressions — every removal of Elementor CSS is paired with a scoped replacement first, verified visually before the sheet is dropped.
+- Restore every category/tag relation and parent-child taxonomy relationship from the export or live data.
+- Backfill the 3,919 missing post paths and ensure every internal link resolves locally.
+- Crawl saved content for internal links, normalize the original domain to local paths, and log unresolved URLs for redirects instead of silently breaking them.
+- Import all featured and inline images into public cloud media storage, deduplicated by content hash; rewrite `src`, `srcset`, and relevant links to cloud URLs.
+- Generate optimized WebP versions where appropriate, preserve meaningful existing alt text, and derive a conservative alt from the post/media title only when the source has none.
+- Use the supplied author, community, feature CTA, contact, metadata-card, and RedsGlow images, rehosted locally rather than hotlinked.
 
-## Out of scope (say the word to add)
-- Redirecting the `usmanjatoi.com` domain to this app (DNS is your side)
-- Rewriting old WP HTML into native React components (heavy; keeping HTML preserves fidelity)
+### 5. Correct page and post rendering
+
+- Render blog posts in the requested **70/30 layout**: title/breadcrumb hero, then a constrained featured image and article body in the 70% column, with the metadata card, ad, table of contents, category navigation, sharing, and community modules in the 30% sidebar.
+- Use the supplied author portrait and backgrounds; make author and quick-link text black and restore the requested sidebar sections.
+- Load the supplied ad and Cal.com embeds only on the client, with isolated containers and graceful failure states so they cannot blank or shift the article.
+- Render recovered pages and services through their proper templates, including child-page/service listings and working breadcrumbs.
+- Keep the global native header/footer on every public page and exclude only admin/auth pages.
+
+### 6. SEO, schema, and AI/GEO readiness
+
+- Generate a unique, length-safe title and description per record using saved SEO data first, then source title/excerpt/content fallback.
+- Emit canonical, Open Graph, Twitter, article dates, author, and cloud-hosted preview image tags per route.
+- Emit valid `BlogPosting` for posts, `WebPage`/`Service` for pages, `BreadcrumbList` for hierarchy, and `FAQPage` only when real FAQs exist.
+- Build summaries, key takeaways, and table-of-contents data from recovered source content only; do not fabricate sections for thin records.
+- Regenerate sitemap indexes from the validated database paths and keep crawler rules aligned with public routes.
+
+### 7. Health dashboard and completion gates
+
+- Add a content-health view/dashboard covering totals, empty/thin content, missing paths, SEO gaps, missing taxonomy, missing/remote media, duplicate slugs, orphan references, and scrape failures.
+- Do not mark recovery complete until:
+  - all expected published pages/posts have a local route and canonical path;
+  - every recoverable item has substantive source content or a recorded source-level reason it does not;
+  - no public body or featured image depends on WordPress;
+  - the two supplied sample posts match their live source content and requested layout;
+  - representative pages, posts, services, categories, pagination, schema, images, header, and footer pass desktop/mobile browser checks;
+  - a URL sweep reports no unexplained internal 404s and the sitemap totals match the validated database inventory.
+
+## Technical notes
+
+- Schema changes will use a migration with grants and row-level security for job/health tables.
+- Import and cleanup actions remain authenticated and admin-role checked; public content continues through narrow published-content read policies.
+- Live scraping is a one-time recovery/fallback stage. Once validation is clean, public routes will have no WordPress or connector dependency.
+- The broken LFS-pointer runtime path will be removed or explicitly rejected by integrity checks so it cannot silently override complete database rows again.
