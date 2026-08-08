@@ -169,11 +169,34 @@ export function PostArticle({
   const responses = useMemo(() => (post.id * 7) % 30, [post.id]);
   const totalVotes = useMemo(() => (post.id * 3) % 15, [post.id]);
 
-  const primaryCategory = categories[0];
+  // Deepest (most specific) category wins for breadcrumb + context copy.
+  const primaryCategory =
+    categories.find((c) => c.parent_id) || categories[0];
+  const parentCategory = primaryCategory
+    ? categories.find((c) => c.id === primaryCategory.parent_id)
+    : undefined;
   const primaryCategoryName = primaryCategory?.name || "Article";
   const archiveHref =
     categoryArchivePath ||
     (primaryCategory ? `/category/${primaryCategory.slug}` : "/blog");
+
+  /* Time-aware greeting shown above the intro (client only, no SSR mismatch). */
+  const [greeting, setGreeting] = useState<string | null>(null);
+  useEffect(() => {
+    const h = new Date().getHours();
+    const part =
+      h < 5
+        ? ["Good night", "a quiet night — perfect for deep reading"]
+        : h < 12
+          ? ["Good morning", "a fresh morning — perfect for a focused read"]
+          : h < 17
+            ? ["Good afternoon", "a productive afternoon — perfect for learning something new"]
+            : h < 22
+              ? ["Good evening", "a relaxing evening — perfect for browsing"]
+              : ["Good night", "a calm late hour — perfect for a slow read"];
+    setGreeting(`${part[0]} — ${part[1]}. Let's get started.`);
+  }, []);
+
 
   /* Enrich HTML with heading anchors + extract TOC. */
   const { enrichedHtml, headings, sources } = useMemo(() => {
