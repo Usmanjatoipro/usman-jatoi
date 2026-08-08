@@ -602,18 +602,18 @@ function ServiceDetail() {
         </section>
       ) : null}
 
-      {/* ---------- Trusted by ---------- */}
+      {/* ---------- Brands worked with ---------- */}
       <section className="border-y border-neutral-200 bg-neutral-50">
-        <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="mx-auto max-w-6xl px-6 py-10">
           <Reveal>
-            <p className="text-center text-sm uppercase tracking-widest text-neutral-400 mb-6">
-              Trusted by 50+ brands and creators
+            <p className="mb-6 text-center text-sm uppercase tracking-widest text-neutral-400">
+              Brands, studios and platforms I've worked with
             </p>
           </Reveal>
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-4">
             {trustedBrands.map((b, i) => (
               <Reveal key={b} delay={i * 60}>
-                <span className="text-neutral-500 hover:text-neutral-950 font-medium transition">
+                <span className="font-medium text-neutral-500 transition hover:text-neutral-950">
                   {b}
                 </span>
               </Reveal>
@@ -621,7 +621,7 @@ function ServiceDetail() {
             <Reveal delay={trustedBrands.length * 60}>
               <Link
                 to="/contact-me"
-                className="text-[#FF6A00] hover:text-[#cc5500] font-medium"
+                className="font-medium text-[#FF6A00] hover:text-[#cc5500]"
               >
                 + Your logo here →
               </Link>
