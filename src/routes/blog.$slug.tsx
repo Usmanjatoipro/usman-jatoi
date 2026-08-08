@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PostArticle, PostArticleTerm } from "@/components/PostArticle";
 import { getLocalPostBySlug } from "@/lib/wp-content-stats.functions";
+import { coverImageUrl } from "@/components/PostCover";
 
 const SITE = "https://usmanjatoi.lovable.app";
+
 
 function truncate(s: string, n: number) {
   const clean = s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
