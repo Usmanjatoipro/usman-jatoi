@@ -244,7 +244,21 @@ async function fetchWpDataOverHttp<T>(relativePath: string): Promise<T | null> {
   }
 }
 
-async function readWpDataJson<T>(relativePath: string): Promise<T> {
+const EMPTY_WP_INDEX: WpDataIndex = {
+  counts: { posts: 0, pages: 0, terms: 0, servicePages: 0, serviceRoots: 0, serviceChildren: 0 },
+  files: { posts: {}, pages: {}, services: {}, terms: "" },
+  slugs: {},
+  paths: {},
+  services: [],
+  categories: {},
+};
+
+/**
+ * Reads a split WP data shard. Returns null instead of throwing when the file
+ * is unavailable or is still a Git LFS pointer (not fetched in this
+ * environment) — callers degrade to the database instead of a 500 page.
+ */
+async function readWpDataJson<T>(relativePath: string): Promise<T | null> {
   if (wpJsonCache.has(relativePath)) return wpJsonCache.get(relativePath) as T;
   const cwd = process.cwd();
   const candidates = [
@@ -252,15 +266,14 @@ async function readWpDataJson<T>(relativePath: string): Promise<T> {
     resolve(cwd, ".output", "public", "wp-data", relativePath),
     resolve(cwd, "..", "public", "wp-data", relativePath),
   ];
-  const errors: string[] = [];
   for (const filePath of candidates) {
     try {
       const inflated = await gunzipAsync(await readFileBuf(filePath));
       const data = JSON.parse(inflated.toString("utf8")) as T;
       wpJsonCache.set(relativePath, data);
       return data;
-    } catch (error) {
-      errors.push(`${filePath}: ${(error as Error).message}`);
+    } catch {
+      /* try next candidate */
     }
   }
   const viaHttp = await fetchWpDataOverHttp<T>(relativePath);
@@ -268,22 +281,24 @@ async function readWpDataJson<T>(relativePath: string): Promise<T> {
     wpJsonCache.set(relativePath, viaHttp);
     return viaHttp;
   }
-  throw new Error(`Unable to load split WP data ${relativePath}. Tried ${errors.join(" | ")}`);
+  console.warn(`[wp-data] shard unavailable: ${relativePath} — falling back to database`);
+  return null;
 }
 
 
-async function getWpDataIndex() {
+async function getWpDataIndex(): Promise<WpDataIndex> {
   if (wpDataIndexCache) return wpDataIndexCache;
-  wpDataIndexCache = await readWpDataJson<WpDataIndex>("wp-data-index.json.gz");
+  wpDataIndexCache = (await readWpDataJson<WpDataIndex>("wp-data-index.json.gz")) ?? EMPTY_WP_INDEX;
   return wpDataIndexCache;
 }
 
-async function readWpShard(file: string) {
+async function readWpShard(file: string): Promise<LocalPost[]> {
   if (wpShardCache.has(file)) return wpShardCache.get(file)!;
-  const data = await readWpDataJson<LocalPost[]>(file);
+  const data = (await readWpDataJson<LocalPost[]>(file)) ?? [];
   wpShardCache.set(file, data);
   return data;
 }
+
 
 async function findItemFromRefs(refs: WpDataRef[] | undefined, predicate: (item: LocalPost) => boolean) {
   for (const ref of refs || []) {
