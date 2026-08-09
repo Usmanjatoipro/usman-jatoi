@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
 const SITE = "https://usmanjatoi.lovable.app";
-const CHUNK = 5000;
+const CHUNK = 2000;
 
 const TYPE_MAP: Record<string, string[]> = {
   pages: ["page"],
@@ -59,11 +59,12 @@ function wrap(urls: Array<{ loc: string; lastmod?: string; priority?: string }>)
   );
 }
 
-export const Route = createFileRoute("/sitemap-$name.xml")({
+export const Route = createFileRoute("/sitemap/$name.xml")({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const name = (params as Record<string, string>).name ?? (params as Record<string, string>)["name.xml"];
+        const raw = Object.values((params ?? {}) as Record<string, string>).find(Boolean) ?? "";
+        const name = String(raw).replace(/\.xml$/i, "");
 
         if (name === "static") {
           return respond(
@@ -71,7 +72,6 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
               STATIC_URLS.map((u) => ({
                 loc: `${SITE}${u.path}`,
                 priority: u.priority,
-                lastmod: new Date().toISOString(),
               })),
             ),
           );
@@ -81,8 +81,7 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
         if (!m) return respond(wrap([]), 404);
         const group = m[1];
         const page = parseInt(m[2], 10);
-        const types = TYPE_MAP[group];
-        if (!types || page < 1) return respond(wrap([]), 404);
+        if (page < 1) return respond(wrap([]), 404);
 
         const url = process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL;
         const key =
@@ -92,18 +91,45 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
         const from = (page - 1) * CHUNK;
         const to = from + CHUNK - 1;
 
-        const { data, error } = await supa
-          .from("wp_posts")
-          .select("path, post_modified, post_type")
-          .in("post_type", types)
-          .eq("status", "publish")
-          .not("path", "is", null)
-          .order("id", { ascending: true })
-          .range(from, to);
+        if (group === "categories") {
+          const { data, error } = await supa
+            .from("wp_terms")
+            .select("slug")
+            .eq("taxonomy", "category")
+            .order("id", { ascending: true })
+            .range(from, to);
+          if (error || !data) return respond(wrap([]));
+          return respond(
+            wrap(
+              (data as Array<{ slug: string }>)
+                .filter((r) => r.slug)
+                .map((r) => ({ loc: `${SITE}/category/${r.slug}`, priority: "0.5" })),
+            ),
+          );
+        }
 
-        if (error || !data) return respond(wrap([]));
+        const types = TYPE_MAP[group];
+        if (!types) return respond(wrap([]), 404);
 
-        const urls = (data as Array<{ path: string; post_modified: string | null; post_type: string }>)
+        type Row = { path: string; post_modified: string | null; post_type: string };
+        const rows: Row[] = [];
+        // Supabase caps a single response at 1000 rows, so fetch the chunk in slices.
+        for (let offset = from; offset <= to; offset += 1000) {
+          const sliceTo = Math.min(offset + 999, to);
+          const { data, error } = await supa
+            .from("wp_posts")
+            .select("path, post_modified, post_type")
+            .in("post_type", types)
+            .eq("status", "publish")
+            .not("path", "is", null)
+            .order("id", { ascending: true })
+            .range(offset, sliceTo);
+          if (error || !data) break;
+          rows.push(...(data as Row[]));
+          if (data.length < sliceTo - offset + 1) break;
+        }
+
+        const urls = rows
           .filter((r) => r.path)
           .map((r) => ({
             loc: `${SITE}${r.path.replace(/\/+$/, "")}`,

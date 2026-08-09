@@ -13,7 +13,6 @@ import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SitemapNameDotxmlRouteImport } from './routes/sitemap-$name[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SeoStudioRouteImport } from './routes/seo-studio'
 import { Route as PressReleaseRouteImport } from './routes/press-release'
@@ -23,6 +22,7 @@ import { Route as MyCertificationsRouteImport } from './routes/my-certifications
 import { Route as MyAwardsRouteImport } from './routes/my-awards'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
@@ -41,6 +41,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expertise.index'
+import { Route as SitemapIndexRouteImport } from './routes/sitemap.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -48,6 +49,7 @@ import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/ski
 import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
 import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
 import { Route as SkillsExpertiseAiResearchAndInnovationRouteImport } from './routes/skills-expertise.ai-research-and-innovation'
+import { Route as SitemapNameDotxmlRouteImport } from './routes/sitemap.$name[.]xml'
 import { Route as ServicesWebRouteImport } from './routes/services.web'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as PortfolioWebsitesRouteImport } from './routes/portfolio.websites'
@@ -89,11 +91,6 @@ const TestimonialsRoute = TestimonialsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapNameDotxmlRoute = SitemapNameDotxmlRouteImport.update({
-  id: '/sitemap-$name.xml',
-  path: '/sitemap-$name.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -139,6 +136,11 @@ const MediaKitRoute = MediaKitRouteImport.update({
 const LogRoute = LogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalRoute = LegalRouteImport.update({
@@ -230,6 +232,11 @@ const SkillsExpertiseIndexRoute = SkillsExpertiseIndexRouteImport.update({
   path: '/skills-expertise/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapIndexRoute = SitemapIndexRouteImport.update({
+  id: '/sitemap/',
+  path: '/sitemap/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
@@ -269,6 +276,11 @@ const SkillsExpertiseAiResearchAndInnovationRoute =
     path: '/skills-expertise/ai-research-and-innovation',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SitemapNameDotxmlRoute = SitemapNameDotxmlRouteImport.update({
+  id: '/sitemap/$name.xml',
+  path: '/sitemap/$name.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesWebRoute = ServicesWebRouteImport.update({
   id: '/services/web',
   path: '/services/web',
@@ -400,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
@@ -409,7 +422,6 @@ export interface FileRoutesByFullPath {
   '/press-release': typeof PressReleaseRoute
   '/seo-studio': typeof SeoStudioRoute
   '/shop': typeof ShopRoute
-  '/sitemap-$name.xml': typeof SitemapNameDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
@@ -436,6 +448,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
+  '/sitemap/$name.xml': typeof SitemapNameDotxmlRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
@@ -443,6 +456,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
 }
 export interface FileRoutesByTo {
@@ -461,6 +475,7 @@ export interface FileRoutesByTo {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
@@ -470,7 +485,6 @@ export interface FileRoutesByTo {
   '/press-release': typeof PressReleaseRoute
   '/seo-studio': typeof SeoStudioRoute
   '/shop': typeof ShopRoute
-  '/sitemap-$name.xml': typeof SitemapNameDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
@@ -497,6 +511,7 @@ export interface FileRoutesByTo {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
+  '/sitemap/$name.xml': typeof SitemapNameDotxmlRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
@@ -504,6 +519,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/my-lifestyle': typeof MyLifestyleIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/sitemap': typeof SitemapIndexRoute
   '/skills-expertise': typeof SkillsExpertiseIndexRoute
 }
 export interface FileRoutesById {
@@ -525,6 +541,7 @@ export interface FileRoutesById {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
@@ -534,7 +551,6 @@ export interface FileRoutesById {
   '/press-release': typeof PressReleaseRoute
   '/seo-studio': typeof SeoStudioRoute
   '/shop': typeof ShopRoute
-  '/sitemap-$name.xml': typeof SitemapNameDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
@@ -561,6 +577,7 @@ export interface FileRoutesById {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
+  '/sitemap/$name.xml': typeof SitemapNameDotxmlRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
@@ -568,6 +585,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
 }
 export interface FileRouteTypes {
@@ -589,6 +607,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms.txt'
     | '/log'
     | '/media-kit'
     | '/my-awards'
@@ -598,7 +617,6 @@ export interface FileRouteTypes {
     | '/press-release'
     | '/seo-studio'
     | '/shop'
-    | '/sitemap-$name.xml'
     | '/sitemap.xml'
     | '/testimonials'
     | '/trust'
@@ -625,6 +643,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
+    | '/sitemap/$name.xml'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
@@ -632,6 +651,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/my-lifestyle/'
     | '/services/'
+    | '/sitemap/'
     | '/skills-expertise/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -650,6 +670,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms.txt'
     | '/log'
     | '/media-kit'
     | '/my-awards'
@@ -659,7 +680,6 @@ export interface FileRouteTypes {
     | '/press-release'
     | '/seo-studio'
     | '/shop'
-    | '/sitemap-$name.xml'
     | '/sitemap.xml'
     | '/testimonials'
     | '/trust'
@@ -686,6 +706,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
+    | '/sitemap/$name.xml'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
@@ -693,6 +714,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/my-lifestyle'
     | '/services'
+    | '/sitemap'
     | '/skills-expertise'
   id:
     | '__root__'
@@ -713,6 +735,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms.txt'
     | '/log'
     | '/media-kit'
     | '/my-awards'
@@ -722,7 +745,6 @@ export interface FileRouteTypes {
     | '/press-release'
     | '/seo-studio'
     | '/shop'
-    | '/sitemap-$name.xml'
     | '/sitemap.xml'
     | '/testimonials'
     | '/trust'
@@ -749,6 +771,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
+    | '/sitemap/$name.xml'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
@@ -756,6 +779,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/my-lifestyle/'
     | '/services/'
+    | '/sitemap/'
     | '/skills-expertise/'
   fileRoutesById: FileRoutesById
 }
@@ -777,6 +801,7 @@ export interface RootRouteChildren {
   ContactUsRoute: typeof ContactUsRoute
   CoursesRoute: typeof CoursesRoute
   LegalRoute: typeof LegalRouteWithChildren
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
   MyAwardsRoute: typeof MyAwardsRoute
@@ -786,7 +811,6 @@ export interface RootRouteChildren {
   PressReleaseRoute: typeof PressReleaseRoute
   SeoStudioRoute: typeof SeoStudioRoute
   ShopRoute: typeof ShopRoute
-  SitemapNameDotxmlRoute: typeof SitemapNameDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
@@ -797,12 +821,14 @@ export interface RootRouteChildren {
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesWebRoute: typeof ServicesWebRoute
+  SitemapNameDotxmlRoute: typeof SitemapNameDotxmlRoute
   SkillsExpertiseAiResearchAndInnovationRoute: typeof SkillsExpertiseAiResearchAndInnovationRoute
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
   SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  SitemapIndexRoute: typeof SitemapIndexRoute
   SkillsExpertiseIndexRoute: typeof SkillsExpertiseIndexRoute
 }
 
@@ -834,13 +860,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap-$name.xml': {
-      id: '/sitemap-$name.xml'
-      path: '/sitemap-$name.xml'
-      fullPath: '/sitemap-$name.xml'
-      preLoaderRoute: typeof SitemapNameDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -904,6 +923,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/log'
       preLoaderRoute: typeof LogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal': {
@@ -1032,6 +1058,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkillsExpertiseIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap/': {
+      id: '/sitemap/'
+      path: '/sitemap'
+      fullPath: '/sitemap/'
+      preLoaderRoute: typeof SitemapIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services/': {
       id: '/services/'
       path: '/services'
@@ -1079,6 +1112,13 @@ declare module '@tanstack/react-router' {
       path: '/skills-expertise/ai-research-and-innovation'
       fullPath: '/skills-expertise/ai-research-and-innovation'
       preLoaderRoute: typeof SkillsExpertiseAiResearchAndInnovationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap/$name.xml': {
+      id: '/sitemap/$name.xml'
+      path: '/sitemap/$name.xml'
+      fullPath: '/sitemap/$name.xml'
+      preLoaderRoute: typeof SitemapNameDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/web': {
@@ -1334,6 +1374,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactUsRoute: ContactUsRoute,
   CoursesRoute: CoursesRoute,
   LegalRoute: LegalRouteWithChildren,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
   MyAwardsRoute: MyAwardsRoute,
@@ -1343,7 +1384,6 @@ const rootRouteChildren: RootRouteChildren = {
   PressReleaseRoute: PressReleaseRoute,
   SeoStudioRoute: SeoStudioRoute,
   ShopRoute: ShopRoute,
-  SitemapNameDotxmlRoute: SitemapNameDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
@@ -1354,6 +1394,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   ServicesWebRoute: ServicesWebRoute,
+  SitemapNameDotxmlRoute: SitemapNameDotxmlRoute,
   SkillsExpertiseAiResearchAndInnovationRoute:
     SkillsExpertiseAiResearchAndInnovationRoute,
   SkillsExpertiseCreativeSkillsRoute: SkillsExpertiseCreativeSkillsRoute,
@@ -1361,18 +1402,9 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  SitemapIndexRoute: SitemapIndexRoute,
   SkillsExpertiseIndexRoute: SkillsExpertiseIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
