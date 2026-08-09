@@ -26,11 +26,12 @@ export type ResearchResult = {
   error?: string;
 };
 
-function keys() {
-  return KEY_ENV.map((name) => ({ name, value: process.env[name] })).filter(
-    (k): k is { name: string; value: string } => Boolean(k.value),
+function keys(): Array<{ name: string; value: string }> {
+  return KEY_ENV.map((name) => ({ name: String(name), value: process.env[name] ?? "" })).filter(
+    (k) => k.value.length > 0,
   );
 }
+
 
 async function callYouCom(query: string): Promise<ResearchResult> {
   const available = keys();
