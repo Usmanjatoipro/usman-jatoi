@@ -33,72 +33,110 @@ function keys(): Array<{ name: string; value: string }> {
 }
 
 
-async function callYouCom(query: string): Promise<ResearchResult> {
+/**
+ * you.com endpoints that actually accept `ydc-` keys:
+ *   GET  https://api.you.com/v1/search    -> web results with snippets
+ *   POST https://api.you.com/v1/research  -> long-form researched answer + sources
+ * (The legacy api.ydc-index.io / chat-api.you.com hosts return 401/403 for these keys.)
+ */
+const SEARCH_URL = "https://api.you.com/v1/search";
+const RESEARCH_URL = "https://api.you.com/v1/research";
+
+type YouWebResult = {
+  url?: string;
+  title?: string;
+  description?: string;
+  snippets?: string[];
+};
+
+type YouSource = { url?: string; title?: string; snippets?: string[] };
+
+async function youSearch(key: string, query: string): Promise<ResearchHit[] | string> {
+  const res = await fetch(`${SEARCH_URL}?query=${encodeURIComponent(query)}`, {
+    headers: { "X-API-Key": key },
+  });
+  const text = await res.text();
+  if (!res.ok) return `search ${res.status}: ${text.slice(0, 160)}`;
+  const json = JSON.parse(text) as { results?: { web?: YouWebResult[] } };
+  return (json.results?.web ?? []).slice(0, 8).map((h) => ({
+    title: h.title ?? "",
+    url: h.url ?? "",
+    snippet: (h.description ?? "") || (h.snippets ?? []).join(" ").slice(0, 600),
+  }));
+}
+
+async function youResearch(
+  key: string,
+  query: string,
+): Promise<{ answer: string; hits: ResearchHit[] } | string> {
+  const res = await fetch(RESEARCH_URL, {
+    method: "POST",
+    headers: { "X-API-Key": key, "Content-Type": "application/json" },
+    // The API expects `input`, not `query`.
+    body: JSON.stringify({ input: query }),
+  });
+  const text = await res.text();
+  if (!res.ok) return `research ${res.status}: ${text.slice(0, 160)}`;
+  const json = JSON.parse(text) as {
+    output?: { content?: string; sources?: YouSource[] };
+  };
+  const answer = json.output?.content ?? "";
+  const hits = (json.output?.sources ?? []).slice(0, 8).map((s) => ({
+    title: s.title ?? "",
+    url: s.url ?? "",
+    snippet: (s.snippets ?? []).join(" ").slice(0, 600),
+  }));
+  if (!answer && hits.length === 0) return "research returned no content";
+  return { answer, hits };
+}
+
+async function callYouCom(query: string, deep = true): Promise<ResearchResult> {
   const available = keys();
   if (!available.length) {
     return { ok: false, provider: "you.com", answer: "", hits: [], error: "No you.com API key configured." };
   }
   let lastError = "";
   for (const key of available) {
-    // Smart API (answer + citations)
-    try {
-      const res = await fetch("https://chat-api.you.com/smart", {
-        method: "POST",
-        headers: { "X-API-Key": key.value, "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-      });
-      const text = await res.text();
-      if (res.ok) {
-        const json = JSON.parse(text) as {
-          answer?: string;
-          search_results?: Array<{ name?: string; url?: string; snippet?: string }>;
-        };
-        return {
-          ok: true,
-          provider: `you.com/smart (${key.name})`,
-          answer: json.answer ?? "",
-          hits: (json.search_results ?? []).slice(0, 8).map((h) => ({
-            title: h.name ?? "",
-            url: h.url ?? "",
-            snippet: h.snippet ?? "",
-          })),
-        };
+    if (deep) {
+      try {
+        const research = await youResearch(key.value, query);
+        if (typeof research !== "string") {
+          let hits = research.hits;
+          if (hits.length === 0) {
+            const fallback = await youSearch(key.value, query);
+            if (typeof fallback !== "string") hits = fallback;
+          }
+          return {
+            ok: true,
+            provider: `you.com/research (${key.name})`,
+            answer: research.answer,
+            hits,
+          };
+        }
+        lastError = research;
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : String(err);
       }
-      lastError = `smart ${res.status}: ${text.slice(0, 160)}`;
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
     }
 
-    // Search API fallback
     try {
-      const res = await fetch(
-        `https://api.ydc-index.io/search?query=${encodeURIComponent(query)}`,
-        { headers: { "X-API-Key": key.value } },
-      );
-      const text = await res.text();
-      if (res.ok) {
-        const json = JSON.parse(text) as {
-          hits?: Array<{ title?: string; url?: string; description?: string; snippets?: string[] }>;
-        };
-        const hits = (json.hits ?? []).slice(0, 8).map((h) => ({
-          title: h.title ?? "",
-          url: h.url ?? "",
-          snippet: h.description ?? (h.snippets ?? []).join(" ").slice(0, 400),
-        }));
+      const hits = await youSearch(key.value, query);
+      if (typeof hits !== "string") {
         return {
           ok: true,
           provider: `you.com/search (${key.name})`,
-          answer: hits.map((h) => h.snippet).join(" ").slice(0, 1200),
+          answer: hits.map((h) => h.snippet).join(" ").slice(0, 1600),
           hits,
         };
       }
-      lastError = `search ${res.status}: ${text.slice(0, 160)}`;
+      lastError = hits;
     } catch (err) {
       lastError = err instanceof Error ? err.message : String(err);
     }
   }
   return { ok: false, provider: "you.com", answer: "", hits: [], error: lastError };
 }
+
 
 export const researchTopic = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
