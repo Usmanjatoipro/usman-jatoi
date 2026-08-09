@@ -111,18 +111,25 @@ export const Route = createFileRoute("/sitemap/$name.xml")({
         const types = TYPE_MAP[group];
         if (!types) return respond(wrap([]), 404);
 
-        const { data, error } = await supa
-          .from("wp_posts")
-          .select("path, post_modified, post_type")
-          .in("post_type", types)
-          .eq("status", "publish")
-          .not("path", "is", null)
-          .order("id", { ascending: true })
-          .range(from, to);
+        type Row = { path: string; post_modified: string | null; post_type: string };
+        const rows: Row[] = [];
+        // Supabase caps a single response at 1000 rows, so fetch the chunk in slices.
+        for (let offset = from; offset <= to; offset += 1000) {
+          const sliceTo = Math.min(offset + 999, to);
+          const { data, error } = await supa
+            .from("wp_posts")
+            .select("path, post_modified, post_type")
+            .in("post_type", types)
+            .eq("status", "publish")
+            .not("path", "is", null)
+            .order("id", { ascending: true })
+            .range(offset, sliceTo);
+          if (error || !data) break;
+          rows.push(...(data as Row[]));
+          if (data.length < sliceTo - offset + 1) break;
+        }
 
-        if (error || !data) return respond(wrap([]));
-
-        const urls = (data as Array<{ path: string; post_modified: string | null; post_type: string }>)
+        const urls = rows
           .filter((r) => r.path)
           .map((r) => ({
             loc: `${SITE}${r.path.replace(/\/+$/, "")}`,
