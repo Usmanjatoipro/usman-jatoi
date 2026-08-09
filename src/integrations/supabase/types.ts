@@ -375,6 +375,7 @@ export type Database = {
         Row: {
           author_id: number | null
           content: string | null
+          content_len: number | null
           created_at: string
           enrich_source: string | null
           enriched_at: string | null
@@ -401,6 +402,7 @@ export type Database = {
         Insert: {
           author_id?: number | null
           content?: string | null
+          content_len?: number | null
           created_at?: string
           enrich_source?: string | null
           enriched_at?: string | null
@@ -427,6 +429,7 @@ export type Database = {
         Update: {
           author_id?: number | null
           content?: string | null
+          content_len?: number | null
           created_at?: string
           enrich_source?: string | null
           enriched_at?: string | null
