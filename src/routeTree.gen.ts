@@ -23,6 +23,7 @@ import { Route as MyCertificationsRouteImport } from './routes/my-certifications
 import { Route as MyAwardsRouteImport } from './routes/my-awards'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
@@ -140,6 +141,11 @@ const MediaKitRoute = MediaKitRouteImport.update({
 const LogRoute = LogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalRoute = LegalRouteImport.update({
@@ -406,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
@@ -468,6 +475,7 @@ export interface FileRoutesByTo {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
@@ -533,6 +541,7 @@ export interface FileRoutesById {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
@@ -598,6 +607,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms.txt'
     | '/log'
     | '/media-kit'
     | '/my-awards'
@@ -660,6 +670,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms.txt'
     | '/log'
     | '/media-kit'
     | '/my-awards'
@@ -724,6 +735,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms.txt'
     | '/log'
     | '/media-kit'
     | '/my-awards'
@@ -789,6 +801,7 @@ export interface RootRouteChildren {
   ContactUsRoute: typeof ContactUsRoute
   CoursesRoute: typeof CoursesRoute
   LegalRoute: typeof LegalRouteWithChildren
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
   MyAwardsRoute: typeof MyAwardsRoute
@@ -917,6 +930,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/log'
       preLoaderRoute: typeof LogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal': {
@@ -1354,6 +1374,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactUsRoute: ContactUsRoute,
   CoursesRoute: CoursesRoute,
   LegalRoute: LegalRouteWithChildren,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,
   MyAwardsRoute: MyAwardsRoute,
