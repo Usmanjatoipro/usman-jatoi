@@ -67,6 +67,7 @@ import { Route as AboutMeVisionValuesRouteImport } from './routes/about-me.visio
 import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
 import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
 import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
+import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
 import { Route as AuthenticatedSeedRouteImport } from './routes/_authenticated/seed'
 import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/intel'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
@@ -369,6 +370,11 @@ const AboutMeMyJourneyRoute = AboutMeMyJourneyRouteImport.update({
   path: '/my-journey',
   getParentRoute: () => AboutMeRoute,
 } as any)
+const AuthenticatedSeoRoute = AuthenticatedSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSeedRoute = AuthenticatedSeedRouteImport.update({
   id: '/seed',
   path: '/seed',
@@ -431,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/import': typeof AuthenticatedImportRoute
   '/intel': typeof AuthenticatedIntelRoute
   '/seed': typeof AuthenticatedSeedRoute
+  '/seo': typeof AuthenticatedSeoRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
@@ -494,6 +501,7 @@ export interface FileRoutesByTo {
   '/import': typeof AuthenticatedImportRoute
   '/intel': typeof AuthenticatedIntelRoute
   '/seed': typeof AuthenticatedSeedRoute
+  '/seo': typeof AuthenticatedSeoRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
@@ -560,6 +568,7 @@ export interface FileRoutesById {
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/_authenticated/intel': typeof AuthenticatedIntelRoute
   '/_authenticated/seed': typeof AuthenticatedSeedRoute
+  '/_authenticated/seo': typeof AuthenticatedSeoRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
@@ -626,6 +635,7 @@ export interface FileRouteTypes {
     | '/import'
     | '/intel'
     | '/seed'
+    | '/seo'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
     | '/about-me/social-media'
@@ -689,6 +699,7 @@ export interface FileRouteTypes {
     | '/import'
     | '/intel'
     | '/seed'
+    | '/seo'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
     | '/about-me/social-media'
@@ -754,6 +765,7 @@ export interface FileRouteTypes {
     | '/_authenticated/import'
     | '/_authenticated/intel'
     | '/_authenticated/seed'
+    | '/_authenticated/seo'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
     | '/about-me/social-media'
@@ -1240,6 +1252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutMeMyJourneyRouteImport
       parentRoute: typeof AboutMeRoute
     }
+    '/_authenticated/seo': {
+      id: '/_authenticated/seo'
+      path: '/seo'
+      fullPath: '/seo'
+      preLoaderRoute: typeof AuthenticatedSeoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/seed': {
       id: '/_authenticated/seed'
       path: '/seed'
@@ -1284,6 +1303,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedImportRoute: typeof AuthenticatedImportRoute
   AuthenticatedIntelRoute: typeof AuthenticatedIntelRoute
   AuthenticatedSeedRoute: typeof AuthenticatedSeedRoute
+  AuthenticatedSeoRoute: typeof AuthenticatedSeoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1292,6 +1312,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedImportRoute: AuthenticatedImportRoute,
   AuthenticatedIntelRoute: AuthenticatedIntelRoute,
   AuthenticatedSeedRoute: AuthenticatedSeedRoute,
+  AuthenticatedSeoRoute: AuthenticatedSeoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
