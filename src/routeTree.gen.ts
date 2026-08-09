@@ -63,6 +63,7 @@ import { Route as LegalPrivacyPolicyRouteImport } from './routes/legal.privacy-p
 import { Route as LegalOurTermsRouteImport } from './routes/legal.our-terms'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthorUsmanJatoiRouteImport } from './routes/author.usman-jatoi'
 import { Route as AboutMeVisionValuesRouteImport } from './routes/about-me.vision-values'
 import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
 import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
@@ -350,6 +351,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AuthorUsmanJatoiRoute = AuthorUsmanJatoiRouteImport.update({
+  id: '/author/usman-jatoi',
+  path: '/author/usman-jatoi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
   id: '/vision-values',
   path: '/vision-values',
@@ -442,6 +448,7 @@ export interface FileRoutesByFullPath {
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/about-me/vision-values': typeof AboutMeVisionValuesRoute
+  '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
@@ -506,6 +513,7 @@ export interface FileRoutesByTo {
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/about-me/vision-values': typeof AboutMeVisionValuesRoute
+  '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
@@ -573,6 +581,7 @@ export interface FileRoutesById {
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/about-me/vision-values': typeof AboutMeVisionValuesRoute
+  '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
@@ -640,6 +649,7 @@ export interface FileRouteTypes {
     | '/about-me/personal-life'
     | '/about-me/social-media'
     | '/about-me/vision-values'
+    | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
     | '/legal/our-terms'
@@ -704,6 +714,7 @@ export interface FileRouteTypes {
     | '/about-me/personal-life'
     | '/about-me/social-media'
     | '/about-me/vision-values'
+    | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
     | '/legal/our-terms'
@@ -770,6 +781,7 @@ export interface FileRouteTypes {
     | '/about-me/personal-life'
     | '/about-me/social-media'
     | '/about-me/vision-values'
+    | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
     | '/legal/our-terms'
@@ -827,6 +839,7 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
+  AuthorUsmanJatoiRoute: typeof AuthorUsmanJatoiRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
@@ -1224,6 +1237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/author/usman-jatoi': {
+      id: '/author/usman-jatoi'
+      path: '/author/usman-jatoi'
+      fullPath: '/author/usman-jatoi'
+      preLoaderRoute: typeof AuthorUsmanJatoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about-me/vision-values': {
       id: '/about-me/vision-values'
       path: '/vision-values'
@@ -1409,6 +1429,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
+  AuthorUsmanJatoiRoute: AuthorUsmanJatoiRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
