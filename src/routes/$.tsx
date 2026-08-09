@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ArrowLeft, Tag, ChevronRight, CheckCircle2, Sparkles, PlayCircle, FolderOpen } from "lucide-react";
 import { loadCategoryArchiveByPath, type CategoryArchive } from "@/lib/wp-category-archive";
 import { PostArticle, type PostArticleTerm } from "@/components/PostArticle";
+import { coverImageUrl } from "@/components/PostCover";
+
 import PageHero from "@/components/PageHero";
 import { getLocalContentByPath } from "@/lib/wp-content-stats.functions";
 import { hydrateContentHtml } from "@/lib/wp-hydrate";
@@ -235,7 +237,9 @@ export const Route = createFileRoute("/$")({
     if (!loaderData) return { meta: [{ title: "Page not found — Usman Jatoi" }, { name: "robots", content: "noindex" }] };
 
     const splat = (params as { _splat?: string })._splat ?? "";
-    const url = `https://usmanjatoi.lovable.app/${splat}`;
+    // Canonical always points at the production property, never the preview host.
+    const url = `https://usmanjatoi.com/${splat}`;
+
     const truncate = (s: string, n: number) => {
       const c = (s || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
       return c.length > n ? c.slice(0, n - 1).trimEnd() + "…" : c;
@@ -282,7 +286,13 @@ export const Route = createFileRoute("/$")({
       post.seo_description || post.excerpt || `${post.title} — Usman Jatoi`,
       158,
     );
-    const image = media?.source_url || media?.storage_url || undefined;
+    // Every page gets a social image: the real featured media when we have it,
+    // otherwise the deterministic auto-generated silk cover for that slug.
+    const image =
+      media?.source_url ||
+      media?.storage_url ||
+      `https://usmanjatoi.com${coverImageUrl(post.slug || splat)}`;
+
 
     const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
     const jsonLdEntries: Array<Record<string, unknown>> = [];
