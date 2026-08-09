@@ -63,7 +63,8 @@ export const Route = createFileRoute("/sitemap/$name.xml")({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const name = (params as Record<string, string>).name ?? (params as Record<string, string>)["name.xml"];
+        const raw = Object.values((params ?? {}) as Record<string, string>).find(Boolean) ?? "";
+        const name = String(raw).replace(/\.xml$/i, "");
 
         if (name === "static") {
           return respond(
