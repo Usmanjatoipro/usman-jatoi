@@ -143,13 +143,48 @@ export const researchTopic = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ query: z.string().min(3).max(400) }).parse(input))
   .handler(async ({ data }) => callYouCom(data.query));
 
-function sentences(text: string) {
+/** Research answers come back as markdown with [[n]] citation markers. */
+function stripMarkdown(text: string) {
   return text
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/\[\[\d+\]\]/g, "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*+]\s+/gm, "")
+    .replace(/^\s*\d+\.\s+/gm, "")
+    .replace(/[*_`>|]/g, "")
     .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Markdown headings/bold lines phrased as questions become FAQ entries. */
+function markdownQuestions(md: string): Array<{ question: string; answer: string }> {
+  const out: Array<{ question: string; answer: string }> = [];
+  const lines = md.split("\n");
+  for (let i = 0; i < lines.length; i += 1) {
+    const raw = lines[i] ?? "";
+    const q = stripMarkdown(raw);
+    if (!q.endsWith("?") || q.length < 15 || q.length > 220) continue;
+    const body: string[] = [];
+    for (let j = i + 1; j < lines.length && body.join(" ").length < 400; j += 1) {
+      const next = lines[j] ?? "";
+      if (/\?\s*$/.test(stripMarkdown(next))) break;
+      const clean = stripMarkdown(next);
+      if (clean) body.push(clean);
+    }
+    if (body.join(" ").length > 40) out.push({ question: q, answer: body.join(" ") });
+  }
+  return out;
+}
+
+function sentences(text: string) {
+  return stripMarkdown(text)
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
-    .filter((s) => s.length > 40);
+    .filter((s) => s.length > 40 && !s.endsWith("?"));
 }
+
 
 function clamp(text: string, max: number) {
   if (text.length <= max) return text;
