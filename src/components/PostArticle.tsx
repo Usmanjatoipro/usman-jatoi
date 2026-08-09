@@ -786,6 +786,13 @@ export function PostArticle({
                     working professionally at{" "}
                     <b className="text-neutral-900">12</b>.
                   </p>
+                  <a
+                    href="/author/usman-jatoi"
+                    className="mt-2 inline-block text-xs font-medium underline decoration-neutral-300 hover:text-neutral-900"
+                  >
+                    About the author — experience, expertise & credentials
+                  </a>
+
                 </div>
               </div>
               <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
