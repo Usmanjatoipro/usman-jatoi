@@ -95,7 +95,7 @@ function readingMinutes(html: string | null | undefined) {
 function formatDate(iso: string | null) {
   if (!iso) return "";
   const d = new Date(iso);
-  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
 }
 
 function CoverFallback({ title, big }: { title: string; big?: boolean }) {

@@ -66,6 +66,7 @@ import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social
 import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
 import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
 import { Route as AuthenticatedSeedRouteImport } from './routes/_authenticated/seed'
+import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/intel'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedCmsRouteImport } from './routes/_authenticated/cms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -361,6 +362,11 @@ const AuthenticatedSeedRoute = AuthenticatedSeedRouteImport.update({
   path: '/seed',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedIntelRoute = AuthenticatedIntelRouteImport.update({
+  id: '/intel',
+  path: '/intel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   id: '/import',
   path: '/import',
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/cms': typeof AuthenticatedCmsRoute
   '/import': typeof AuthenticatedImportRoute
+  '/intel': typeof AuthenticatedIntelRoute
   '/seed': typeof AuthenticatedSeedRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
@@ -471,6 +478,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/cms': typeof AuthenticatedCmsRoute
   '/import': typeof AuthenticatedImportRoute
+  '/intel': typeof AuthenticatedIntelRoute
   '/seed': typeof AuthenticatedSeedRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
@@ -534,6 +542,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/cms': typeof AuthenticatedCmsRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
+  '/_authenticated/intel': typeof AuthenticatedIntelRoute
   '/_authenticated/seed': typeof AuthenticatedSeedRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
@@ -597,6 +606,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cms'
     | '/import'
+    | '/intel'
     | '/seed'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
@@ -657,6 +667,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cms'
     | '/import'
+    | '/intel'
     | '/seed'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
@@ -719,6 +730,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/cms'
     | '/_authenticated/import'
+    | '/_authenticated/intel'
     | '/_authenticated/seed'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
@@ -1195,6 +1207,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSeedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/intel': {
+      id: '/_authenticated/intel'
+      path: '/intel'
+      fullPath: '/intel'
+      preLoaderRoute: typeof AuthenticatedIntelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/import': {
       id: '/_authenticated/import'
       path: '/import'
@@ -1223,6 +1242,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCmsRoute: typeof AuthenticatedCmsRoute
   AuthenticatedImportRoute: typeof AuthenticatedImportRoute
+  AuthenticatedIntelRoute: typeof AuthenticatedIntelRoute
   AuthenticatedSeedRoute: typeof AuthenticatedSeedRoute
 }
 
@@ -1230,6 +1250,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCmsRoute: AuthenticatedCmsRoute,
   AuthenticatedImportRoute: AuthenticatedImportRoute,
+  AuthenticatedIntelRoute: AuthenticatedIntelRoute,
   AuthenticatedSeedRoute: AuthenticatedSeedRoute,
 }
 
@@ -1345,13 +1366,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

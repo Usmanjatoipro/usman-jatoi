@@ -71,6 +71,24 @@ export type Database = {
         }
         Relationships: []
       }
+      content_stats_snapshot: {
+        Row: {
+          generated_at: string
+          id: number
+          payload: Json
+        }
+        Insert: {
+          generated_at?: string
+          id?: number
+          payload?: Json
+        }
+        Update: {
+          generated_at?: string
+          id?: number
+          payload?: Json
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
@@ -107,6 +125,39 @@ export type Database = {
           created_at?: string
           from_path?: string
           to_path?: string
+        }
+        Relationships: []
+      }
+      seo_audit_findings: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          kind: string
+          resolved: boolean
+          severity: string
+          target_kind: string | null
+          target_path: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind: string
+          resolved?: boolean
+          severity?: string
+          target_kind?: string | null
+          target_path: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          resolved?: boolean
+          severity?: string
+          target_kind?: string | null
+          target_path?: string
         }
         Relationships: []
       }
@@ -224,6 +275,63 @@ export type Database = {
           title?: string | null
           updated_at?: string
           width?: number | null
+        }
+        Relationships: []
+      }
+      wp_post_outlines: {
+        Row: {
+          ai_notes: Json
+          best_practices: Json
+          citations: Json
+          created_at: string
+          examples: Json
+          insights: Json
+          narrative: Json
+          quotes: Json
+          risks: Json
+          slug: string
+          source_url: string | null
+          stats: Json
+          takeaways: Json
+          title: string | null
+          tools: Json
+          updated_at: string
+        }
+        Insert: {
+          ai_notes?: Json
+          best_practices?: Json
+          citations?: Json
+          created_at?: string
+          examples?: Json
+          insights?: Json
+          narrative?: Json
+          quotes?: Json
+          risks?: Json
+          slug: string
+          source_url?: string | null
+          stats?: Json
+          takeaways?: Json
+          title?: string | null
+          tools?: Json
+          updated_at?: string
+        }
+        Update: {
+          ai_notes?: Json
+          best_practices?: Json
+          citations?: Json
+          created_at?: string
+          examples?: Json
+          insights?: Json
+          narrative?: Json
+          quotes?: Json
+          risks?: Json
+          slug?: string
+          source_url?: string | null
+          stats?: Json
+          takeaways?: Json
+          title?: string | null
+          tools?: Json
+          updated_at?: string
         }
         Relationships: []
       }
@@ -368,6 +476,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      refresh_content_stats: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"
