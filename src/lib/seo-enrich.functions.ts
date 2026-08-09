@@ -240,7 +240,7 @@ export const applyEnrichment = createServerFn({ method: "POST" })
       .update({
         seo_title: data.seo_title,
         seo_description: data.seo_description,
-        meta,
+        meta: meta as never,
         enriched_at: new Date().toISOString(),
         enrich_source: "you.com",
       })
