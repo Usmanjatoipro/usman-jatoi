@@ -284,7 +284,13 @@ export const Route = createFileRoute("/$")({
       post.seo_description || post.excerpt || `${post.title} — Usman Jatoi`,
       158,
     );
-    const image = media?.source_url || media?.storage_url || undefined;
+    // Every page gets a social image: the real featured media when we have it,
+    // otherwise the deterministic auto-generated silk cover for that slug.
+    const image =
+      media?.source_url ||
+      media?.storage_url ||
+      `https://usmanjatoi.com${coverImageUrl(post.slug || splat)}`;
+
 
     const structured = extractStructured((post.meta ?? null) as Record<string, unknown> | null);
     const jsonLdEntries: Array<Record<string, unknown>> = [];
