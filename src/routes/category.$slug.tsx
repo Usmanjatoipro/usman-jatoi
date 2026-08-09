@@ -165,7 +165,8 @@ function CategoryPage() {
                 <div className="p-5">
                   {post.post_date && (
                     <time className="text-xs uppercase tracking-widest text-neutral-500">
-                      {new Date(post.post_date).toLocaleDateString(undefined, {
+                      {new Date(post.post_date).toLocaleDateString("en-US", {
+                        timeZone: "UTC",
                         year: "numeric",
                         month: "short",
                         day: "numeric",

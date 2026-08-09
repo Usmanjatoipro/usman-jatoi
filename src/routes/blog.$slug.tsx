@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PostArticle, PostArticleTerm } from "@/components/PostArticle";
 import { getLocalPostBySlug } from "@/lib/wp-content-stats.functions";
+import { getPostOutline } from "@/lib/wp-outline.functions";
 import { coverImageUrl } from "@/components/PostCover";
 
 const SITE = "https://usmanjatoi.lovable.app";
@@ -12,9 +13,12 @@ function truncate(s: string, n: number) {
 }
 
 async function loadPostHead(slug: string) {
-  const data = await getLocalPostBySlug({ data: { slug } });
+  const [data, outline] = await Promise.all([
+    getLocalPostBySlug({ data: { slug } }),
+    getPostOutline({ data: { slug } }).catch(() => null),
+  ]);
   if (!data) return null;
-  return { ...data.post, image: data.heroUrl, categories: data.categories, tags: data.tags };
+  return { ...data.post, image: data.heroUrl, categories: data.categories, tags: data.tags, outline };
 }
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -81,6 +85,11 @@ export const Route = createFileRoute("/blog/$slug")({
               mainEntityOfPage: { "@type": "WebPage", "@id": url },
               articleSection: (loaderData.categories || []).map((category: { name: string }) => category.name),
               keywords: (loaderData.tags || []).map((tag: { name: string }) => tag.name).join(", "),
+              citation: (loaderData.outline?.citations || []).slice(0, 10),
+              about: (loaderData.outline?.insights || []).slice(0, 5).map((text: string) => ({
+                "@type": "Thing",
+                name: truncate(text, 90),
+              })),
               inLanguage: "en",
             },
             {
@@ -127,6 +136,7 @@ function PostPage() {
       heroUrl={loaderData.image || null}
       categories={(loaderData.categories || []) as PostArticleTerm[]}
       tags={(loaderData.tags || []) as PostArticleTerm[]}
+      outline={loaderData.outline ?? null}
     />
   );
 }

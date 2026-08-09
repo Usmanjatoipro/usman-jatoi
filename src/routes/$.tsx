@@ -971,7 +971,7 @@ function CategoryArchivePage({ archive }: { archive: CategoryArchive }) {
                 <div className="p-5">
                   {p.post_date && (
                     <time className="text-xs uppercase tracking-widest text-muted-foreground">
-                      {new Date(p.post_date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                      {new Date(p.post_date).toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "short", day: "numeric" })}
                     </time>
                   )}
                   <h3 className="mt-2 text-lg font-semibold leading-snug group-hover:text-primary transition line-clamp-2">

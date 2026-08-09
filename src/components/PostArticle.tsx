@@ -30,6 +30,8 @@ import PageHero from "@/components/PageHero";
 import PostCover from "@/components/PostCover";
 import AdSlot from "@/components/AdSlot";
 import CalEmbed from "@/components/CalEmbed";
+import PostOutlineSections from "@/components/PostOutlineSections";
+import type { PostOutline } from "@/lib/wp-outline.functions";
 import metaBg from "@/assets/Metas_of_my_posts.webp.asset.json";
 import communityBg from "@/assets/Usman_Jatoi.webp.asset.json";
 import authorImg from "@/assets/Usman-Jatoi-Official.webp.asset.json";
@@ -133,6 +135,7 @@ export function PostArticle({
   tags = [],
   categoryArchivePath,
   primaryCategoryChildren = [],
+  outline = null,
 }: {
   post: PostArticleData;
   heroUrl: string | null;
@@ -140,6 +143,7 @@ export function PostArticle({
   tags?: PostArticleTerm[];
   categoryArchivePath?: string | null;
   primaryCategoryChildren?: { title: string; href: string }[];
+  outline?: PostOutline | null;
 }) {
   const [rating, setRating] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -654,6 +658,8 @@ export function PostArticle({
             className="post-body mt-6"
             dangerouslySetInnerHTML={{ __html: enrichedHtml }}
           />
+
+          <PostOutlineSections outline={outline} />
 
 
           {/* Featured-in-article CTA — image beside the copy, not behind it */}
