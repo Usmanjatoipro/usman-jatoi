@@ -250,10 +250,16 @@ export const previewEnrichment = createServerFn({ method: "POST" })
       155,
     );
 
-    const faqs = research.hits.slice(0, 5).map((hit, i) => ({
-      question: hit.title || `${topic} — question ${i + 1}`,
-      answer: clamp(hit.snippet || lines[i + 1] || "", 320),
-    }));
+    const fromAnswer = markdownQuestions(research.answer).slice(0, 6);
+    const faqs = (
+      fromAnswer.length
+        ? fromAnswer.map((f) => ({ question: f.question, answer: clamp(f.answer, 320) }))
+        : research.hits.slice(0, 5).map((hit, i) => ({
+            question: hit.title || `${topic} — question ${i + 1}`,
+            answer: clamp(hit.snippet || lines[i + 1] || "", 320),
+          }))
+    );
+
 
     return {
       path: data.path,
