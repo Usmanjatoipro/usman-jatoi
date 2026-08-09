@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
 const SITE = "https://usmanjatoi.lovable.app";
-const CHUNK = 5000;
+const CHUNK = 2000;
 
 const TYPE_MAP: Record<string, string[]> = {
   pages: ["page"],
