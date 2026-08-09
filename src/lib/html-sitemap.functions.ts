@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-export const HTML_SITEMAP_PAGE_SIZE = 1500;
+export const HTML_SITEMAP_PAGE_SIZE = 1000;
 
 export type SitemapLink = { path: string; title: string };
 
