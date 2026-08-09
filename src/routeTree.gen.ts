@@ -41,6 +41,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expertise.index'
+import { Route as SitemapIndexRouteImport } from './routes/sitemap.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -228,6 +229,11 @@ const IndexRoute = IndexRouteImport.update({
 const SkillsExpertiseIndexRoute = SkillsExpertiseIndexRouteImport.update({
   id: '/skills-expertise/',
   path: '/skills-expertise/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapIndexRoute = SitemapIndexRouteImport.update({
+  id: '/sitemap/',
+  path: '/sitemap/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
@@ -443,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
 }
 export interface FileRoutesByTo {
@@ -504,6 +511,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/my-lifestyle': typeof MyLifestyleIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/sitemap': typeof SitemapIndexRoute
   '/skills-expertise': typeof SkillsExpertiseIndexRoute
 }
 export interface FileRoutesById {
@@ -568,6 +576,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
 }
 export interface FileRouteTypes {
@@ -632,6 +641,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/my-lifestyle/'
     | '/services/'
+    | '/sitemap/'
     | '/skills-expertise/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -693,6 +703,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/my-lifestyle'
     | '/services'
+    | '/sitemap'
     | '/skills-expertise'
   id:
     | '__root__'
@@ -756,6 +767,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/my-lifestyle/'
     | '/services/'
+    | '/sitemap/'
     | '/skills-expertise/'
   fileRoutesById: FileRoutesById
 }
@@ -803,6 +815,7 @@ export interface RootRouteChildren {
   SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  SitemapIndexRoute: typeof SitemapIndexRoute
   SkillsExpertiseIndexRoute: typeof SkillsExpertiseIndexRoute
 }
 
@@ -1030,6 +1043,13 @@ declare module '@tanstack/react-router' {
       path: '/skills-expertise'
       fullPath: '/skills-expertise/'
       preLoaderRoute: typeof SkillsExpertiseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap/': {
+      id: '/sitemap/'
+      path: '/sitemap'
+      fullPath: '/sitemap/'
+      preLoaderRoute: typeof SitemapIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/': {
@@ -1361,6 +1381,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  SitemapIndexRoute: SitemapIndexRoute,
   SkillsExpertiseIndexRoute: SkillsExpertiseIndexRoute,
 }
 export const routeTree = rootRouteImport
