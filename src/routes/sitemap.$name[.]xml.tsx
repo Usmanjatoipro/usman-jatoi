@@ -59,7 +59,7 @@ function wrap(urls: Array<{ loc: string; lastmod?: string; priority?: string }>)
   );
 }
 
-export const Route = createFileRoute("/sitemap-$name.xml")({
+export const Route = createFileRoute("/sitemap/$name.xml")({
   server: {
     handlers: {
       GET: async ({ params }) => {

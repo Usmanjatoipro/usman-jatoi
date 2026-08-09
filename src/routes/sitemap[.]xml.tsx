@@ -20,7 +20,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           process.env.SUPABASE_PUBLISHABLE_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
         const supa = createClient(url!, key!, { auth: { persistSession: false } });
 
-        const children: string[] = [`${SITE}/sitemap-static.xml`];
+        const children: string[] = [`${SITE}/sitemap/static.xml`];
 
         for (const g of GROUPS) {
           const { count } = await supa
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           if (total === 0) continue;
           const pages = Math.max(1, Math.ceil(total / CHUNK));
           for (let i = 1; i <= pages; i++) {
-            children.push(`${SITE}/sitemap-${g.key}-${i}.xml`);
+            children.push(`${SITE}/sitemap/${g.key}-${i}.xml`);
           }
         }
 
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           .eq("taxonomy", "category");
         const catPages = Math.ceil((catCount ?? 0) / CHUNK);
         for (let i = 1; i <= catPages; i++) {
-          children.push(`${SITE}/sitemap-categories-${i}.xml`);
+          children.push(`${SITE}/sitemap/categories-${i}.xml`);
         }
 
         const xml =
