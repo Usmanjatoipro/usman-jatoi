@@ -63,10 +63,12 @@ import { Route as LegalPrivacyPolicyRouteImport } from './routes/legal.privacy-p
 import { Route as LegalOurTermsRouteImport } from './routes/legal.our-terms'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthorUsmanJatoiRouteImport } from './routes/author.usman-jatoi'
 import { Route as AboutMeVisionValuesRouteImport } from './routes/about-me.vision-values'
 import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
 import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
 import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
+import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
 import { Route as AuthenticatedSeedRouteImport } from './routes/_authenticated/seed'
 import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/intel'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
@@ -349,6 +351,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AuthorUsmanJatoiRoute = AuthorUsmanJatoiRouteImport.update({
+  id: '/author/usman-jatoi',
+  path: '/author/usman-jatoi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
   id: '/vision-values',
   path: '/vision-values',
@@ -368,6 +375,11 @@ const AboutMeMyJourneyRoute = AboutMeMyJourneyRouteImport.update({
   id: '/my-journey',
   path: '/my-journey',
   getParentRoute: () => AboutMeRoute,
+} as any)
+const AuthenticatedSeoRoute = AuthenticatedSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSeedRoute = AuthenticatedSeedRouteImport.update({
   id: '/seed',
@@ -431,10 +443,12 @@ export interface FileRoutesByFullPath {
   '/import': typeof AuthenticatedImportRoute
   '/intel': typeof AuthenticatedIntelRoute
   '/seed': typeof AuthenticatedSeedRoute
+  '/seo': typeof AuthenticatedSeoRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/about-me/vision-values': typeof AboutMeVisionValuesRoute
+  '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
@@ -494,10 +508,12 @@ export interface FileRoutesByTo {
   '/import': typeof AuthenticatedImportRoute
   '/intel': typeof AuthenticatedIntelRoute
   '/seed': typeof AuthenticatedSeedRoute
+  '/seo': typeof AuthenticatedSeoRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/about-me/vision-values': typeof AboutMeVisionValuesRoute
+  '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
@@ -560,10 +576,12 @@ export interface FileRoutesById {
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/_authenticated/intel': typeof AuthenticatedIntelRoute
   '/_authenticated/seed': typeof AuthenticatedSeedRoute
+  '/_authenticated/seo': typeof AuthenticatedSeoRoute
   '/about-me/my-journey': typeof AboutMeMyJourneyRoute
   '/about-me/personal-life': typeof AboutMePersonalLifeRoute
   '/about-me/social-media': typeof AboutMeSocialMediaRoute
   '/about-me/vision-values': typeof AboutMeVisionValuesRoute
+  '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
@@ -626,10 +644,12 @@ export interface FileRouteTypes {
     | '/import'
     | '/intel'
     | '/seed'
+    | '/seo'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
     | '/about-me/social-media'
     | '/about-me/vision-values'
+    | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
     | '/legal/our-terms'
@@ -689,10 +709,12 @@ export interface FileRouteTypes {
     | '/import'
     | '/intel'
     | '/seed'
+    | '/seo'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
     | '/about-me/social-media'
     | '/about-me/vision-values'
+    | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
     | '/legal/our-terms'
@@ -754,10 +776,12 @@ export interface FileRouteTypes {
     | '/_authenticated/import'
     | '/_authenticated/intel'
     | '/_authenticated/seed'
+    | '/_authenticated/seo'
     | '/about-me/my-journey'
     | '/about-me/personal-life'
     | '/about-me/social-media'
     | '/about-me/vision-values'
+    | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
     | '/legal/our-terms'
@@ -815,6 +839,7 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
+  AuthorUsmanJatoiRoute: typeof AuthorUsmanJatoiRoute
   CategorySlugRoute: typeof CategorySlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
@@ -1212,6 +1237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/author/usman-jatoi': {
+      id: '/author/usman-jatoi'
+      path: '/author/usman-jatoi'
+      fullPath: '/author/usman-jatoi'
+      preLoaderRoute: typeof AuthorUsmanJatoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about-me/vision-values': {
       id: '/about-me/vision-values'
       path: '/vision-values'
@@ -1239,6 +1271,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about-me/my-journey'
       preLoaderRoute: typeof AboutMeMyJourneyRouteImport
       parentRoute: typeof AboutMeRoute
+    }
+    '/_authenticated/seo': {
+      id: '/_authenticated/seo'
+      path: '/seo'
+      fullPath: '/seo'
+      preLoaderRoute: typeof AuthenticatedSeoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/seed': {
       id: '/_authenticated/seed'
@@ -1284,6 +1323,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedImportRoute: typeof AuthenticatedImportRoute
   AuthenticatedIntelRoute: typeof AuthenticatedIntelRoute
   AuthenticatedSeedRoute: typeof AuthenticatedSeedRoute
+  AuthenticatedSeoRoute: typeof AuthenticatedSeoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1292,6 +1332,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedImportRoute: AuthenticatedImportRoute,
   AuthenticatedIntelRoute: AuthenticatedIntelRoute,
   AuthenticatedSeedRoute: AuthenticatedSeedRoute,
+  AuthenticatedSeoRoute: AuthenticatedSeoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -1388,6 +1429,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
+  AuthorUsmanJatoiRoute: AuthorUsmanJatoiRoute,
   CategorySlugRoute: CategorySlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,

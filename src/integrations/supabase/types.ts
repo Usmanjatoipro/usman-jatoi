@@ -161,6 +161,24 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_audit_snapshot: {
+        Row: {
+          generated_at: string
+          id: number
+          payload: Json
+        }
+        Insert: {
+          generated_at?: string
+          id?: number
+          payload?: Json
+        }
+        Update: {
+          generated_at?: string
+          id?: number
+          payload?: Json
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -357,7 +375,10 @@ export type Database = {
         Row: {
           author_id: number | null
           content: string | null
+          content_len: number | null
           created_at: string
+          enrich_source: string | null
+          enriched_at: string | null
           excerpt: string | null
           featured_media_id: number | null
           id: number
@@ -381,7 +402,10 @@ export type Database = {
         Insert: {
           author_id?: number | null
           content?: string | null
+          content_len?: number | null
           created_at?: string
+          enrich_source?: string | null
+          enriched_at?: string | null
           excerpt?: string | null
           featured_media_id?: number | null
           id: number
@@ -405,7 +429,10 @@ export type Database = {
         Update: {
           author_id?: number | null
           content?: string | null
+          content_len?: number | null
           created_at?: string
+          enrich_source?: string | null
+          enriched_at?: string | null
           excerpt?: string | null
           featured_media_id?: number | null
           id?: number
@@ -477,6 +504,7 @@ export type Database = {
         Returns: boolean
       }
       refresh_content_stats: { Args: never; Returns: Json }
+      run_seo_audit: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"
