@@ -235,7 +235,9 @@ export const Route = createFileRoute("/$")({
     if (!loaderData) return { meta: [{ title: "Page not found — Usman Jatoi" }, { name: "robots", content: "noindex" }] };
 
     const splat = (params as { _splat?: string })._splat ?? "";
-    const url = `https://usmanjatoi.lovable.app/${splat}`;
+    // Canonical always points at the production property, never the preview host.
+    const url = `https://usmanjatoi.com/${splat}`;
+
     const truncate = (s: string, n: number) => {
       const c = (s || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
       return c.length > n ? c.slice(0, n - 1).trimEnd() + "…" : c;
