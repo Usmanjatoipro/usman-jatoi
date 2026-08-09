@@ -71,7 +71,6 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
               STATIC_URLS.map((u) => ({
                 loc: `${SITE}${u.path}`,
                 priority: u.priority,
-                lastmod: new Date().toISOString(),
               })),
             ),
           );
@@ -81,8 +80,7 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
         if (!m) return respond(wrap([]), 404);
         const group = m[1];
         const page = parseInt(m[2], 10);
-        const types = TYPE_MAP[group];
-        if (!types || page < 1) return respond(wrap([]), 404);
+        if (page < 1) return respond(wrap([]), 404);
 
         const url = process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL;
         const key =
@@ -91,6 +89,26 @@ export const Route = createFileRoute("/sitemap-$name.xml")({
 
         const from = (page - 1) * CHUNK;
         const to = from + CHUNK - 1;
+
+        if (group === "categories") {
+          const { data, error } = await supa
+            .from("wp_terms")
+            .select("slug")
+            .eq("taxonomy", "category")
+            .order("id", { ascending: true })
+            .range(from, to);
+          if (error || !data) return respond(wrap([]));
+          return respond(
+            wrap(
+              (data as Array<{ slug: string }>)
+                .filter((r) => r.slug)
+                .map((r) => ({ loc: `${SITE}/category/${r.slug}`, priority: "0.5" })),
+            ),
+          );
+        }
+
+        const types = TYPE_MAP[group];
+        if (!types) return respond(wrap([]), 404);
 
         const { data, error } = await supa
           .from("wp_posts")
