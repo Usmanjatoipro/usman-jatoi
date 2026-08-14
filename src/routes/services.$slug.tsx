@@ -59,6 +59,8 @@ export const Route = createFileRoute("/services/$slug")({
       158,
     );
     const pageTitle = truncate(`${rawTitle} — Usman Jatoi`, 60);
+    const socialImage = `${SITE}/site-assets/Businessman-with-Rainbow-Lightbulb-Head-e1752653622894-745x1024.jpg`;
+    const faqs = service.structured?.faqs?.faqs?.filter((item) => item.question && item.answer);
     return {
       meta: [
         { title: pageTitle },
@@ -67,7 +69,9 @@ export const Route = createFileRoute("/services/$slug")({
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { property: "og:url", content: url },
+        { property: "og:image", content: socialImage },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: socialImage },
       ],
       links: [{ rel: "canonical", href: url }],
       scripts: [
@@ -99,6 +103,22 @@ export const Route = createFileRoute("/services/$slug")({
                   { "@type": "ListItem", position: 3, name: service.title, item: url },
                 ],
               },
+              ...(faqs?.length
+                ? [
+                    {
+                      "@type": "FAQPage",
+                      "@id": `${url}#faqs`,
+                      mainEntity: faqs.map((faq) => ({
+                        "@type": "Question",
+                        name: faq.question,
+                        acceptedAnswer: {
+                          "@type": "Answer",
+                          text: faq.answer,
+                        },
+                      })),
+                    },
+                  ]
+                : []),
             ],
           }),
         },

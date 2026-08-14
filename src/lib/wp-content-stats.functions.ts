@@ -685,9 +685,9 @@ function cleanImportedHtml(value: string) {
     .replace(/\son\w+=("[^"]*"|'[^']*')/gi, "");
 }
 
-function serviceMetaToHtml(meta: LocalPost["meta"]) {
+function serviceMetaSections(meta: LocalPost["meta"]) {
   const record = meta && !Array.isArray(meta) && typeof meta === "object" ? meta : {};
-  const sections: string[] = [];
+  const sections: Record<string, string> = {};
   for (const key of SERVICE_BODY_META) {
     const raw = record[key];
     const value = Array.isArray(raw)
@@ -696,21 +696,32 @@ function serviceMetaToHtml(meta: LocalPost["meta"]) {
     if (typeof value !== "string" || !value.trim()) continue;
     const parsed = parseJson(value);
     const body = parsed ? jsonToHtml(parsed, key) : cleanImportedHtml(value);
-    if (stripTags(body))
-      sections.push(
-        `<section class="migrated-field service-field service-field-${escapeHtml(key.replace(/^_+/, ""))}" data-field="${escapeHtml(key)}">${body}</section>`,
-      );
+    if (stripTags(body)) sections[key] = body;
   }
   const video = metaString(record, "promovideo");
   const youtubeId = video.match(/(?:youtu\.be\/|[?&]v=)([a-zA-Z0-9_-]{6,})/)?.[1];
   if (youtubeId) {
-    sections.splice(
-      2,
-      0,
-      `<section class="migrated-field service-field service-video"><div class="service-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(youtubeId)}" title="Service video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></section>`,
-    );
+    sections.promovideo = `<div class="service-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(youtubeId)}" title="Service video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
   }
-  return sections.join("");
+  return sections;
+}
+
+function serviceMetaToHtml(meta: LocalPost["meta"]) {
+  const sections = serviceMetaSections(meta);
+  const orderedKeys = [
+    "our_services",
+    "aboutexpertise_section",
+    "promovideo",
+    ...SERVICE_BODY_META,
+  ];
+  const seen = new Set<string>();
+  return orderedKeys
+    .filter((key) => sections[key] && !seen.has(key) && seen.add(key))
+    .map(
+      (key) =>
+        `<section class="migrated-field service-field service-field-${escapeHtml(key.replace(/^_+/, ""))}" data-field="${escapeHtml(key)}">${sections[key]}</section>`,
+    )
+    .join("");
 }
 
 function hydratedPost(post: LocalPost): LocalPost {
@@ -865,6 +876,9 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
     const hydrated = hydratedPost(page);
     const hero = parseJson(metaString(page.meta, "hero_section")) as any;
     const about = parseJson(metaString(page.meta, "aboutexpertise_section")) as any;
+    const services = parseJson(metaString(page.meta, "our_services")) as any;
+    const process = parseJson(metaString(page.meta, "process")) as any;
+    const faqs = parseJson(metaString(page.meta, "faqs")) as any;
     const children = pages
       .filter(
         (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
@@ -891,6 +905,15 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
             ? about.bullets.map((item: any) => itemTitle(item, "Benefit"))
             : []),
         ].filter(Boolean),
+        structured: {
+          hero,
+          about,
+          services,
+          process,
+          faqs,
+          promoVideo: metaString(page.meta, "promovideo") || null,
+        },
+        sections: serviceMetaSections(page.meta),
       },
       children,
       childCount: pages.filter(

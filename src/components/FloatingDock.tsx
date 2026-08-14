@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import avatar from "@/assets/favicon-192.webp.asset.json";
 
 const items = [
   { label: "Services", to: "/services" },
@@ -20,7 +19,7 @@ export default function FloatingDock() {
       <div className="flex items-center gap-2 rounded-full border border-white/12 bg-neutral-950/90 p-2 pl-2.5 shadow-[0_18px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl">
         <Link to="/" aria-label="Usman Jatoi — home" className="shrink-0">
           <img
-            src={avatar.url}
+            src="/site-assets/cropped-Imagee-Character-2-192x192.webp"
             alt="Usman Jatoi"
             width={40}
             height={40}
@@ -32,7 +31,7 @@ export default function FloatingDock() {
         {items.map((it) => (
           <Link
             key={it.to}
-            to={it.to as any}
+            to={it.to}
             className="rounded-full border border-white/15 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/85 transition hover:border-white/40 hover:text-white md:px-4 md:text-xs"
           >
             {it.label}

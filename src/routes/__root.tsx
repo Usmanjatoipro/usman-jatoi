@@ -14,9 +14,6 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "../components/SiteChrome";
 import FloatingDock from "../components/FloatingDock";
-import favicon32 from "../assets/favicon-32.webp.asset.json";
-import favicon192 from "../assets/favicon-192.webp.asset.json";
-import faviconApple from "../assets/apple-touch-icon.webp.asset.json";
 
 function NotFoundComponent() {
   return (
@@ -93,12 +90,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Usman Jatoi" },
       {
         property: "og:description",
-        content: "Official site of Usman Jatoi — educator, entrepreneur and strategist. Courses, blog posts, services and resources.",
+        content:
+          "Official site of Usman Jatoi — educator, entrepreneur and strategist. Courses, blog posts, services and resources.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Usman Jatoi" },
-      { name: "twitter:description", content: "Official site of Usman Jatoi — educator, entrepreneur and strategist. Courses, blog posts, services and resources." },
+      {
+        name: "twitter:description",
+        content:
+          "Official site of Usman Jatoi — educator, entrepreneur and strategist. Courses, blog posts, services and resources.",
+      },
     ],
     scripts: [
       {
@@ -108,10 +110,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/webp", sizes: "32x32", href: favicon32.url },
-      { rel: "icon", type: "image/webp", sizes: "192x192", href: favicon192.url },
-      { rel: "apple-touch-icon", sizes: "180x180", href: faviconApple.url },
-      { rel: "shortcut icon", href: favicon32.url },
+      {
+        rel: "icon",
+        type: "image/webp",
+        sizes: "32x32",
+        href: "/site-assets/cropped-Imagee-Character-2-32x32.webp",
+      },
+      {
+        rel: "icon",
+        type: "image/webp",
+        sizes: "192x192",
+        href: "/site-assets/cropped-Imagee-Character-2-192x192.webp",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/site-assets/cropped-Imagee-Character-2-180x180.webp",
+      },
+      { rel: "shortcut icon", href: "/site-assets/cropped-Imagee-Character-2-32x32.webp" },
     ],
   }),
   shellComponent: RootShell,
@@ -138,9 +154,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const hideChrome =
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/import") ||
-    pathname.startsWith("/auth");
+    pathname.startsWith("/admin") || pathname.startsWith("/import") || pathname.startsWith("/auth");
 
   // Floating pill dock on the top pillar pages only.
   const dockPrefixes = [

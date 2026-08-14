@@ -1,6 +1,5 @@
 import silkDark from "@/assets/silk-dark.jpg.asset.json";
 import silkLight from "@/assets/silk-light.jpg.asset.json";
-import favicon from "@/assets/favicon-192.webp.asset.json";
 
 function hash(seed: string) {
   let h = 0;
@@ -59,7 +58,7 @@ export default function ServiceCover({
         <span className="mt-3 block h-1 w-14 rounded-full bg-[#ff6a00]" />
       </div>
       <img
-        src={favicon.url}
+        src="/site-assets/cropped-Imagee-Character-2-192x192.webp"
         alt=""
         aria-hidden
         width={32}

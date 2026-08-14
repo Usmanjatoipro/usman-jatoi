@@ -1,6 +1,5 @@
 import silkDark from "@/assets/silk-dark.jpg.asset.json";
 import silkLight from "@/assets/silk-light.jpg.asset.json";
-import favicon from "@/assets/favicon-192.webp.asset.json";
 
 /** Stable hash so the same post always renders the same variant. */
 export function coverVariant(seed: string): "dark" | "light" {
@@ -78,7 +77,7 @@ export default function PostCover({
           </div>
         )}
         <img
-          src={favicon.url}
+          src="/site-assets/cropped-Imagee-Character-2-192x192.webp"
           alt=""
           aria-hidden
           width={44}
