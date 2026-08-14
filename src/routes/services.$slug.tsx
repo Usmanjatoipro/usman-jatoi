@@ -2,6 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import ServiceArticle, {
   type ServiceArticleData,
   type ServiceChild,
+  type ServiceRelatedPost,
+
 } from "@/components/ServiceArticle";
 import servicesContent from "@/data/services-content.json";
 import { getLocalServiceBySlug } from "@/lib/wp-content-stats.functions";
@@ -146,11 +148,14 @@ function ServicePage() {
   const local = Route.useLoaderData();
   const service = (local?.service || fallbackServices[slug]) as ServiceArticleData;
   const children = (local?.children || []) as ServiceChild[];
+  const related = (local?.related || []) as ServiceRelatedPost[];
   return (
     <ServiceArticle
       service={{ ...service, slug }}
       children={children}
       childCount={local?.childCount || children.length}
+      related={related}
     />
   );
+
 }
