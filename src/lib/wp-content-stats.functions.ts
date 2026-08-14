@@ -964,13 +964,24 @@ async function serviceTreeFromDb(slug: string) {
   const { data: rows } = await sb
     .from("wp_posts")
     .select(
-      "id, post_type, status, slug, title, excerpt, content, path, post_date, seo_title, seo_description, fifu_image_url, meta",
+      "id, post_type, status, slug, title, excerpt, content, path, post_date, seo_title, seo_description, featured_media_id, meta",
     )
     .or(`path.eq.${base},path.eq.${base}/`)
     .eq("status", "publish")
     .limit(1);
-  const page = (rows || [])[0] as unknown as LocalPost | undefined;
-  if (!page) return null;
+  const row = (rows || [])[0] as unknown as (LocalPost & { featured_media_id?: number }) | undefined;
+  if (!row) return null;
+  let heroUrl = metaImageUrl(row.meta);
+  if (!heroUrl && row.featured_media_id) {
+    const { data: media } = await sb
+      .from("wp_media")
+      .select("storage_url, source_url")
+      .eq("id", row.featured_media_id)
+      .maybeSingle();
+    heroUrl = media?.storage_url || media?.source_url || null;
+  }
+  const page = { ...row, fifu_image_url: heroUrl } as LocalPost;
+
 
   const grab = async (pattern: string, limit: number) => {
     const { data } = await sb
@@ -1007,42 +1018,46 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
     let locations: ServiceLink[] = [];
     let childCount = 0;
 
-    try {
-      const index = await getWpDataIndex();
-      const serviceLine = index.services.find((service) => service.slug === data.slug);
-      const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
-      const found = pages.find(
-        (item) => item.status === "publish" && normalizePath(item.path) === path,
-      );
-      if (found) {
-        page = found;
-        const kids = pages.filter(
-          (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
-        );
-        childCount = kids.length;
-        children = kids.map((item) => toLink(item));
-        industries = kids
-          .filter((item) => normalizePath(item.path).startsWith(`${path}/industries/`))
-          .slice(0, 120)
-          .map((item) => toLink(item));
-        locations = kids
-          .filter((item) => normalizePath(item.path).startsWith(`${path}/location/`))
-          .slice(0, 120)
-          .map((item) => toLink(item));
-      }
-    } catch {
-      page = undefined;
-    }
-
-    if (!page) {
-      const tree = await serviceTreeFromDb(data.slug).catch(() => null);
-      if (!tree) return null;
+    const tree = await serviceTreeFromDb(data.slug).catch(() => null);
+    if (tree) {
       page = tree.page;
       children = tree.children;
       industries = tree.industries;
       locations = tree.locations;
       childCount = tree.childCount;
     }
+
+    if (!page) {
+      try {
+        const index = await getWpDataIndex();
+        const serviceLine = index.services.find((service) => service.slug === data.slug);
+        const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
+        const found = pages.find(
+          (item) => item.status === "publish" && normalizePath(item.path) === path,
+        );
+        if (found) {
+          page = found;
+          const kids = pages.filter(
+            (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
+          );
+          childCount = kids.length;
+          children = kids.map((item) => toLink(item));
+          industries = kids
+            .filter((item) => normalizePath(item.path).startsWith(`${path}/industries/`))
+            .slice(0, 120)
+            .map((item) => toLink(item));
+          locations = kids
+            .filter((item) => normalizePath(item.path).startsWith(`${path}/location/`))
+            .slice(0, 120)
+            .map((item) => toLink(item));
+        }
+      } catch {
+        page = undefined;
+      }
+    }
+
+    if (!page) return null;
+
 
     const hydrated = hydratedPost(page);
     const hero = structuredServiceMeta(page.meta, "hero_section") as any;
