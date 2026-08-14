@@ -34,9 +34,14 @@ function Row({
             href={`/services/${slug}/${e.country.toLowerCase().replace(/\s+/g, "-")}/`}
             className="flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white px-5 py-4 transition hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-lg"
           >
-            <span className="text-3xl leading-none" aria-hidden>
-              {e.flag}
-            </span>
+            <img
+              src={`/site-assets/${e.code}.svg`}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="h-7 w-10 flex-none rounded-sm object-cover shadow-sm"
+            />
+
             <span>
               <span className="block font-bold text-neutral-950">{e.country}</span>
               <span className="block text-sm text-neutral-500">{e.note}</span>

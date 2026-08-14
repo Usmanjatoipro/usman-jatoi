@@ -155,7 +155,10 @@ function ServicePage() {
       children={children}
       childCount={local?.childCount || children.length}
       related={related}
+      industries={(local?.industries || []) as ServiceChild[]}
+      locations={(local?.locations || []) as ServiceChild[]}
     />
+
   );
 
 }
