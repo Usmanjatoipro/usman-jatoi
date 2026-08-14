@@ -19,7 +19,7 @@ export const Route = createFileRoute("/legal/privacy-policy")({
         { label: "Privacy Policy" },
       ]}
     >
-      <div className="space-y-6 text-white/70 leading-relaxed">
+      <div className="space-y-6 leading-relaxed text-neutral-700">
         <p>
           We collect only the data required to run this site and its services — analytics,
           contact form submissions and account data if you sign in.

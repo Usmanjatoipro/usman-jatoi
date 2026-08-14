@@ -19,7 +19,7 @@ export const Route = createFileRoute("/legal/our-terms")({
         { label: "Terms of Service" },
       ]}
     >
-      <div className="space-y-6 text-white/70 leading-relaxed">
+      <div className="space-y-6 leading-relaxed text-neutral-700">
         <p>
           These terms govern your use of this website, its content and any services offered. By
           continuing to browse or transact, you accept them.
