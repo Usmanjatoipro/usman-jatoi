@@ -964,13 +964,24 @@ async function serviceTreeFromDb(slug: string) {
   const { data: rows } = await sb
     .from("wp_posts")
     .select(
-      "id, post_type, status, slug, title, excerpt, content, path, post_date, seo_title, seo_description, fifu_image_url, meta",
+      "id, post_type, status, slug, title, excerpt, content, path, post_date, seo_title, seo_description, featured_media_id, meta",
     )
     .or(`path.eq.${base},path.eq.${base}/`)
     .eq("status", "publish")
     .limit(1);
-  const page = (rows || [])[0] as unknown as LocalPost | undefined;
-  if (!page) return null;
+  const row = (rows || [])[0] as unknown as (LocalPost & { featured_media_id?: number }) | undefined;
+  if (!row) return null;
+  let heroUrl = metaImageUrl(row.meta);
+  if (!heroUrl && row.featured_media_id) {
+    const { data: media } = await sb
+      .from("wp_media")
+      .select("storage_url, source_url")
+      .eq("id", row.featured_media_id)
+      .maybeSingle();
+    heroUrl = media?.storage_url || media?.source_url || null;
+  }
+  const page = { ...row, fifu_image_url: heroUrl } as LocalPost;
+
 
   const grab = async (pattern: string, limit: number) => {
     const { data } = await sb
