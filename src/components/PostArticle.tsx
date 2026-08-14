@@ -107,6 +107,12 @@ function slugify(s: string) {
 type Heading = { id: string; text: string; level: 2 | 3 };
 type SourceLink = { url: string; host: string; label: string };
 
+const RELATED_BENTO_BACKGROUNDS = [
+  { image: "/site-assets/related-bg-silk.webp", tone: "dark" },
+  { image: "/site-assets/related-bg-silk.webp", tone: "dark" },
+  { image: "/site-assets/related-bg-defi.jpg", tone: "light" },
+] as const;
+
 /* Extract external outbound links as "sources". */
 function extractSources(html: string): SourceLink[] {
   if (!html) return [];
@@ -1153,53 +1159,64 @@ export function PostArticle({
                 to={related[0].href as any}
                 className="relative rounded-2xl overflow-hidden aspect-[16/10] group"
                 style={{
-                  backgroundImage: related[0].image
-                    ? `linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%), url(${related[0].image})`
-                    : `linear-gradient(135deg, #f5e6f5, #dae7f5)`,
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.88) 100%), url(${RELATED_BENTO_BACKGROUNDS[0].image})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-neutral-900">
-                  <div className="bg-white/85 backdrop-blur rounded-xl p-4 md:p-5">
-                    <h3 className="text-lg md:text-xl font-semibold leading-snug group-hover:underline">
-                      {related[0].title}
-                    </h3>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white md:p-8">
+                  <div className="text-[11px] tracking-widest uppercase text-white/70">
+                    {related[0].date ? formatDate(related[0].date) : ""}
                   </div>
+                  <h3 className="mt-3 text-xl md:text-3xl font-semibold leading-snug group-hover:underline">
+                    {related[0].title}
+                  </h3>
                 </div>
               </Link>
               <div className="grid grid-rows-2 gap-4">
-                {related.slice(1, 3).map((r) => (
-                  <Link
-                    key={r.href}
-                    to={r.href as any}
-                    className="relative rounded-2xl overflow-hidden group"
-                    style={{
-                      backgroundImage: r.image
-                        ? `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%), url(${r.image})`
-                        : `linear-gradient(135deg, #0a0a0a, #262626)`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      minHeight: 180,
-                    }}
-                  >
-                    <div className="absolute inset-0 p-5 flex flex-col justify-between text-white">
-                      <div className="text-[11px] tracking-widest uppercase text-white/70">
-                        {r.date
-                          ? new Date(r.date).toLocaleDateString("en-US", {
-                              timeZone: "UTC",
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })
-                          : ""}
+                {related.slice(1, 3).map((r, index) => {
+                  const bg = RELATED_BENTO_BACKGROUNDS[index + 1];
+                  const isLight = bg.tone === "light";
+                  return (
+                    <Link
+                      key={r.href}
+                      to={r.href as any}
+                      className={`relative rounded-2xl overflow-hidden group ${
+                        isLight ? "bg-white text-neutral-950" : "bg-neutral-950 text-white"
+                      }`}
+                      style={{
+                        backgroundImage: `${
+                          isLight
+                            ? "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.94) 100%)"
+                            : "linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.88) 100%)"
+                        }, url(${bg.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        minHeight: 180,
+                      }}
+                    >
+                      <div className="absolute inset-0 p-5 flex flex-col justify-between">
+                        <div
+                          className={`text-[11px] tracking-widest uppercase ${
+                            isLight ? "text-neutral-600" : "text-white/70"
+                          }`}
+                        >
+                          {r.date
+                            ? new Date(r.date).toLocaleDateString("en-US", {
+                                timeZone: "UTC",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })
+                            : ""}
+                        </div>
+                        <div className="text-base md:text-lg font-semibold leading-snug group-hover:underline">
+                          {r.title}
+                        </div>
                       </div>
-                      <div className="text-base md:text-lg font-semibold leading-snug group-hover:underline">
-                        {r.title}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </section>

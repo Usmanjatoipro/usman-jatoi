@@ -32,26 +32,26 @@ function escapeHtml(value: string | null | undefined) {
 
 const LABELS: Record<string, string> = {
   aboutexpertise_section: "About & Expertise",
-  BestPracticesTips: "Best Practices & Tips",
-  CommonMistakesMyths: "Common Mistakes & Myths",
-  GlossaryRelatedTerms: "Glossary & Related Terms",
-  "ProcessStep-by-Step": "Process Step by Step",
-  WhatisX: "What Is It?",
-  beginners_tips: "Beginner Tips",
-  advanced_tips: "Advanced Tips",
-  comparison_tables: "Comparison",
-  comparison: "Comparison",
+  BestPracticesTips: "",
+  CommonMistakesMyths: "",
+  GlossaryRelatedTerms: "Glossary of Related Terms",
+  "ProcessStep-by-Step": "",
+  WhatisX: "",
+  beginners_tips: "",
+  advanced_tips: "",
+  comparison_tables: "Comparison Table",
+  comparison: "Comparison Table",
   hero_section: "Overview",
   our_services: "Our Services",
   pros_cons: "Pros & Cons",
-  why_important: "Why It Matters",
-  process: "Process Step by Step",
+  why_important: "",
+  process: "",
   faqs: "Frequently Asked Questions",
   takeaways: "Key Takeaways",
   case_studies: "Case Studies",
   checklist: "Checklist",
   timeline: "Timeline",
-  examples: "Examples",
+  examples: "",
   intro: "",
 };
 
@@ -76,37 +76,67 @@ function parseJson(value: string): any {
 
 function itemTitle(item: any, fallback: string) {
   return stripTags(
-    item?.title || item?.heading || item?.name || item?.topic || item?.term || item?.question || fallback,
+    item?.title ||
+      item?.heading ||
+      item?.name ||
+      item?.topic ||
+      item?.term ||
+      item?.question ||
+      fallback,
   );
 }
 
 function itemDescription(item: any) {
   return stripTags(
-    item?.description || item?.subtitle || item?.answer || item?.definition || item?.content || item?.text || "",
+    item?.description ||
+      item?.subtitle ||
+      item?.answer ||
+      item?.definition ||
+      item?.content ||
+      item?.text ||
+      "",
   );
 }
 
 function cellHtml(value: any): string {
   if (Array.isArray(value))
     return `<ul class="cell-list">${value.map((v) => `<li>${escapeHtml(stripTags(String(v)))}</li>`).join("")}</ul>`;
+  if (value && typeof value === "object")
+    return escapeHtml(itemDescription(value) || itemTitle(value, ""));
   return escapeHtml(stripTags(String(value ?? "")));
 }
 
+function normalizeKey(value: string) {
+  return stripTags(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 function keyCandidates(column: string) {
-  const base = stripTags(column).toLowerCase().trim();
-  return [
-    base,
-    base.replace(/\s+/g, "-"),
-    base.replace(/\s+/g, "_"),
-    base.replace(/\s+/g, ""),
-    base.replace(/\s+/g, "-").replace(/s$/, ""),
-  ];
+  const base = normalizeKey(column);
+  const compact = base.replace(/_/g, "");
+  const aliases: Record<string, string[]> = {
+    topic: ["topic", "title", "name", "approach", "option", "type"],
+    when_to_use: ["when_to_use", "use_case", "best_for", "when", "usage"],
+    pros: ["pros", "advantages", "benefits", "positive"],
+    cons: ["cons", "drawbacks", "limitations", "risks", "negative"],
+    complexity: ["complexity", "difficulty", "effort"],
+    cost: ["cost", "price", "pricing", "roi", "budget"],
+  };
+  return Array.from(new Set([base, compact, ...(aliases[base] || [])]));
 }
 
 /** Rich comparison table: resolves each column against the row object keys. */
 function comparisonHtml(data: any): string {
-  const columns: string[] = data.columns || data.headers || [];
-  const rows: any[] = data.rows || [];
+  const table = data?.comparison || data?.table || data;
+  const rows: any[] = table.rows || data.rows || [];
+  const inferredColumns =
+    Array.isArray(rows) && rows.length && !Array.isArray(rows[0])
+      ? Object.keys(rows[0]).filter((key) => !/^id$|^slug$/i.test(key))
+      : [];
+  const columns: string[] =
+    table.columns || table.headers || data.columns || data.headers || inferredColumns;
   if (!columns.length || !rows.length) return "";
   const body = rows
     .map((row) => {
@@ -114,7 +144,10 @@ function comparisonHtml(data: any): string {
         ? row.map((c) => cellHtml(c))
         : columns.map((col) => {
             const cands = keyCandidates(col);
-            const found = Object.keys(row).find((k) => cands.includes(k.toLowerCase().replace(/\s+/g, "-")) || cands.includes(k.toLowerCase()));
+            const found = Object.keys(row || {}).find((k) => {
+              const normalized = normalizeKey(k);
+              return cands.includes(normalized) || cands.includes(normalized.replace(/_/g, ""));
+            });
             return cellHtml(found ? row[found] : "—");
           });
       return `<tr>${cells.map((c, i) => `<td data-label="${escapeHtml(columns[i] || "")}">${c || "—"}</td>`).join("")}</tr>`;
@@ -216,7 +249,17 @@ function glossaryHtml(data: any): string {
 
 function bulletsHtml(data: any): string {
   const out: string[] = [];
-  for (const key of ["features", "bullets", "points", "tips", "mistakes", "myths", "takeaways", "benefits", "drawbacks"]) {
+  for (const key of [
+    "features",
+    "bullets",
+    "points",
+    "tips",
+    "mistakes",
+    "myths",
+    "takeaways",
+    "benefits",
+    "drawbacks",
+  ]) {
     const arr = data[key];
     if (Array.isArray(arr) && arr.length) {
       out.push(
@@ -247,7 +290,9 @@ function cardsHtml(items: any[], fallbackLabel: string): string {
 /** Render one structured (JSON) field into its designed markup. */
 function renderJsonSection(key: string, data: any): { heading: string; body: string } {
   const heading =
-    (data && !Array.isArray(data) && stripTags(data["main-title"] || data.section_title || data.title || "")) ||
+    (data &&
+      !Array.isArray(data) &&
+      stripTags(data["main-title"] || data.section_title || data.title || "")) ||
     labelFromKey(key) ||
     "";
   const intro =
@@ -405,7 +450,9 @@ export function metaSectionsToHtml(meta: MetaRecord): string {
 
       // HTML content → keep exactly as authored; it already carries its heading.
       const isHtml = /<\/?[a-z][\s\S]*>/i.test(value);
-      const html = isHtml ? value.replace(/<script[\s\S]*?<\/script>/gi, "") : `<p>${escapeHtml(value)}</p>`;
+      const html = isHtml
+        ? value.replace(/<script[\s\S]*?<\/script>/gi, "")
+        : `<p>${escapeHtml(value)}</p>`;
       if (!html.trim()) return "";
       const label = labelFromKey(key);
       const needsHeading = !hasOwnHeading(html) && !!label;

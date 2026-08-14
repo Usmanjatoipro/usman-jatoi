@@ -211,19 +211,19 @@ const RELATED_ARTICLES = [
     title: "The Evolution from SEO to GEO: How AI Search Engines Changed Optimization Forever",
     href: "/marketing/geo/whats-trending/evolution-seo-geo-how-ai-search-engines-changed-optimization-forever",
     date: "October 27, 2025",
-    image: "/site-assets/2024-07-23-145529-desktop-1-7.png",
+    image: "/site-assets/related-bg-silk.webp",
   },
   {
     title: "Web3, Metaverse, And AI: Next Decade's Digital Shapes",
     href: "/web3/blockchain-outlook/metaverse-ai-future-decade",
     date: "September 17, 2025",
-    image: "/site-assets/Tools-Redsglow.jpg",
+    image: "/site-assets/related-bg-silk.webp",
   },
   {
     title: "DeFi 2024-2025: Regulation, Growth, And Next Moves",
     href: "/web3/blockchain-outlook/defi-2024-2025-regulation-growth-next-moves",
     date: "September 17, 2025",
-    image: "/site-assets/Verves1100001.jpg",
+    image: "/site-assets/related-bg-defi.jpg",
   },
 ] as const;
 
@@ -396,7 +396,6 @@ export default function ServiceArticle({
     }
   }
 
-
   return (
     <main className="bg-white text-neutral-950">
       <section className="bg-neutral-950 px-6 pb-16 pt-32 text-center text-white md:pb-20 md:pt-36">
@@ -498,12 +497,12 @@ export default function ServiceArticle({
               <span className="text-amber-500">★★★★★</span> 4.9/5 client rating
             </p>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-neutral-100">
+          <div className="relative min-h-[360px] overflow-hidden rounded-lg bg-neutral-100 md:min-h-[460px] lg:min-h-[540px]">
             <img
               src={transformationImage}
               alt={`${service.title} service`}
               loading="eager"
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover object-center"
             />
           </div>
         </div>
@@ -527,7 +526,7 @@ export default function ServiceArticle({
 
       <section className="bg-neutral-50 py-16 md:py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[.72fr_1.28fr] lg:px-10">
-          <div className="relative min-h-[480px] overflow-hidden rounded-lg bg-neutral-200">
+          <div className="relative min-h-[520px] overflow-hidden rounded-lg bg-neutral-200 lg:min-h-[620px]">
             <img
               src="/site-assets/Usman-Jatoi-Official.webp"
               alt="Usman Jatoi"
@@ -1003,13 +1002,13 @@ export default function ServiceArticle({
               {AWARDS.map(([name, src]) => (
                 <div
                   key={name}
-                  className="grid min-h-28 place-items-center rounded-md bg-white/5 p-5"
+                  className="grid min-h-28 place-items-center rounded-md bg-white/[.055] p-5 transition hover:bg-white/[.08]"
                 >
                   <img
                     src={src}
                     alt={name}
                     loading="lazy"
-                    className="max-h-16 max-w-full object-contain brightness-0 invert"
+                    className="max-h-16 max-w-full object-contain opacity-95"
                   />
                 </div>
               ))}
@@ -1124,30 +1123,50 @@ export default function ServiceArticle({
                 src={relatedArticles[0].image}
                 alt=""
                 loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover opacity-35 transition duration-500 group-hover:scale-[1.02]"
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white via-white/95 to-transparent p-7 pt-28 md:p-10">
-                <time className="text-xs text-neutral-500">{relatedArticles[0].date}</time>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-7 pt-28 text-white md:p-10">
+                <time className="text-xs uppercase tracking-[.14em] text-white/70">
+                  {relatedArticles[0].date}
+                </time>
                 <h3 className="mt-3 max-w-2xl text-2xl font-semibold leading-snug group-hover:underline md:text-3xl">
                   {relatedArticles[0].title}
                 </h3>
               </div>
             </a>
             <div className="grid gap-5">
-              {relatedArticles.slice(1).map((article) => (
+              {relatedArticles.slice(1).map((article, index) => (
                 <a
                   key={article.href}
                   href={article.href}
-                  className="group relative min-h-48 overflow-hidden rounded-lg bg-neutral-950 p-6 text-white"
+                  className={`group relative min-h-48 overflow-hidden rounded-lg p-6 ${
+                    index === 1 ? "bg-white text-neutral-950" : "bg-neutral-950 text-white"
+                  }`}
                 >
                   <img
                     src={article.image}
                     alt=""
                     loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover opacity-25 transition duration-500 group-hover:scale-[1.03]"
+                    className={`absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03] ${
+                      index === 1 ? "opacity-70" : "opacity-35"
+                    }`}
+                  />
+                  <div
+                    className={`absolute inset-0 ${
+                      index === 1
+                        ? "bg-gradient-to-t from-white/95 via-white/50 to-transparent"
+                        : "bg-gradient-to-t from-black/85 via-black/35 to-transparent"
+                    }`}
                   />
                   <div className="relative flex h-full flex-col justify-end">
-                    <time className="text-xs text-white/60">{article.date}</time>
+                    <time
+                      className={`text-xs uppercase tracking-[.14em] ${
+                        index === 1 ? "text-neutral-600" : "text-white/60"
+                      }`}
+                    >
+                      {article.date}
+                    </time>
                     <h3 className="mt-3 text-lg font-semibold leading-7 group-hover:underline">
                       {article.title}
                     </h3>
@@ -1247,7 +1266,6 @@ export default function ServiceArticle({
               disabled={contactState === "sending"}
               className="w-full bg-[#FF6A00] px-6 py-3 font-semibold text-white disabled:opacity-60"
             >
-
               {contactState === "sending"
                 ? "Sending..."
                 : contactState === "done"
