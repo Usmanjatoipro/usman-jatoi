@@ -86,19 +86,21 @@ export const Route = createFileRoute("/api/public/content")({
 
           const limit = Math.min(Number(q.get("limit") ?? 50) || 50, 200);
           const offset = Math.max(Number(q.get("offset") ?? 0) || 0, 0);
+          const prefixParam = q.get("path_prefix");
+          const searchParam = q.get("search");
+          // Narrow result sets can afford an exact count; full-table scans cannot.
+          const countMode = prefixParam || searchParam ? "exact" : "planned";
           let query = client
             .from("wp_posts")
-            .select(q.get("fields") === "full" ? FULL : LIGHT, { count: "planned" })
+            .select(q.get("fields") === "full" ? FULL : LIGHT, { count: countMode })
             .eq("status", "publish")
             .order("post_date", { ascending: false })
             .range(offset, offset + limit - 1);
 
           const type = q.get("type");
           if (type) query = query.eq("post_type", type);
-          const prefix = q.get("path_prefix");
-          if (prefix) query = query.ilike("path", `${prefix}%`);
-          const search = q.get("search");
-          if (search) query = query.ilike("title", `%${search}%`);
+          if (prefixParam) query = query.ilike("path", `${prefixParam}%`);
+          if (searchParam) query = query.ilike("title", `%${searchParam}%`);
 
           const { data, count, error } = await query;
           if (error) throw error;
