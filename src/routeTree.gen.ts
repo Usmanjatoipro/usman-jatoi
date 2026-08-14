@@ -44,6 +44,7 @@ import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expert
 import { Route as SitemapIndexRouteImport } from './routes/sitemap.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
+import { Route as ComparisonsIndexRouteImport } from './routes/comparisons.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/skills-expertise.technical-skills'
 import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
@@ -61,6 +62,7 @@ import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle
 import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
 import { Route as LegalPrivacyPolicyRouteImport } from './routes/legal.privacy-policy'
 import { Route as LegalOurTermsRouteImport } from './routes/legal.our-terms'
+import { Route as ComparisonsSlugRouteImport } from './routes/comparisons.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthorUsmanJatoiRouteImport } from './routes/author.usman-jatoi'
@@ -74,6 +76,7 @@ import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedCmsRouteImport } from './routes/_authenticated/cms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ApiPublicContentRouteImport } from './routes/api/public/content'
 
 const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
   id: '/white-label-partnership',
@@ -249,6 +252,11 @@ const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
   path: '/my-lifestyle/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComparisonsIndexRoute = ComparisonsIndexRouteImport.update({
+  id: '/comparisons/',
+  path: '/comparisons/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -341,6 +349,11 @@ const LegalOurTermsRoute = LegalOurTermsRouteImport.update({
   path: '/our-terms',
   getParentRoute: () => LegalRoute,
 } as any)
+const ComparisonsSlugRoute = ComparisonsSlugRouteImport.update({
+  id: '/comparisons/$slug',
+  path: '/comparisons/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -406,6 +419,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicContentRoute = ApiPublicContentRouteImport.update({
+  id: '/api/public/content',
+  path: '/api/public/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -451,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/comparisons/$slug': typeof ComparisonsSlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
   '/legal/privacy-policy': typeof LegalPrivacyPolicyRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
@@ -468,10 +487,12 @@ export interface FileRoutesByFullPath {
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/blog/': typeof BlogIndexRoute
+  '/comparisons/': typeof ComparisonsIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
+  '/api/public/content': typeof ApiPublicContentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -516,6 +537,7 @@ export interface FileRoutesByTo {
   '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/comparisons/$slug': typeof ComparisonsSlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
   '/legal/privacy-policy': typeof LegalPrivacyPolicyRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
@@ -533,10 +555,12 @@ export interface FileRoutesByTo {
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/blog': typeof BlogIndexRoute
+  '/comparisons': typeof ComparisonsIndexRoute
   '/my-lifestyle': typeof MyLifestyleIndexRoute
   '/services': typeof ServicesIndexRoute
   '/sitemap': typeof SitemapIndexRoute
   '/skills-expertise': typeof SkillsExpertiseIndexRoute
+  '/api/public/content': typeof ApiPublicContentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -584,6 +608,7 @@ export interface FileRoutesById {
   '/author/usman-jatoi': typeof AuthorUsmanJatoiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/comparisons/$slug': typeof ComparisonsSlugRoute
   '/legal/our-terms': typeof LegalOurTermsRoute
   '/legal/privacy-policy': typeof LegalPrivacyPolicyRoute
   '/my-lifestyle/fitness-health': typeof MyLifestyleFitnessHealthRoute
@@ -601,10 +626,12 @@ export interface FileRoutesById {
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
   '/skills-expertise/technical-skills': typeof SkillsExpertiseTechnicalSkillsRoute
   '/blog/': typeof BlogIndexRoute
+  '/comparisons/': typeof ComparisonsIndexRoute
   '/my-lifestyle/': typeof MyLifestyleIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
+  '/api/public/content': typeof ApiPublicContentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -652,6 +679,7 @@ export interface FileRouteTypes {
     | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/comparisons/$slug'
     | '/legal/our-terms'
     | '/legal/privacy-policy'
     | '/my-lifestyle/fitness-health'
@@ -669,10 +697,12 @@ export interface FileRouteTypes {
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
     | '/blog/'
+    | '/comparisons/'
     | '/my-lifestyle/'
     | '/services/'
     | '/sitemap/'
     | '/skills-expertise/'
+    | '/api/public/content'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -717,6 +747,7 @@ export interface FileRouteTypes {
     | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/comparisons/$slug'
     | '/legal/our-terms'
     | '/legal/privacy-policy'
     | '/my-lifestyle/fitness-health'
@@ -734,10 +765,12 @@ export interface FileRouteTypes {
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
     | '/blog'
+    | '/comparisons'
     | '/my-lifestyle'
     | '/services'
     | '/sitemap'
     | '/skills-expertise'
+    | '/api/public/content'
   id:
     | '__root__'
     | '/'
@@ -784,6 +817,7 @@ export interface FileRouteTypes {
     | '/author/usman-jatoi'
     | '/blog/$slug'
     | '/category/$slug'
+    | '/comparisons/$slug'
     | '/legal/our-terms'
     | '/legal/privacy-policy'
     | '/my-lifestyle/fitness-health'
@@ -801,10 +835,12 @@ export interface FileRouteTypes {
     | '/skills-expertise/seo-marketing'
     | '/skills-expertise/technical-skills'
     | '/blog/'
+    | '/comparisons/'
     | '/my-lifestyle/'
     | '/services/'
     | '/sitemap/'
     | '/skills-expertise/'
+    | '/api/public/content'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -841,6 +877,7 @@ export interface RootRouteChildren {
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
   AuthorUsmanJatoiRoute: typeof AuthorUsmanJatoiRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  ComparisonsSlugRoute: typeof ComparisonsSlugRoute
   MyLifestyleFitnessHealthRoute: typeof MyLifestyleFitnessHealthRoute
   MyLifestyleGamingLifeRoute: typeof MyLifestyleGamingLifeRoute
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
@@ -851,10 +888,12 @@ export interface RootRouteChildren {
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
   SkillsExpertiseTechnicalSkillsRoute: typeof SkillsExpertiseTechnicalSkillsRoute
+  ComparisonsIndexRoute: typeof ComparisonsIndexRoute
   MyLifestyleIndexRoute: typeof MyLifestyleIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   SitemapIndexRoute: typeof SitemapIndexRoute
   SkillsExpertiseIndexRoute: typeof SkillsExpertiseIndexRoute
+  ApiPublicContentRoute: typeof ApiPublicContentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1104,6 +1143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyLifestyleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/comparisons/': {
+      id: '/comparisons/'
+      path: '/comparisons'
+      fullPath: '/comparisons/'
+      preLoaderRoute: typeof ComparisonsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -1223,6 +1269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalOurTermsRouteImport
       parentRoute: typeof LegalRoute
     }
+    '/comparisons/$slug': {
+      id: '/comparisons/$slug'
+      path: '/comparisons/$slug'
+      fullPath: '/comparisons/$slug'
+      preLoaderRoute: typeof ComparisonsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -1313,6 +1366,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/content': {
+      id: '/api/public/content'
+      path: '/api/public/content'
+      fullPath: '/api/public/content'
+      preLoaderRoute: typeof ApiPublicContentRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1431,6 +1491,7 @@ const rootRouteChildren: RootRouteChildren = {
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
   AuthorUsmanJatoiRoute: AuthorUsmanJatoiRoute,
   CategorySlugRoute: CategorySlugRoute,
+  ComparisonsSlugRoute: ComparisonsSlugRoute,
   MyLifestyleFitnessHealthRoute: MyLifestyleFitnessHealthRoute,
   MyLifestyleGamingLifeRoute: MyLifestyleGamingLifeRoute,
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
@@ -1442,10 +1503,12 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsExpertiseCreativeSkillsRoute: SkillsExpertiseCreativeSkillsRoute,
   SkillsExpertiseSeoMarketingRoute: SkillsExpertiseSeoMarketingRoute,
   SkillsExpertiseTechnicalSkillsRoute: SkillsExpertiseTechnicalSkillsRoute,
+  ComparisonsIndexRoute: ComparisonsIndexRoute,
   MyLifestyleIndexRoute: MyLifestyleIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   SitemapIndexRoute: SitemapIndexRoute,
   SkillsExpertiseIndexRoute: SkillsExpertiseIndexRoute,
+  ApiPublicContentRoute: ApiPublicContentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
