@@ -890,6 +890,7 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
         featured_image:
           item.fifu_image_url || metaImageUrl(item.meta) || firstHtmlImage(item.content),
       }));
+    const related = await relatedPostsForService(data.slug);
     return {
       service: {
         ...hydrated,
@@ -916,11 +917,56 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
         sections: serviceMetaSections(page.meta),
       },
       children,
+      related,
       childCount: pages.filter(
         (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
       ).length,
     };
   });
+
+const RELATED_SEGMENT_ALIASES: Record<string, string> = {
+  web: "websites",
+  "web-design": "websites",
+  digital: "digital",
+  "social-media": "social-media",
+  "lead-generaton": "lead-generation",
+  "technical-skills": "technical",
+  supports: "support",
+  "bulk-publishing": "content",
+  dubbing: "creative",
+  game: "game",
+};
+
+async function relatedPostsForService(slug: string) {
+  const segment = RELATED_SEGMENT_ALIASES[slug] || slug;
+  try {
+    const sb = serverClient();
+    const { data } = await sb
+      .from("wp_posts")
+      .select("id, title, excerpt, path, post_date, seo_description")
+      .eq("post_type", "post")
+      .eq("status", "publish")
+      .like("path", `/${segment}/%`)
+      .order("post_date", { ascending: false })
+      .limit(7);
+    return (data || []).map((row) => ({
+      title: stripTags(row.title) || "Article",
+      href: normalizePath(row.path),
+      excerpt: stripTags(row.excerpt || row.seo_description || "").slice(0, 180),
+      date: row.post_date,
+      slug: normalizePath(row.path).split("/").filter(Boolean).pop() || `post-${row.id}`,
+    }));
+  } catch {
+    return [] as {
+      title: string;
+      href: string;
+      excerpt: string;
+      date: string | null;
+      slug: string;
+    }[];
+  }
+}
+
 
 export const getLocalContentByPath = createServerFn({ method: "GET" })
   .validator((data: { path: string }) => data)

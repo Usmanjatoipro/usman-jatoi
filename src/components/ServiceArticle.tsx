@@ -1,22 +1,44 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
+  ArrowUpRight,
   Award,
-  Calendar,
+  BarChart3,
+  Bot,
+  Brain,
   Check,
+  ChevronDown,
   ChevronRight,
-  Clock3,
-  ExternalLink,
+  Cog,
+  Compass,
+  Eye,
+  FileText,
   Globe2,
-  Layers3,
-  Play,
+  Info,
+  LineChart,
+  type LucideIcon,
+  Megaphone,
+  Palette,
+  PenTool,
+  Plus,
+  Rocket,
   Search,
+  Server,
   ShieldCheck,
   Sparkles,
+  Star,
+  Users,
+  Video,
+  Wrench,
+  Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import CalEmbed from "@/components/CalEmbed";
+import HeroLoopList from "@/components/HeroLoopList";
+import ProcessSlider from "@/components/ProcessSlider";
+import GlobalFlags, { type FlagEntry } from "@/components/GlobalFlags";
+import { coverImageUrl } from "@/components/PostCover";
 
 type ServiceHero = {
   title?: string;
@@ -29,11 +51,7 @@ type ServiceAbout = {
   title?: string;
   intro?: string;
   paragraphs?: string[];
-  bullets?: Array<{
-    heading?: string;
-    description?: string;
-    list?: string[];
-  }>;
+  bullets?: Array<{ heading?: string; description?: string; list?: string[] }>;
 };
 
 type ServiceSolutions = {
@@ -49,19 +67,10 @@ type ServiceSolutions = {
 };
 
 type ServiceProcess = {
-  steps?: Array<{
-    step_number?: number;
-    title?: string;
-    description?: string;
-  }>;
+  steps?: Array<{ step_number?: number; title?: string; description?: string }>;
 };
 
-type ServiceFaqs = {
-  faqs?: Array<{
-    question?: string;
-    answer?: string;
-  }>;
-};
+type ServiceFaqs = { faqs?: Array<{ question?: string; answer?: string }> };
 
 export type ServiceStructuredData = {
   hero?: ServiceHero | null;
@@ -95,7 +104,17 @@ export type ServiceChild = {
   featured_image?: string | null;
 };
 
-const NETWORK_LOGOS = [
+export type ServiceRelatedPost = {
+  title: string;
+  href: string;
+  excerpt?: string | null;
+  date?: string | null;
+  slug: string;
+};
+
+/* ---------------------------------------------------------------- data --- */
+
+const NETWORK_LOGOS: [string, string][] = [
   ["Wix", "/site-assets/Wix-Logo-1024x398.webp"],
   ["Bricks Builder", "/site-assets/BrickBuilder-logo-1-e1752473525426.webp"],
   ["Shopify", "/site-assets/Shopify-Logo-1024x322.webp"],
@@ -104,17 +123,17 @@ const NETWORK_LOGOS = [
   ["Medium", "/site-assets/Medium-Logo-scaled-e1753187413358-1024x196.png"],
   ["Wikidata", "/site-assets/wikidatawiki-wordmark.svg"],
   ["TED", "/site-assets/TED_three_letter_logo.svg-1024x376.webp"],
-] as const;
+];
 
-const TOOL_LOGOS = [
+const TOOL_LOGOS: [string, string][] = [
   ["Elementor", "/site-assets/elementor-logo-freelogovectors.net_-1024x202.webp"],
   ["Cursor", "/site-assets/cursor-logo-words-e1752653818550.jpg"],
   ["BuildShip", "/site-assets/BuildShip.png.webp"],
   ["Axiom", "/site-assets/axiom-e1752654626677.jpeg"],
   ["Anakin", "/site-assets/Anakin-Logo.png"],
-] as const;
+];
 
-const PORTFOLIO = {
+const PORTFOLIO: Record<string, [string, string][]> = {
   "Creative work": [
     ["Packaging design", "/site-assets/NotePads-and-Shirts.jpg"],
     ["Stationery", "/site-assets/NotePad.jpg"],
@@ -147,124 +166,143 @@ const PORTFOLIO = {
     ["UJ Online", "/site-assets/Can_UJonline.png"],
     ["Redsglow tools", "/site-assets/Tools-Redsglow.png"],
   ],
-} as const;
+};
 
-type PortfolioTab = keyof typeof PORTFOLIO;
+const DELAYS: [string, string][] = [
+  ["Family events", "Important family responsibilities can occasionally move a meeting or milestone."],
+  ["Health issues", "Unexpected health conditions or medical appointments may temporarily affect availability."],
+  ["Technical outages", "Platform, hosting, power, or connectivity incidents can interrupt work for a short period."],
+  ["Client dependencies", "Missing access, content, approvals, or feedback can pause the next delivery step."],
+  ["Scope changes", "New requirements are reviewed openly so the schedule and price stay realistic."],
+  ["Public holidays", "Regional holidays and planned time away are communicated before work begins."],
+];
 
-const DELAYS = [
-  [
-    "Family events",
-    "Important family responsibilities can occasionally move a meeting or milestone.",
-  ],
-  [
-    "Health issues",
-    "Unexpected health conditions or medical appointments may temporarily affect availability.",
-  ],
-  [
-    "Technical outages",
-    "Platform, hosting, power, or connectivity incidents can interrupt work for a short period.",
-  ],
-  [
-    "Client dependencies",
-    "Missing access, content, approvals, or feedback can pause the next delivery step.",
-  ],
-  [
-    "Scope changes",
-    "New requirements are reviewed openly so the schedule and price stay realistic.",
-  ],
-  [
-    "Public holidays",
-    "Regional holidays and planned time away are communicated before work begins.",
-  ],
-] as const;
-
-const AWARDS = [
+const AWARDS: [string, string][] = [
   ["Foundations", "/site-assets/foundations-river-image__1_-1.webp"],
   ["Lapa Ninja", "/site-assets/ll343zssrpmwtvd2vdxit66e46ed-1.webp"],
   ["Gemini", "/site-assets/Gemini_Generated_Image_5ghg9q5ghg9q5ghg-1-e1752937634868.png"],
   ["Best Design", "/site-assets/best-design-awards-2025.svg"],
   ["Design recognition", "/site-assets/images-1.webp"],
   ["DevSpot", "/site-assets/Devspot.svg"],
-] as const;
+];
 
-const COUNTRIES = [
-  ["Australia", "au"],
-  ["Canada", "ca"],
-  ["France", "fr"],
-  ["Germany", "de"],
-  ["United Arab Emirates", "ae"],
-  ["United Kingdom", "gb"],
-  ["United States", "us"],
-  ["India", "in"],
-  ["Japan", "jp"],
-  ["Singapore", "sg"],
-] as const;
+const FLAGS: FlagEntry[] = [
+  { code: "us", flag: "🇺🇸", country: "United States", note: "Coast-to-coast delivery" },
+  { code: "gb", flag: "🇬🇧", country: "United Kingdom", note: "London to Manchester" },
+  { code: "ca", flag: "🇨🇦", country: "Canada", note: "Toronto and Vancouver" },
+  { code: "au", flag: "🇦🇺", country: "Australia", note: "Sydney and Melbourne" },
+  { code: "de", flag: "🇩🇪", country: "Germany", note: "Berlin and Munich" },
+  { code: "fr", flag: "🇫🇷", country: "France", note: "Paris and Lyon" },
+  { code: "ae", flag: "🇦🇪", country: "United Arab Emirates", note: "Dubai and Abu Dhabi" },
+  { code: "sg", flag: "🇸🇬", country: "Singapore", note: "APAC operations" },
+  { code: "in", flag: "🇮🇳", country: "India", note: "Bengaluru and Mumbai" },
+  { code: "jp", flag: "🇯🇵", country: "Japan", note: "Tokyo and Osaka" },
+];
 
-const RELATED_ARTICLES = [
-  {
-    title: "The Evolution from SEO to GEO: How AI Search Engines Changed Optimization Forever",
-    href: "/marketing/geo/whats-trending/evolution-seo-geo-how-ai-search-engines-changed-optimization-forever",
-    date: "October 27, 2025",
-    image: "/site-assets/2024-07-23-145529-desktop-1-7.png",
-  },
-  {
-    title: "Web3, Metaverse, And AI: Next Decade's Digital Shapes",
-    href: "/web3/blockchain-outlook/metaverse-ai-future-decade",
-    date: "September 17, 2025",
-    image: "/site-assets/Tools-Redsglow.jpg",
-  },
-  {
-    title: "DeFi 2024-2025: Regulation, Growth, And Next Moves",
-    href: "/web3/blockchain-outlook/defi-2024-2025-regulation-growth-next-moves",
-    date: "September 17, 2025",
-    image: "/site-assets/Verves1100001.jpg",
-  },
-] as const;
+const ICONS: [RegExp, LucideIcon][] = [
+  [/robot|agent|bot/i, Bot],
+  [/brain|ai|ml|machine/i, Brain],
+  [/eye|vision|camera/i, Eye],
+  [/chart|analytic|dashboard|graph/i, BarChart3],
+  [/shield|secur|risk|lock/i, ShieldCheck],
+  [/video|film|reel|play/i, Video],
+  [/paint|palette|brush|design|creative/i, Palette],
+  [/pen|write|content|blog|copy/i, PenTool],
+  [/search|seo|magnif/i, Search],
+  [/bullhorn|megaphone|market|pr|press/i, Megaphone],
+  [/server|cloud|database|infra/i, Server],
+  [/cog|gear|process|operation|automation/i, Cog],
+  [/tool|wrench|build|develop/i, Wrench],
+  [/users|team|people|support/i, Users],
+  [/rocket|launch|startup|growth/i, Rocket],
+  [/globe|world|web|site/i, Globe2],
+  [/file|doc|report|sop/i, FileText],
+  [/trend|line|invest|monet/i, LineChart],
+  [/compass|strateg|consult/i, Compass],
+  [/bolt|zap|fast|speed/i, Zap],
+];
+
+function iconFor(name?: string, fallbackSeed = ""): LucideIcon {
+  const key = `${name || ""} ${fallbackSeed}`;
+  for (const [pattern, Icon] of ICONS) if (pattern.test(key)) return Icon;
+  return Sparkles;
+}
+
+const VIDEO_SLUGS = /video|dubbing|reel|creative|content|marketing|social/i;
+const PORTFOLIO_FOR_SLUG: [RegExp, string][] = [
+  [/creative|design|dubbing|game|brand/i, "Creative work"],
+  [/web3|web|digital|technical|product/i, "Websites"],
+  [/pr|marketing|social|lead|monet/i, "Brands"],
+  [/ai|operations|startup|management|support|training|consulting/i, "Products"],
+];
+
+/* ------------------------------------------------------------- helpers --- */
+
+function stripTags(value?: string | null) {
+  return (value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function displayDate(value?: string | null) {
-  if (!value) return "Imported from WordPress";
-  const date = new Date(value.replace(" ", "T"));
-  if (Number.isNaN(date.getTime())) return "Imported from WordPress";
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  if (!value) return "";
+  const date = new Date(String(value).replace(" ", "T"));
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
 function youtubeEmbed(value?: string | null) {
   if (!value) return null;
-  const id = value.match(
-    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/,
-  )?.[1];
+  const id = value.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/)?.[1];
   return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
 }
 
-function SectionTitle({
+function localHref(href: string) {
+  try {
+    const url = href.startsWith("http") ? new URL(href) : null;
+    return url ? url.pathname : href;
+  } catch {
+    return href;
+  }
+}
+
+/* ---------------------------------------------------------- UI helpers --- */
+
+function SectionHead({
   eyebrow,
   title,
   description,
   inverse = false,
+  center = false,
 }: {
   eyebrow: string;
   title: string;
   description?: string;
   inverse?: boolean;
+  center?: boolean;
 }) {
   return (
-    <div className="max-w-3xl">
+    <div className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
       <p
-        className={`text-xs font-semibold uppercase ${inverse ? "text-white/55" : "text-neutral-500"}`}
+        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${
+          inverse ? "border-white/20 text-white/70" : "border-neutral-200 text-neutral-500"
+        }`}
       >
+        <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
         {eyebrow}
       </p>
       <h2
-        className={`mt-3 text-3xl font-semibold leading-tight md:text-5xl ${inverse ? "text-white" : "text-neutral-950"}`}
+        className={`mt-4 text-3xl font-bold leading-[1.08] tracking-tight md:text-[44px] ${
+          inverse ? "text-white" : "text-neutral-950"
+        }`}
       >
         {title}
       </h2>
       {description && (
-        <p className={`mt-5 text-base leading-7 ${inverse ? "text-white/65" : "text-neutral-600"}`}>
+        <p
+          className={`mt-4 text-[17px] leading-8 ${inverse ? "text-white/65" : "text-neutral-600"}`}
+        >
           {description}
         </p>
       )}
@@ -272,34 +310,160 @@ function SectionTitle({
   );
 }
 
+/** Card with subtle 3D pointer tilt + a thin gradient hairline on hover. */
+function TiltCard({
+  children,
+  className = "",
+  inverse = false,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  inverse?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  function move(event: React.PointerEvent<HTMLDivElement>) {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(900px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 7).toFixed(2)}deg) translateY(-4px)`;
+    el.style.setProperty("--uj-x", `${((event.clientX - rect.left) / rect.width) * 100}%`);
+  }
+
+  function reset() {
+    const el = ref.current;
+    if (el) el.style.transform = "";
+  }
+
+  return (
+    <div
+      ref={ref}
+      onPointerMove={move}
+      onPointerLeave={reset}
+      className={`group relative overflow-hidden transition-transform duration-200 will-change-transform ${
+        inverse ? "bg-neutral-950" : "bg-white"
+      } ${className}`}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, #FF6A00 20%, #ffb27a 50%, #FF6A00 80%, transparent)",
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(420px circle at var(--uj-x,50%) 0%, rgba(255,106,0,.10), transparent 60%)",
+        }}
+      />
+      {children}
+    </div>
+  );
+}
+
+function Accordion({
+  items,
+  tone = "light",
+}: {
+  items: { heading: string; description?: string; list?: string[] }[];
+  tone?: "light" | "dark";
+}) {
+  const [open, setOpen] = useState(0);
+  const dark = tone === "dark";
+  return (
+    <div className={`divide-y ${dark ? "divide-white/12" : "divide-neutral-200"}`}>
+      {items.map((item, index) => {
+        const isOpen = open === index;
+        return (
+          <div key={item.heading} className="py-4">
+            <button
+              type="button"
+              onClick={() => setOpen(isOpen ? -1 : index)}
+              aria-expanded={isOpen}
+              className="flex w-full items-center justify-between gap-6 text-left"
+            >
+              <span
+                className={`text-lg font-bold ${dark ? "text-white" : "text-neutral-950"} ${
+                  isOpen ? "text-[#FF6A00]" : ""
+                }`}
+              >
+                {item.heading}
+              </span>
+              <ChevronDown
+                className={`h-5 w-5 flex-none transition-transform ${isOpen ? "rotate-180 text-[#FF6A00]" : dark ? "text-white/50" : "text-neutral-400"}`}
+              />
+            </button>
+            {isOpen && (
+              <div className="pt-3">
+                {item.description && (
+                  <p className={`leading-7 ${dark ? "text-white/70" : "text-neutral-600"}`}>
+                    {item.description}
+                  </p>
+                )}
+                {item.list && item.list.length > 0 && (
+                  <HeroLoopList
+                    items={item.list}
+                    visible={Math.min(3, item.list.length)}
+                    tone={dark ? "dark" : "light"}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------- layout --- */
+
 export default function ServiceArticle({
   service,
   children,
   childCount,
+  related = [],
 }: {
   service: ServiceArticleData;
   children: ServiceChild[];
   childCount: number;
+  related?: ServiceRelatedPost[];
 }) {
-  const [query, setQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(18);
-  const [portfolioTab, setPortfolioTab] = useState<PortfolioTab>("Creative work");
-  const [contactState, setContactState] = useState<"idle" | "sending" | "done" | "error">("idle");
-  const title = service.h1 || service.structured?.hero?.title || service.title;
-  const intro =
-    service.structured?.hero?.subtitle || service.paragraphs?.[0] || service.excerpt || "";
   const structured = service.structured || {};
-  const highlights = (
-    structured.hero?.features?.length ? structured.hero.features : service.bullets || []
-  )
-    .filter(Boolean)
-    .slice(0, 6);
-  const solutions = structured.services?.services?.filter((item) => item.title) || [];
-  const processSteps = structured.process?.steps?.filter((item) => item.title) || [];
-  const expertise = structured.about?.bullets?.filter((item) => item.heading) || [];
-  const faqs = structured.faqs?.faqs?.filter((item) => item.question && item.answer) || [];
-  const videoUrl = youtubeEmbed(structured.promoVideo);
   const sections = service.sections || {};
+  const title = stripTags(service.h1 || structured.hero?.title || service.title);
+  const subtitle = stripTags(structured.hero?.subtitle || service.paragraphs?.[0] || service.excerpt);
+  const heroDescription = stripTags(structured.hero?.description || service.paragraphs?.[1] || "");
+  const features = (structured.hero?.features || service.bullets || []).filter(Boolean).map(stripTags);
+  const solutions = (structured.services?.services || []).filter((item) => item.title);
+  const processSteps = (structured.process?.steps || []).filter((item) => item.title);
+  const expertise = (structured.about?.bullets || [])
+    .filter((item) => item.heading)
+    .map((item) => ({
+      heading: stripTags(item.heading),
+      description: stripTags(item.description),
+      list: (item.list || []).map(stripTags).filter(Boolean),
+    }));
+  const faqs = (structured.faqs?.faqs || []).filter((item) => item.question && item.answer);
+  const videoUrl = youtubeEmbed(structured.promoVideo);
+  const showVideo = Boolean(videoUrl) && VIDEO_SLUGS.test(`${service.slug} ${service.title}`);
+  const portfolioTabName =
+    PORTFOLIO_FOR_SLUG.find(([pattern]) => pattern.test(`${service.slug} ${service.title}`))?.[1] ||
+    null;
+  const portfolioItems = portfolioTabName ? PORTFOLIO[portfolioTabName] : null;
+  const heroImage = service.fifu_image_url || coverImageUrl(service.slug);
+
+  const [query, setQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(12);
+  const [agencyTab, setAgencyTab] = useState<"industries" | "locations">("industries");
+  const [openFaq, setOpenFaq] = useState(0);
+  const [contactState, setContactState] = useState<"idle" | "sending" | "done" | "error">("idle");
 
   const filteredChildren = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -309,16 +473,35 @@ export default function ServiceArticle({
     );
   }, [children, query]);
 
+  const toc = useMemo(
+    () =>
+      [
+        ["About my expertise", "#overview"],
+        solutions.length ? [`${service.title} services`, "#solutions"] : null,
+        processSteps.length ? ["My process", "#process"] : null,
+        portfolioItems ? ["Portfolio", "#portfolio"] : null,
+        childCount ? ["Full service directory", "#directory"] : null,
+        ["Global coverage", "#global"],
+        related.length ? ["Related reading", "#blogs"] : null,
+        faqs.length ? ["FAQs", "#faqs"] : null,
+        ["Contact", "#contact"],
+      ].filter(Boolean) as [string, string][],
+    [solutions.length, processSteps.length, portfolioItems, childCount, related.length, faqs.length, service.title],
+  );
+
+  useEffect(() => setVisibleCount(12), [query]);
+
   async function submitContact(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     setContactState("sending");
+    const interest = String(data.get("interest") || "").trim();
     const { error } = await supabase.from("contact_submissions").insert({
       name: String(data.get("name") || "").trim() || "Anonymous",
       email: String(data.get("email") || "").trim(),
       phone: String(data.get("phone") || "").trim() || null,
-      looking_for: service.title,
+      looking_for: interest ? `${service.title} — ${interest}` : service.title,
       message: String(data.get("message") || "").trim(),
       source_path: typeof window !== "undefined" ? window.location.pathname : service.path,
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
@@ -332,21 +515,19 @@ export default function ServiceArticle({
 
   return (
     <main className="bg-white text-neutral-950">
-      <section
-        className="relative isolate min-h-[720px] overflow-hidden bg-neutral-950 text-white"
-        style={{
-          backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.98) 0%, rgba(0,0,0,.9) 44%, rgba(0,0,0,.28) 100%), url('/site-assets/Businessman-with-Rainbow-Lightbulb-Head-e1752653622894-745x1024.jpg')`,
-          backgroundPosition: "center, right 18% center",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover, min(48vw, 680px) auto",
-        }}
-      >
-        <div className="mx-auto flex min-h-[720px] max-w-7xl items-center px-6 pb-20 pt-32 lg:px-10">
-          <div className="max-w-3xl">
-            <nav
-              className="flex flex-wrap items-center gap-2 text-sm text-white/65"
-              aria-label="Breadcrumb"
-            >
+      {/* ------------------------------------------------------------ hero */}
+      <section className="relative isolate overflow-hidden bg-neutral-950 text-white">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              "radial-gradient(60% 60% at 8% 0%, rgba(255,106,0,.22), transparent 60%), radial-gradient(50% 50% at 90% 20%, rgba(255,106,0,.12), transparent 65%)",
+          }}
+        />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-20 pt-32 lg:grid-cols-[1.15fr_.85fr] lg:px-10 lg:pb-28 lg:pt-40">
+          <div>
+            <nav className="flex flex-wrap items-center gap-2 text-sm text-white/60" aria-label="Breadcrumb">
               <Link to="/" className="hover:text-white">
                 Home
               </Link>
@@ -357,175 +538,177 @@ export default function ServiceArticle({
               <ChevronRight className="h-4 w-4" />
               <span className="text-white">{service.title}</span>
             </nav>
-            <p className="mt-12 text-xs font-semibold uppercase text-white/60">
-              Usman Jatoi services
+
+            <p className="mt-10 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
+              {service.title} services
             </p>
-            <h1 className="mt-4 max-w-4xl text-4xl font-semibold leading-[1.04] md:text-6xl lg:text-7xl">
+
+            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.03] tracking-tight md:text-6xl">
               {title}
             </h1>
-            {intro && <p className="mt-7 max-w-2xl text-lg leading-8 text-white/78">{intro}</p>}
-            <div className="mt-8 flex flex-wrap gap-3">
+
+            {subtitle && (
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">{subtitle}</p>
+            )}
+
+            {features.length > 0 && <HeroLoopList items={features} visible={3} tone="dark" />}
+
+            {heroDescription && (
+              <p className="mt-6 max-w-2xl leading-7 text-white/60">{heroDescription}</p>
+            )}
+
+            <div className="mt-9 flex flex-wrap gap-3">
               <a
-                href="#book-call"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 p-[2px] font-semibold"
+                href="#contact"
+                className="inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-7 py-3.5 font-bold text-white transition hover:bg-[#ff8124]"
               >
-                <span className="inline-flex items-center gap-2 rounded-full bg-neutral-950 px-6 py-3 text-white">
-                  Book a free call <ArrowRight className="h-4 w-4" />
-                </span>
+                Book a free call <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href="#solutions"
-                className="inline-flex items-center rounded-full border border-white/35 px-6 py-3 font-semibold transition hover:bg-white hover:text-neutral-950"
+                className="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3.5 font-bold transition hover:bg-white hover:text-neutral-950"
               >
-                Explore solutions
+                Explore {service.title.toLowerCase()} solutions
               </a>
             </div>
-            <div className="mt-10 grid max-w-2xl gap-x-8 gap-y-3 border-t border-white/18 pt-6 sm:grid-cols-2">
-              {(highlights.length
-                ? highlights
-                : [
-                    "Clear scope before work begins",
-                    "Direct communication and ownership",
-                    "Responsive delivery and handover",
-                    "Built for measurable outcomes",
-                  ]
-              )
-                .slice(0, 4)
-                .map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 text-sm leading-6 text-white/78"
-                  >
-                    <Check className="mt-1 h-4 w-4 flex-none" />
-                    <span>{item}</span>
-                  </div>
-                ))}
+
+            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-white/12 pt-6 text-sm text-white/65">
+              <span className="inline-flex items-center gap-2">
+                <span className="flex" aria-hidden>
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star key={i} className="h-4 w-4 fill-[#FF6A00] text-[#FF6A00]" />
+                  ))}
+                </span>
+                4.9/5 from 127 client reviews
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Award className="h-4 w-4 text-[#FF6A00]" /> Award-winning delivery
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Globe2 className="h-4 w-4 text-[#FF6A00]" /> 450+ projects, 50+ countries
+              </span>
             </div>
+          </div>
+
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-3xl border border-white/12">
+              <img
+                src={heroImage}
+                alt={`${service.title} services by Usman Jatoi`}
+                className="aspect-[4/5] w-full object-cover"
+                loading="eager"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-6 pt-20">
+                <p className="text-lg font-bold">Usman Jatoi</p>
+                <p className="mt-1 text-sm text-white/70">
+                  Independent {service.title.toLowerCase()} practitioner — strategy, build, handover.
+                </p>
+              </div>
+            </div>
+            {childCount > 0 && (
+              <div className="absolute -left-5 bottom-10 hidden rounded-2xl border border-white/15 bg-neutral-950/90 px-5 py-4 backdrop-blur lg:block">
+                <p className="text-3xl font-bold text-[#FF6A00]">{childCount}</p>
+                <p className="text-xs uppercase tracking-widest text-white/60">
+                  specialist pages
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      <nav
-        className="sticky top-0 z-30 border-b border-neutral-200 bg-white/95 backdrop-blur"
-        aria-label="Service sections"
-      >
-        <div className="mx-auto flex max-w-7xl gap-7 overflow-x-auto px-6 py-4 text-sm font-medium lg:px-10">
-          {[
-            ["Overview", "#overview"],
-            ["Solutions", "#solutions"],
-            ["Process", "#process"],
-            ["Portfolio", "#portfolio"],
-            ["Directory", "#directory"],
-            ["FAQs", "#faqs"],
-            ["Contact", "#contact"],
-          ].map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              className="whitespace-nowrap text-neutral-600 hover:text-neutral-950"
-            >
-              {label}
-            </a>
-          ))}
-        </div>
-      </nav>
-
-      <section className="border-b border-neutral-200 py-10">
+      {/* -------------------------------------------------------- trusted by */}
+      <section className="border-b border-neutral-200 bg-white py-12">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <p className="text-center text-xl font-semibold">
-            Trusted by brands, platforms, and creative networks worldwide
+          <p className="text-center text-sm font-bold uppercase tracking-[0.2em] text-neutral-500">
+            Trusted by 20+ brands for premium {service.title.toLowerCase()} work
           </p>
-          <div className="mt-8 grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-4 lg:grid-cols-8">
+          <div className="mt-8 grid grid-cols-3 items-center gap-x-8 gap-y-8 sm:grid-cols-5 lg:grid-cols-9">
             {NETWORK_LOGOS.map(([name, src]) => (
               <img
                 key={name}
                 src={src}
                 alt={name}
                 loading="lazy"
-                className="mx-auto h-8 max-w-[120px] object-contain grayscale"
+                className="mx-auto h-8 max-w-[120px] object-contain opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0"
               />
             ))}
+            <a
+              href="#contact"
+              className="mx-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-neutral-300 text-neutral-500 transition hover:border-[#FF6A00] hover:text-[#FF6A00]"
+              title="Add your logo — become a client"
+              aria-label="Add your logo — become a client"
+            >
+              <Plus className="h-5 w-5" />
+            </a>
           </div>
         </div>
       </section>
 
-      <section id="overview" className="scroll-mt-20 py-20 md:py-28">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[.78fr_1.22fr] lg:px-10">
-          <div className="relative min-h-[520px] overflow-hidden rounded-lg bg-neutral-100">
+      {/* ---------------------------------------------------------- overview */}
+      <section id="overview" className="scroll-mt-24 py-20 md:py-28">
+        <div className="mx-auto grid max-w-7xl items-start gap-14 px-6 lg:grid-cols-[.8fr_1.2fr] lg:px-10">
+          <div className="relative overflow-hidden rounded-3xl bg-neutral-100">
             <img
               src="/site-assets/Usman-Jatoi-Official.webp"
               alt="Usman Jatoi"
-              loading="eager"
-              className="absolute inset-0 h-full w-full object-cover object-top"
+              loading="lazy"
+              className="aspect-[3/4] w-full object-cover object-top"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-7 pt-24 text-white">
-              <p className="font-semibold">Usman Jatoi</p>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-20 text-white">
+              <p className="font-bold">Hands-on, not hands-off</p>
               <p className="mt-1 text-sm text-white/75">
-                Independent digital practitioner and creative technologist
+                You work directly with me — no account-manager relay.
               </p>
             </div>
           </div>
           <div>
-            <SectionTitle
+            <SectionHead
               eyebrow="About my expertise"
-              title={structured.about?.title || `Practical expertise in ${service.title}`}
+              title={stripTags(structured.about?.title) || `About my expertise in ${service.title}`}
               description={
-                structured.about?.intro ||
-                service.paragraphs?.[1] ||
-                `Hands-on ${service.title.toLowerCase()} support shaped around your goals, systems, and audience.`
+                stripTags(structured.about?.intro) ||
+                `Practical ${service.title.toLowerCase()} support shaped around your goals, systems, and audience.`
               }
             />
-            {structured.about?.paragraphs?.map((paragraph) => (
-              <p key={paragraph} className="mt-5 max-w-3xl leading-7 text-neutral-600">
-                {paragraph}
+            {(structured.about?.paragraphs || []).map((paragraph) => (
+              <p key={paragraph} className="mt-5 leading-7 text-neutral-600">
+                {stripTags(paragraph)}
               </p>
             ))}
-            <div className="mt-10 grid gap-7 md:grid-cols-2">
-              {(expertise.length
-                ? expertise
-                : [
-                    {
-                      heading: "My expertise",
-                      description:
-                        "Practical systems, clear decisions, and implementation support.",
-                      list: service.bullets?.slice(0, 3),
-                    },
-                    {
-                      heading: `How I help with ${service.title}`,
-                      description: "A focused engagement designed around the result you need.",
-                      list: service.bullets?.slice(3, 6),
-                    },
-                  ]
-              ).map((group) => (
-                <article key={group.heading} className="border-t border-neutral-950 pt-5">
-                  <h3 className="text-xl font-semibold">{group.heading}</h3>
-                  {group.description && (
-                    <p className="mt-3 leading-7 text-neutral-600">{group.description}</p>
-                  )}
-                  {group.list && (
-                    <ul className="mt-4 space-y-3">
-                      {group.list.map((item) => (
-                        <li key={item} className="flex gap-3 text-sm leading-6 text-neutral-700">
-                          <Check className="mt-1 h-4 w-4 flex-none" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </article>
-              ))}
+            <div className="mt-8">
+              <Accordion
+                items={
+                  expertise.length
+                    ? expertise
+                    : [
+                        {
+                          heading: "My expertise",
+                          description: "Practical systems, clear decisions, and implementation support.",
+                          list: features.slice(0, 4),
+                        },
+                        {
+                          heading: `How I help with ${service.title}`,
+                          description: "A focused engagement designed around the result you need.",
+                          list: features.slice(4, 8),
+                        },
+                      ]
+                }
+              />
             </div>
           </div>
         </div>
       </section>
 
+      {/* ---------------------------------------------- presence + networks */}
       <section className="border-y border-neutral-200 bg-neutral-50 py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <SectionTitle
-            eyebrow="Online presence and networks"
+          <SectionHead
+            eyebrow="Online presence & networks"
             title="Experience across the tools and ecosystems your work depends on"
           />
-          <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-200 sm:grid-cols-3 lg:grid-cols-5">
             {[...NETWORK_LOGOS.slice(0, 5), ...TOOL_LOGOS].map(([name, src]) => (
               <div key={`${name}-${src}`} className="grid min-h-28 place-items-center bg-white p-6">
                 <img
@@ -540,639 +723,575 @@ export default function ServiceArticle({
         </div>
       </section>
 
-      <section id="solutions" className="scroll-mt-20 bg-neutral-950 py-20 text-white md:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <SectionTitle
-            eyebrow="Services"
-            inverse
-            title={
-              structured.services?.section_title ||
-              `${service.title} solutions for real business needs`
-            }
-            description={
-              structured.services?.section_subtitle ||
-              `Explore a focused set of ${service.title.toLowerCase()} solutions, then use the complete directory below for specialist work.`
-            }
-          />
-          <div className="mt-12 grid gap-px overflow-hidden rounded-lg border border-white/15 bg-white/15 md:grid-cols-2 lg:grid-cols-3">
-            {(solutions.length
-              ? solutions
-              : highlights.map((item) => ({
-                  title: item,
-                  description: `A tailored ${service.title.toLowerCase()} engagement built around this outcome.`,
-                  tags: [] as string[],
-                }))
-            ).map((item, index) => (
-              <article key={`${item.title}-${index}`} className="min-h-64 bg-neutral-950 p-7">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/45">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <Layers3 className="h-5 w-5 text-white/60" />
-                </div>
-                <h3 className="mt-10 text-2xl font-semibold">{item.title}</h3>
-                {item.description && (
-                  <p className="mt-4 leading-7 text-white/65">{item.description}</p>
-                )}
-                {item.tags && (
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {item.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="border border-white/20 px-3 py-1 text-xs text-white/70"
-                      >
-                        {tag}
+      {/* --------------------------------------------------------- solutions */}
+      {solutions.length > 0 && (
+        <section id="solutions" className="scroll-mt-24 bg-neutral-950 py-20 text-white md:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10">
+            <SectionHead
+              eyebrow="Explore my services"
+              inverse
+              title={
+                stripTags(structured.services?.section_title) ||
+                `Explore my ${service.title.toLowerCase()} solutions`
+              }
+              description={
+                stripTags(structured.services?.section_subtitle) ||
+                `A focused set of ${service.title.toLowerCase()} solutions — with a full specialist directory below.`
+              }
+            />
+            <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {solutions.map((item) => {
+                const Icon = iconFor(item.icon, item.title);
+                const href = localHref(item.link || "");
+                const inner = (
+                  <TiltCard
+                    inverse
+                    className="h-full rounded-2xl border border-white/12 p-7 hover:border-white/25"
+                  >
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6A00]/12 text-[#FF6A00]">
+                      <Icon className="h-6 w-6" />
+                    </span>
+                    <h3 className="mt-5 text-xl font-bold leading-snug">{stripTags(item.title)}</h3>
+                    {item.description && (
+                      <p className="mt-3 text-sm leading-7 text-white/65">
+                        {stripTags(item.description)}
+                      </p>
+                    )}
+                    {item.tags && item.tags.length > 0 && (
+                      <ul className="mt-5 flex flex-wrap gap-2">
+                        {item.tags.map((tag) => (
+                          <li
+                            key={tag}
+                            className="rounded-full border border-white/15 px-3 py-1 text-[11px] uppercase tracking-wider text-white/60"
+                          >
+                            {stripTags(tag)}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {href && (
+                      <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#FF6A00]">
+                        View service <ArrowUpRight className="h-4 w-4" />
                       </span>
-                    ))}
-                  </div>
-                )}
-              </article>
-            ))}
+                    )}
+                  </TiltCard>
+                );
+                return href ? (
+                  <a key={item.title} href={href} className="block h-full">
+                    {inner}
+                  </a>
+                ) : (
+                  <div key={item.title}>{inner}</div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="py-20 md:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[.72fr_1.28fr] lg:px-10">
-          <SectionTitle
-            eyebrow="Tools and platforms"
-            title="A modern stack selected for the work, not forced onto it"
-            description="I choose tools around your requirements, existing systems, security needs, and ability to maintain the result."
+      {/* ------------------------------------------------------------- tools */}
+      <section className="py-20 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <SectionHead
+            eyebrow="Stack"
+            title={`Tools, platforms, and technologies I work with for ${service.title.toLowerCase()}`}
           />
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 sm:grid-cols-3">
-            {TOOL_LOGOS.map(([name, src]) => (
-              <div key={name} className="grid min-h-36 place-items-center bg-white p-7">
-                <img
-                  src={src}
-                  alt={name}
-                  loading="lazy"
-                  className="max-h-12 max-w-[150px] object-contain"
-                />
-              </div>
+          <div className="mt-10 flex flex-wrap gap-3">
+            {[...TOOL_LOGOS, ...NETWORK_LOGOS].map(([name, src]) => (
+              <span
+                key={`${name}-chip`}
+                className="inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700"
+              >
+                <img src={src} alt="" aria-hidden className="h-5 max-w-[70px] object-contain" />
+                {name}
+              </span>
             ))}
-            <div className="grid min-h-36 place-items-center bg-neutral-950 p-7 text-center text-sm font-semibold text-white">
-              Plus the specialist stack your project requires
-            </div>
           </div>
         </div>
       </section>
 
-      {videoUrl && (
-        <section className="border-y border-neutral-200 bg-neutral-50 py-20">
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 lg:grid-cols-[.7fr_1.3fr] lg:px-10">
-            <div>
-              <Play className="h-8 w-8" />
-              <h2 className="mt-5 text-3xl font-semibold md:text-5xl">
-                See the thinking and work behind the service
-              </h2>
-              <p className="mt-5 leading-7 text-neutral-600">
-                A short look at the process, experiments, and practical approach used across client
-                work.
-              </p>
+      {/* ----------------------------------------------------------- process */}
+      {processSteps.length > 0 && (
+        <section id="process" className="scroll-mt-24 border-y border-neutral-200 bg-neutral-50 py-20 md:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10">
+            <SectionHead
+              eyebrow="My process"
+              title="From discovery to a result your team can actually use"
+              description="Each engagement follows the same transparent path — you always know the current step and what comes next."
+            />
+            <div className="mt-12">
+              <ProcessSlider
+                steps={processSteps.map((step, index) => ({
+                  n: String(step.step_number || index + 1).padStart(2, "0"),
+                  t: stripTags(step.title),
+                  d: stripTags(step.description),
+                }))}
+              />
             </div>
-            <div className="aspect-video overflow-hidden rounded-lg bg-black">
+          </div>
+        </section>
+      )}
+
+      {/* ------------------------------------------------------------- video */}
+      {showVideo && videoUrl && (
+        <section className="bg-neutral-950 py-20 text-white md:py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10">
+            <SectionHead eyebrow="Highlight" inverse title={`${service.title} in motion`} />
+            <div className="mt-10 aspect-video overflow-hidden rounded-2xl border border-white/12">
               <iframe
                 src={videoUrl}
-                title={`${service.title} service video`}
+                title={`${service.title} highlight video`}
                 loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="h-full w-full border-0"
+                className="h-full w-full"
               />
             </div>
           </div>
         </section>
       )}
 
-      <section id="process" className="scroll-mt-20 py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <SectionTitle
-              eyebrow="Our process"
-              title="From discovery to a result your team can use"
-              description="A transparent sequence keeps decisions, responsibilities, and delivery visible from the beginning."
-            />
-            <a
-              href="#book-call"
-              className="inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-4"
-            >
-              Discuss your project <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-          <div className="service-process-row mt-12 flex gap-4 overflow-x-auto pb-5">
-            {(processSteps.length
-              ? processSteps
-              : [
-                  {
-                    step_number: 1,
-                    title: "Discovery",
-                    description:
-                      "Clarify the problem, audience, constraints, and definition of success.",
-                  },
-                  {
-                    step_number: 2,
-                    title: "Strategy",
-                    description:
-                      "Choose the right scope, tools, sequence, and measurable milestones.",
-                  },
-                  {
-                    step_number: 3,
-                    title: "Delivery",
-                    description:
-                      "Build, review, improve, document, and hand over the finished work.",
-                  },
-                ]
-            ).map((step, index) => (
-              <article
-                key={`${step.title}-${index}`}
-                className="w-[310px] flex-none snap-start rounded-lg border border-neutral-200 bg-white p-7 md:w-[360px]"
-              >
-                <span className="text-sm font-semibold text-neutral-400">
-                  {String(step.step_number || index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-12 text-xl font-semibold">{step.title}</h3>
-                {step.description && (
-                  <p className="mt-4 leading-7 text-neutral-600">{step.description}</p>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {sections._cached_industries_block && (
-        <section className="border-y border-neutral-200 bg-neutral-50 py-20">
-          <div
-            className="service-rich-html mx-auto max-w-7xl px-6 lg:px-10"
-            dangerouslySetInnerHTML={{ __html: sections._cached_industries_block }}
-          />
-        </section>
-      )}
-
-      <section id="portfolio" className="scroll-mt-20 bg-neutral-950 py-20 text-white md:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <SectionTitle
-            eyebrow="Selected work"
-            inverse
-            title="Explore my portfolio"
-            description="Brand, product, website, and creative work drawn from the original service-page portfolio."
-          />
-          <div
-            role="tablist"
-            aria-label="Portfolio categories"
-            className="mt-9 flex gap-2 overflow-x-auto border-b border-white/20 pb-4"
-          >
-            {(Object.keys(PORTFOLIO) as PortfolioTab[]).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                aria-selected={portfolioTab === tab}
-                onClick={() => setPortfolioTab(tab)}
-                className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-semibold transition ${portfolioTab === tab ? "bg-white text-neutral-950" : "border border-white/25 text-white/70 hover:text-white"}`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PORTFOLIO[portfolioTab].map(([name, src]) => (
-              <figure key={name} className="group overflow-hidden rounded-lg bg-white">
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={src}
-                    alt={name}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                  />
-                </div>
-                <figcaption className="p-4 text-sm font-semibold text-neutral-950">
-                  {name}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <SectionTitle
-            eyebrow="Delivery transparency"
-            title="Understanding potential service delays"
-            description="These situations are uncommon. They are shared openly so expectations remain realistic and communication stays clear."
-          />
-          <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 md:grid-cols-2 lg:grid-cols-3">
-            {DELAYS.map(([heading, description], index) => (
-              <article key={heading} className="min-h-52 bg-white p-7">
-                <div className="flex items-center justify-between">
-                  <Clock3 className="h-5 w-5" />
-                  <span className="text-sm text-neutral-400">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="mt-8 text-xl font-semibold">{heading}</h3>
-                <p className="mt-3 leading-7 text-neutral-600">{description}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {children.length > 0 && (
-        <section
-          id="directory"
-          className="scroll-mt-20 border-y border-neutral-200 bg-neutral-50 py-20 md:py-28"
-        >
+      {/* --------------------------------------------------------- portfolio */}
+      {portfolioItems && (
+        <section id="portfolio" className="scroll-mt-24 py-20 md:py-28">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
-            <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
-              <SectionTitle
-                eyebrow="Full service directory"
-                title={`Explore every ${service.title} service`}
-                description={`${childCount.toLocaleString()} imported child and specialist service pages. Search by the exact outcome or discipline you need.`}
-              />
-              <label className="flex w-full max-w-sm items-center gap-2 border-b border-neutral-500 py-3 text-sm focus-within:border-neutral-950">
-                <Search className="h-4 w-4 text-neutral-500" />
-                <input
-                  value={query}
-                  onChange={(event) => {
-                    setQuery(event.target.value);
-                    setVisibleCount(18);
-                  }}
-                  placeholder="Search services"
-                  className="w-full bg-transparent outline-none placeholder:text-neutral-400"
-                />
-              </label>
-            </div>
-            <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredChildren.slice(0, visibleCount).map((child, index) => (
-                <a
-                  key={child.href}
-                  href={child.href}
-                  className="group block border-b border-neutral-300 pb-6"
+            <SectionHead
+              eyebrow="Portfolio"
+              title={`${portfolioTabName} relevant to ${service.title.toLowerCase()}`}
+              description="A snapshot of shipped work in the same discipline as this service."
+            />
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {portfolioItems.map(([name, src]) => (
+                <TiltCard
+                  key={name}
+                  className="overflow-hidden rounded-2xl border border-neutral-200"
                 >
-                  <div className="aspect-[16/9] overflow-hidden rounded-lg bg-neutral-200">
-                    {child.featured_image ? (
-                      <img
-                        src={child.featured_image}
-                        alt=""
-                        loading="lazy"
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <div className="grid h-full place-items-center bg-neutral-950 text-sm text-white/55">
-                        {String(index + 1).padStart(2, "0")}
-                      </div>
+                  <img src={src} alt={name} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                  <p className="px-5 py-4 font-semibold">{name}</p>
+                </TiltCard>
+              ))}
+            </div>
+            <Link
+              to="/portfolio"
+              className="mt-8 inline-flex items-center gap-2 font-bold text-[#FF6A00]"
+            >
+              See the full portfolio <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* ----------------------------------------------------------- delays */}
+      <section className="border-y border-neutral-200 bg-neutral-50 py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <SectionHead
+            eyebrow="Transparency"
+            title="Understanding potential service delays"
+            description="Rare, but honest: these are the only reasons a milestone ever moves. Hover any badge for detail."
+          />
+          <ul className="mt-8 flex flex-wrap gap-3">
+            {DELAYS.map(([label, detail]) => (
+              <li key={label} className="group relative">
+                <span className="inline-flex cursor-help items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition group-hover:border-[#FF6A00]">
+                  <Info className="h-4 w-4 text-[#FF6A00]" />
+                  {label}
+                </span>
+                <span className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-72 rounded-xl bg-neutral-950 p-4 text-sm leading-6 text-white/85 shadow-xl group-hover:block">
+                  {detail}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* --------------------------------------------------------- directory */}
+      {children.length > 0 && (
+        <section id="directory" className="scroll-mt-24 py-20 md:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10">
+            <SectionHead
+              eyebrow="Directory"
+              title={`All ${childCount} ${service.title.toLowerCase()} pages`}
+              description="Every specialist page under this service — searchable."
+            />
+            <label className="mt-8 flex max-w-md items-center gap-3 rounded-full border border-neutral-200 bg-white px-5 py-3">
+              <Search className="h-4 w-4 text-neutral-400" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={`Search ${service.title.toLowerCase()} services`}
+                className="w-full bg-transparent text-sm outline-none"
+                aria-label="Search services"
+              />
+            </label>
+            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredChildren.slice(0, visibleCount).map((child) => (
+                <a key={child.href} href={child.href} className="block h-full">
+                  <TiltCard className="h-full rounded-2xl border border-neutral-200 p-6 hover:border-neutral-300">
+                    <h3 className="text-base font-bold leading-snug">{child.title}</h3>
+                    {child.excerpt && (
+                      <p className="mt-2 text-sm leading-6 text-neutral-600">{child.excerpt}</p>
                     )}
-                  </div>
-                  <p className="mt-5 text-xs font-semibold uppercase text-neutral-500">
-                    {service.title}
-                  </p>
-                  <h3 className="mt-2 text-xl font-semibold leading-snug group-hover:underline">
-                    {child.title}
-                  </h3>
-                  {child.excerpt && (
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-neutral-600">
-                      {child.excerpt}
-                    </p>
-                  )}
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#FF6A00]">
+                      Open <ArrowUpRight className="h-4 w-4" />
+                    </span>
+                  </TiltCard>
                 </a>
               ))}
             </div>
-            {filteredChildren.length === 0 && (
-              <p className="py-16 text-center text-neutral-500">
-                No services match &quot;{query}&quot;.
-              </p>
-            )}
-            {visibleCount < filteredChildren.length && (
-              <div className="mt-12 text-center">
-                <button
-                  type="button"
-                  onClick={() => setVisibleCount((count) => count + 18)}
-                  className="rounded-full border border-neutral-950 px-6 py-3 text-sm font-semibold transition hover:bg-neutral-950 hover:text-white"
-                >
-                  Show more services ({(filteredChildren.length - visibleCount).toLocaleString()}{" "}
-                  remaining)
-                </button>
-              </div>
+            {filteredChildren.length > visibleCount && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount((value) => value + 18)}
+                className="mt-8 rounded-full border border-neutral-300 px-6 py-3 font-bold transition hover:bg-neutral-950 hover:text-white"
+              >
+                Show more ({filteredChildren.length - visibleCount} left)
+              </button>
             )}
           </div>
         </section>
       )}
 
-      <section className="py-20 md:py-28">
+      {/* ---------------------------------------------------------- book call */}
+      <section id="book-call" className="scroll-mt-24 bg-neutral-950 py-20 text-white md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <SectionTitle
-              eyebrow="Recognition"
-              title="Awards and recognition"
-              description="Achievements that tell the real story: consistent craft, experimentation, and useful work."
-            />
-            <Link
-              to="/awards"
-              className="inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-4"
-            >
-              Explore all awards <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 md:grid-cols-3 lg:grid-cols-6">
+          <SectionHead
+            eyebrow="Booking"
+            inverse
+            center
+            title={`Book a call about ${service.title.toLowerCase()}`}
+            description="Pick a slot that works for you — we will scope the work together, no pressure."
+          />
+          <CalEmbed className="mt-10 min-h-[680px] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950" />
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------ awards */}
+      <section className="py-20 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <SectionHead eyebrow="Recognition" title="Awards and recognition" />
+          <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
             {AWARDS.map(([name, src]) => (
-              <div key={name} className="grid min-h-40 place-items-center bg-white p-6">
-                <img
-                  src={src}
-                  alt={name}
-                  loading="lazy"
-                  className="max-h-24 max-w-full object-contain"
-                />
+              <div
+                key={name}
+                className="grid min-h-32 place-items-center rounded-2xl border border-neutral-200 bg-white p-5"
+              >
+                <img src={src} alt={name} loading="lazy" className="max-h-16 object-contain" />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-y border-neutral-200 bg-neutral-950 py-20 text-white md:py-28">
+      {/* ------------------------------------------------------------ global */}
+      <section id="global" className="scroll-mt-24 border-y border-neutral-200 bg-neutral-50 py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
+          <div className="grid gap-12 lg:grid-cols-[.9fr_1.1fr]">
             <div>
-              <Globe2 className="h-8 w-8" />
-              <h2 className="mt-6 text-3xl font-semibold md:text-5xl">
-                We are global to empower you
-              </h2>
-              <p className="mt-5 max-w-xl leading-7 text-white/65">
-                Delivering projects worldwide with clients across top countries. Geography is never
-                a barrier.
-              </p>
-              <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-white/20 pt-6">
-                <div>
-                  <dt className="text-3xl font-semibold">450+</dt>
-                  <dd className="mt-2 text-xs text-white/55">Projects delivered</dd>
-                </div>
-                <div>
-                  <dt className="text-3xl font-semibold">100+</dt>
-                  <dd className="mt-2 text-xs text-white/55">Markets served</dd>
-                </div>
-                <div>
-                  <dt className="text-3xl font-semibold">Global</dt>
-                  <dd className="mt-2 text-xs text-white/55">Client access</dd>
-                </div>
-              </dl>
+              <SectionHead
+                eyebrow="Global"
+                title="We are global to empower you"
+                description={`Location-specific ${service.title.toLowerCase()} delivery, with local context and worldwide standards.`}
+              />
+              <div className="mt-8 grid grid-cols-3 gap-6">
+                {[
+                  ["450+", "Projects"],
+                  ["50+", "Countries"],
+                  ["24/7", "Comms"],
+                ].map(([value, label]) => (
+                  <div key={label}>
+                    <p className="text-3xl font-bold text-[#FF6A00]">{value}</p>
+                    <p className="text-xs uppercase tracking-widest text-neutral-500">{label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/15 bg-white/15 sm:grid-cols-3">
-              {COUNTRIES.map(([name, code]) => (
-                <div key={code} className="flex min-h-24 items-center gap-4 bg-neutral-950 p-5">
-                  <img
-                    src={`/site-assets/${code}.svg`}
-                    alt=""
-                    loading="lazy"
-                    className="h-7 w-9 object-cover"
-                  />
-                  <span className="text-sm text-white/75">{name}</span>
-                </div>
+            <GlobalFlags entries={FLAGS} slug={service.slug} />
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------ hire agency */}
+      {(sections._cached_industries_block || sections._cached_locations_block_v4) && (
+        <section className="relative isolate overflow-hidden bg-neutral-950 py-20 text-white md:py-28">
+          <img
+            src="/site-assets/Redsglow-Banner.jpg"
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover opacity-20"
+          />
+          <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+            <SectionHead
+              eyebrow="Scale up"
+              inverse
+              title="Want to hire an agency instead?"
+              description="Bigger scope? My team covers industry-specific programmes and location-specific delivery for this service."
+            />
+            <div className="mt-8 flex gap-2 rounded-full border border-white/15 p-1 text-sm font-bold sm:w-fit">
+              {(
+                [
+                  ["industries", "Industries we serve"],
+                  ["locations", "Locations we serve"],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setAgencyTab(key)}
+                  className={`rounded-full px-5 py-2.5 transition ${
+                    agencyTab === key ? "bg-[#FF6A00] text-white" : "text-white/65 hover:text-white"
+                  }`}
+                >
+                  {label}
+                </button>
               ))}
             </div>
+            <div
+              className="uj-service-block mt-8 rounded-2xl border border-white/12 bg-white/[.04] p-6 md:p-9"
+              dangerouslySetInnerHTML={{
+                __html:
+                  (agencyTab === "industries"
+                    ? sections._cached_industries_block
+                    : sections._cached_locations_block_v4) ||
+                  sections._cached_industries_block ||
+                  sections._cached_locations_block_v4 ||
+                  "",
+              }}
+            />
           </div>
-          {sections._cached_locations_block_v4 && (
-            <details className="service-location-details mt-12 border-t border-white/20 pt-7">
-              <summary className="cursor-pointer font-semibold">
-                View the complete imported location coverage
-              </summary>
-              <div
-                className="service-rich-html service-rich-html-dark mt-8"
-                dangerouslySetInnerHTML={{ __html: sections._cached_locations_block_v4 }}
-              />
-            </details>
-          )}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <div
-          className="relative min-h-[360px] overflow-hidden rounded-lg border border-neutral-200"
-          style={{
-            backgroundImage: "url('/site-assets/Redsglow.jpg')",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          }}
-        >
-          <div className="relative max-w-2xl p-8 md:p-14">
-            <p className="text-xs font-semibold uppercase">Want to hire an agency?</p>
-            <h2 className="mt-4 text-3xl font-semibold leading-tight md:text-5xl">
-              One team for strategy, creative, technology, and growth
-            </h2>
-            <p className="mt-5 max-w-xl leading-7 text-neutral-800">
-              From marketing to automation, technical development to management, creative design to
-              operations, Redsglow delivers it under one roof.
-            </p>
-            <a
-              href="https://redsglow.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-neutral-950 px-6 py-3 text-sm font-semibold text-white"
-            >
-              Visit Redsglow <ExternalLink className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-neutral-200 bg-neutral-50 py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <SectionTitle
-            eyebrow="Insights"
-            title="Read our blogs"
-            description="Related thinking, practical guides, and research from the wider Usman Jatoi library."
-          />
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {RELATED_ARTICLES.map((article) => (
-              <a
-                key={article.href}
-                href={article.href}
-                className="group overflow-hidden rounded-lg border border-neutral-200 bg-white"
-              >
-                <div className="aspect-[16/10] overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt=""
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                  />
-                </div>
-                <div className="p-6">
-                  <time className="text-xs text-neutral-500">{article.date}</time>
-                  <h3 className="mt-3 text-xl font-semibold leading-snug group-hover:underline">
-                    {article.title}
-                  </h3>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="faqs" className="scroll-mt-20 py-20 md:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[.58fr_1.42fr] lg:px-10">
-          <div>
-            <Sparkles className="h-8 w-8" />
-            <h2 className="mt-5 text-3xl font-semibold md:text-5xl">Frequently asked questions</h2>
-            <p className="mt-5 leading-7 text-neutral-600">
-              Open each question individually. The answers come directly from the imported service
-              data.
-            </p>
-          </div>
-          <div>
-            {faqs.length ? (
-              faqs.map((faq) => (
-                <details key={faq.question} className="border-b border-neutral-950 py-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-semibold">
-                    <span>{faq.question}</span>
-                    <span aria-hidden="true" className="text-2xl font-normal">
-                      +
-                    </span>
-                  </summary>
-                  <p className="max-w-3xl pb-2 pt-5 leading-7 text-neutral-600">{faq.answer}</p>
-                </details>
-              ))
-            ) : sections.faqs ? (
-              <div
-                className="service-rich-html"
-                dangerouslySetInnerHTML={{ __html: sections.faqs }}
-              />
-            ) : (
-              <p className="text-neutral-600">
-                Bring your questions to the booking call and I will answer them directly.
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {!service.structured && service.content && (
-        <section className="border-y border-neutral-200 bg-neutral-50 py-20">
-          <div
-            className="service-rich-html mx-auto max-w-6xl px-6 lg:px-10"
-            dangerouslySetInnerHTML={{ __html: service.content }}
-          />
         </section>
       )}
 
-      <section
-        id="book-call"
-        className="scroll-mt-20 border-y border-neutral-200 bg-neutral-950 py-20 text-white"
-      >
-        <div className="mx-auto max-w-6xl px-6 lg:px-10">
-          <Calendar className="mx-auto h-8 w-8" />
-          <h2 className="mt-5 text-center text-3xl font-semibold md:text-5xl">
-            Book a call about {service.title}
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-white/65">
-            Choose a 30-minute slot and bring your goals, constraints, current setup, or questions.
-          </p>
-          <CalEmbed className="mt-10 min-h-[720px] overflow-hidden rounded-lg border border-white/15 bg-neutral-950" />
+      {/* -------------------------------------------------------------- toc */}
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-7">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+              On this page
+            </p>
+            <ul className="mt-4 grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+              {toc.map(([label, href]) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    className="inline-flex items-center gap-2 py-1 text-sm font-semibold text-neutral-700 hover:text-[#FF6A00]"
+                  >
+                    <ChevronRight className="h-4 w-4 text-[#FF6A00]" />
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
-      <section id="contact" className="scroll-mt-20 mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="overflow-hidden rounded-lg bg-neutral-950 text-white md:grid md:grid-cols-2">
-          <form onSubmit={submitContact} className="space-y-4 p-7 md:p-10">
-            <p className="text-xs font-semibold uppercase text-white/55">Contact</p>
-            <h2 className="text-3xl font-semibold">Tell me what you want to build</h2>
+      {/* ------------------------------------------------------------- blogs */}
+      {related.length > 0 && (
+        <section id="blogs" className="scroll-mt-24 pb-20 md:pb-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10">
+            <SectionHead
+              eyebrow="Read my blogs"
+              title={`Latest ${service.title.toLowerCase()} writing`}
+              description="Research-backed articles from the same topic cluster as this service."
+            />
+            <div className="mt-10 grid gap-5 lg:grid-cols-2">
+              <a href={related[0].href} className="block">
+                <TiltCard className="h-full overflow-hidden rounded-2xl border border-neutral-200">
+                  <img
+                    src={coverImageUrl(related[0].slug)}
+                    alt={related[0].title}
+                    loading="lazy"
+                    className="aspect-[16/9] w-full object-cover"
+                  />
+                  <div className="p-7">
+                    <p className="text-xs uppercase tracking-widest text-neutral-500">
+                      {displayDate(related[0].date)}
+                    </p>
+                    <h3 className="mt-3 text-2xl font-bold leading-snug">{related[0].title}</h3>
+                    {related[0].excerpt && (
+                      <p className="mt-3 leading-7 text-neutral-600">{related[0].excerpt}</p>
+                    )}
+                  </div>
+                </TiltCard>
+              </a>
+              <div className="grid gap-5">
+                {related.slice(1, 3).map((post) => (
+                  <a key={post.href} href={post.href} className="block">
+                    <TiltCard className="grid h-full gap-5 rounded-2xl border border-neutral-200 sm:grid-cols-[.45fr_.55fr]">
+                      <img
+                        src={coverImageUrl(post.slug)}
+                        alt={post.title}
+                        loading="lazy"
+                        className="h-full min-h-40 w-full object-cover"
+                      />
+                      <div className="p-6 pl-0 sm:pl-0">
+                        <p className="text-xs uppercase tracking-widest text-neutral-500">
+                          {displayDate(post.date)}
+                        </p>
+                        <h3 className="mt-2 text-lg font-bold leading-snug">{post.title}</h3>
+                      </div>
+                    </TiltCard>
+                  </a>
+                ))}
+              </div>
+            </div>
+            {related.length > 3 && (
+              <ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                {related.slice(3, 7).map((post) => (
+                  <li key={post.href}>
+                    <a
+                      href={post.href}
+                      className="block h-full rounded-xl border border-neutral-200 p-5 text-sm font-semibold leading-6 transition hover:border-[#FF6A00]"
+                    >
+                      {post.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* --------------------------------------------------------------- faq */}
+      {faqs.length > 0 && (
+        <section id="faqs" className="scroll-mt-24 border-y border-neutral-200 bg-neutral-50 py-20 md:py-24">
+          <div className="mx-auto max-w-4xl px-6">
+            <SectionHead eyebrow="FAQ" center title="Frequently asked questions" />
+            <div className="mt-10 divide-y divide-neutral-200 overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+              {faqs.map((faq, index) => {
+                const isOpen = openFaq === index;
+                return (
+                  <div key={faq.question}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? -1 : index)}
+                      aria-expanded={isOpen}
+                      className="flex w-full items-center justify-between gap-6 p-6 text-left"
+                    >
+                      <span className="font-bold">{stripTags(faq.question)}</span>
+                      <ChevronDown
+                        className={`h-5 w-5 flex-none transition-transform ${isOpen ? "rotate-180 text-[#FF6A00]" : "text-neutral-400"}`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <p className="px-6 pb-6 leading-7 text-neutral-600">
+                        {stripTags(faq.answer)}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ----------------------------------------------------------- contact */}
+      <section id="contact" className="scroll-mt-24 py-20 md:py-28">
+        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1fr_1fr] lg:px-10">
+          <div>
+            <SectionHead
+              eyebrow="Contact"
+              title={`Tell me about your ${service.title.toLowerCase()} project`}
+              description="Send the brief and I reply personally, usually within one business day."
+            />
+            <ul className="mt-8 space-y-4">
+              {[
+                "Direct reply from me — not a sales team",
+                "Clear scope, timeline, and price before work starts",
+                "NDA-friendly and confidential by default",
+              ].map((item) => (
+                <li key={item} className="flex gap-3 leading-7 text-neutral-700">
+                  <Check className="mt-1.5 h-4 w-4 flex-none text-[#FF6A00]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <form
+            onSubmit={submitContact}
+            className="rounded-2xl border border-neutral-200 bg-neutral-50 p-7"
+          >
             <div className="grid gap-4 sm:grid-cols-2">
               <input
                 name="name"
                 required
-                placeholder="Name"
-                className="w-full bg-white px-4 py-3 text-neutral-950 outline-none"
+                placeholder="Your name"
+                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
               />
               <input
                 name="email"
-                required
                 type="email"
-                placeholder="Email"
-                className="w-full bg-white px-4 py-3 text-neutral-950 outline-none"
+                required
+                placeholder="Email address"
+                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
               />
+              <input
+                name="phone"
+                placeholder="Phone (optional)"
+                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
+              />
+              <select
+                name="interest"
+                defaultValue=""
+                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
+                aria-label={`Which ${service.title} service do you need?`}
+              >
+                <option value="">{`Any ${service.title.toLowerCase()} service`}</option>
+                {(solutions.length
+                  ? solutions.map((item) => stripTags(item.title))
+                  : children.slice(0, 25).map((child) => child.title)
+                ).map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
-            <input
-              name="phone"
-              type="tel"
-              placeholder="Phone"
-              className="w-full bg-white px-4 py-3 text-neutral-950 outline-none"
-            />
             <textarea
               name="message"
               required
-              rows={6}
-              placeholder={`Tell me about your ${service.title} project`}
-              className="w-full resize-y bg-white px-4 py-3 text-neutral-950 outline-none"
+              rows={5}
+              placeholder={`What do you need help with in ${service.title.toLowerCase()}?`}
+              className="mt-4 w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
             />
+            <input type="hidden" name="service" value={service.title} />
             <button
+              type="submit"
               disabled={contactState === "sending"}
-              className="w-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 px-6 py-3 font-semibold text-white disabled:opacity-60"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-7 py-3.5 font-bold text-white transition hover:bg-[#ff8124] disabled:opacity-60"
             >
-              {contactState === "sending"
-                ? "Sending..."
-                : contactState === "done"
-                  ? "Message sent"
-                  : "Send enquiry"}
+              {contactState === "sending" ? "Sending…" : "Send the brief"}
+              <ArrowRight className="h-4 w-4" />
             </button>
-            <p role="status" className="text-sm text-white/65">
-              {contactState === "error"
-                ? "The form could not submit. Email contact@usmanjatoi.com instead."
-                : contactState === "done"
-                  ? "Thanks. I will get back to you shortly."
-                  : "Prefer email? contact@usmanjatoi.com"}
-            </p>
-          </form>
-          <div className="relative min-h-[520px]">
-            <img
-              src="/site-assets/My-own-Picture-2.jpg"
-              alt="Usman Jatoi"
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-neutral-950/65" />
-            <div className="absolute bottom-0 p-8 md:p-10">
-              <p className="max-w-md text-sm leading-7">
-                I believe in collaborating with smart, diverse, and creative people, then giving
-                them the clarity and room to do excellent work.
+            {contactState === "done" && (
+              <p className="mt-4 text-sm font-semibold text-emerald-600">
+                Thank you — your {service.title.toLowerCase()} brief is with me.
               </p>
-              <p className="mt-4 font-semibold">Usman Jatoi</p>
-            </div>
-          </div>
+            )}
+            {contactState === "error" && (
+              <p className="mt-4 text-sm font-semibold text-red-600">
+                Something went wrong. Please email hello@usmanjatoi.com instead.
+              </p>
+            )}
+          </form>
         </div>
       </section>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        .service-process-row { scroll-snap-type:x mandatory; scrollbar-width:thin; }
-        .service-rich-html { color:#262626; font-size:16px; line-height:1.75; }
-        .service-rich-html h2,.service-rich-html h3,.service-rich-html h4 { color:#0a0a0a; line-height:1.15; }
-        .service-rich-html h2 { margin:0 0 18px; font-size:clamp(28px,4vw,46px); font-weight:650; }
-        .service-rich-html h3 { margin:0 0 12px; font-size:clamp(20px,2vw,26px); font-weight:650; }
-        .service-rich-html p { margin:0 0 16px; color:#525252; }
-        .service-rich-html a { color:#111; text-decoration:underline; text-underline-offset:3px; }
-        .service-rich-html ul,.service-rich-html ol { margin:16px 0; padding-left:22px; }
-        .service-rich-html li { margin:8px 0; }
-        .service-rich-html .migrated-grid,.service-rich-html .wbb-flag-grid,.service-rich-html .locations-grid,.service-rich-html .industry-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:28px; }
-        .service-rich-html .migrated-grid article,.service-rich-html .wbb-flag-card-link,.service-rich-html .industry-card { display:block; border:1px solid #d4d4d4; background:#fff; padding:18px; border-radius:8px; text-decoration:none; }
-        .service-rich-html details { border-bottom:1px solid #262626; padding:18px 0; }
-        .service-rich-html summary { cursor:pointer; list-style:none; display:flex; justify-content:space-between; gap:20px; color:#111; font-weight:650; }
-        .service-rich-html summary::-webkit-details-marker { display:none; }
-        .service-rich-html summary::after { content:"+"; font-size:22px; font-weight:400; }
-        .service-rich-html details[open] summary::after { content:"-"; }
-        .service-rich-html table { min-width:680px; width:100%; border-collapse:collapse; }
-        .service-rich-html th,.service-rich-html td { border:1px solid #d4d4d4; padding:12px; text-align:left; vertical-align:top; }
-        .service-rich-html th { background:#111; color:#fff; }
-        .service-rich-html img { max-width:100%; height:auto; }
-        .service-rich-html-dark,.service-rich-html-dark h2,.service-rich-html-dark h3,.service-rich-html-dark h4,.service-rich-html-dark p,.service-rich-html-dark a { color:#fff; }
-        .service-rich-html-dark .wbb-flag-card-link,.service-rich-html-dark .industry-card { background:#171717; border-color:#404040; }
-        .service-location-details summary::-webkit-details-marker { display:none; }
-        @media (max-width:700px) {
-          .service-rich-html .migrated-grid,.service-rich-html .wbb-flag-grid,.service-rich-html .locations-grid,.service-rich-html .industry-grid { grid-template-columns:1fr; }
-        }
-      `,
-        }}
-      />
+      <style>{`
+        .uj-service-block h2{font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+        .uj-service-block h3{font-size:1.1rem;font-weight:700;color:#fff;margin:1.2rem 0 .4rem}
+        .uj-service-block p{color:rgba(255,255,255,.68);line-height:1.75;margin-bottom:.75rem}
+        .uj-service-block ul{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:.75rem 0}
+        .uj-service-block li{list-style:none;color:rgba(255,255,255,.8);font-size:.9rem;border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:.6rem .9rem}
+        .uj-service-block a{color:#FF6A00;text-decoration:none}
+        .uj-service-block a:hover{text-decoration:underline}
+        .uj-service-block table{width:100%;border-collapse:collapse;font-size:.9rem;color:rgba(255,255,255,.8)}
+        .uj-service-block td,.uj-service-block th{border:1px solid rgba(255,255,255,.12);padding:.6rem}
+        .uj-service-block meta{display:none}
+      `}</style>
     </main>
   );
 }
