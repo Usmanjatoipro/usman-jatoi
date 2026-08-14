@@ -2,6 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import ServiceArticle, {
   type ServiceArticleData,
   type ServiceChild,
+  type ServiceRelatedPost,
+
 } from "@/components/ServiceArticle";
 import servicesContent from "@/data/services-content.json";
 import { getLocalServiceBySlug } from "@/lib/wp-content-stats.functions";
