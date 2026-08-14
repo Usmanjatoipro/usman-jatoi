@@ -1007,42 +1007,46 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
     let locations: ServiceLink[] = [];
     let childCount = 0;
 
-    try {
-      const index = await getWpDataIndex();
-      const serviceLine = index.services.find((service) => service.slug === data.slug);
-      const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
-      const found = pages.find(
-        (item) => item.status === "publish" && normalizePath(item.path) === path,
-      );
-      if (found) {
-        page = found;
-        const kids = pages.filter(
-          (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
-        );
-        childCount = kids.length;
-        children = kids.map((item) => toLink(item));
-        industries = kids
-          .filter((item) => normalizePath(item.path).startsWith(`${path}/industries/`))
-          .slice(0, 120)
-          .map((item) => toLink(item));
-        locations = kids
-          .filter((item) => normalizePath(item.path).startsWith(`${path}/location/`))
-          .slice(0, 120)
-          .map((item) => toLink(item));
-      }
-    } catch {
-      page = undefined;
-    }
-
-    if (!page) {
-      const tree = await serviceTreeFromDb(data.slug).catch(() => null);
-      if (!tree) return null;
+    const tree = await serviceTreeFromDb(data.slug).catch(() => null);
+    if (tree) {
       page = tree.page;
       children = tree.children;
       industries = tree.industries;
       locations = tree.locations;
       childCount = tree.childCount;
     }
+
+    if (!page) {
+      try {
+        const index = await getWpDataIndex();
+        const serviceLine = index.services.find((service) => service.slug === data.slug);
+        const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
+        const found = pages.find(
+          (item) => item.status === "publish" && normalizePath(item.path) === path,
+        );
+        if (found) {
+          page = found;
+          const kids = pages.filter(
+            (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
+          );
+          childCount = kids.length;
+          children = kids.map((item) => toLink(item));
+          industries = kids
+            .filter((item) => normalizePath(item.path).startsWith(`${path}/industries/`))
+            .slice(0, 120)
+            .map((item) => toLink(item));
+          locations = kids
+            .filter((item) => normalizePath(item.path).startsWith(`${path}/location/`))
+            .slice(0, 120)
+            .map((item) => toLink(item));
+        }
+      } catch {
+        page = undefined;
+      }
+    }
+
+    if (!page) return null;
+
 
     const hydrated = hydratedPost(page);
     const hero = structuredServiceMeta(page.meta, "hero_section") as any;
