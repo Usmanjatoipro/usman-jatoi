@@ -1231,13 +1231,23 @@ export default function ServiceArticle({
               name="message"
               required
               rows={6}
+              maxLength={5000}
               placeholder={`Tell me about your ${service.title} project`}
               className="w-full resize-y bg-white px-4 py-3 text-neutral-950 outline-none"
             />
+            <input
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+            />
             <button
               disabled={contactState === "sending"}
-              className="w-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 px-6 py-3 font-semibold text-white disabled:opacity-60"
+              className="w-full bg-[#FF6A00] px-6 py-3 font-semibold text-white disabled:opacity-60"
             >
+
               {contactState === "sending"
                 ? "Sending..."
                 : contactState === "done"
