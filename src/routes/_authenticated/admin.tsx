@@ -13,34 +13,50 @@ import { useMemo, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  loader: async () => {
-    const [categories, content] = await Promise.all([
-      listCategoriesTree(),
-      getContentTypeStats(),
-    ]);
-    return { ...categories, content };
-  },
   head: () => ({
     meta: [
       { title: "Admin — Usman Jatoi" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  component: AdminPage,
+  component: AdminGate,
   errorComponent: ({ error }) => (
     <div className="p-10 text-red-600">Failed to load: {error.message}</div>
   ),
   notFoundComponent: () => <div className="p-10">Not found</div>,
 });
 
+type AdminData = {
+  tree: WpCategoryNode[];
+  flat: WpCategoryNode[];
+  content: Awaited<ReturnType<typeof getContentTypeStats>>;
+};
 
+function AdminGate() {
+  const loadCategories = useServerFn(listCategoriesTree);
+  const loadContent = useServerFn(getContentTypeStats);
+  const [data, setData] = useState<AdminData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-function AdminPage() {
-  const { tree, flat, content } = Route.useLoaderData() as {
-    tree: WpCategoryNode[];
-    flat: WpCategoryNode[];
-    content: Awaited<ReturnType<typeof getContentTypeStats>>;
-  };
+  useEffect(() => {
+    let active = true;
+    Promise.all([loadCategories(), loadContent()])
+      .then(([categories, content]) => {
+        if (active) setData({ ...(categories as any), content } as AdminData);
+      })
+      .catch((e) => active && setError(e?.message ?? "Failed to load"));
+    return () => {
+      active = false;
+    };
+  }, [loadCategories, loadContent]);
+
+  if (error) return <div className="p-10 text-red-600">Failed to load: {error}</div>;
+  if (!data) return <div className="p-10 text-neutral-500">Loading admin console…</div>;
+  return <AdminPage data={data} />;
+}
+
+function AdminPage({ data }: { data: AdminData }) {
+  const { tree, flat, content } = data;
   const [q, setQ] = useState("");
   const [expandAll, setExpandAll] = useState(false);
 
