@@ -365,13 +365,27 @@ export default function ServiceArticle({
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    if (String(data.get("company") || "").trim()) return; // honeypot
+    const name = String(data.get("name") || "")
+      .trim()
+      .slice(0, 200);
+    const email = String(data.get("email") || "")
+      .trim()
+      .slice(0, 200);
+    const message = String(data.get("message") || "")
+      .trim()
+      .slice(0, 5000);
+    if (!name || !/.+@.+\..+/.test(email) || !message) {
+      setContactState("error");
+      return;
+    }
     setContactState("sending");
     const { error } = await supabase.from("contact_submissions").insert({
-      name: String(data.get("name") || "").trim() || "Anonymous",
-      email: String(data.get("email") || "").trim(),
+      name,
+      email,
       phone: String(data.get("phone") || "").trim() || null,
-      looking_for: service.title,
-      message: String(data.get("message") || "").trim(),
+      looking_for: `${service.title} — /services/${service.slug}`,
+      message,
       source_path: typeof window !== "undefined" ? window.location.pathname : service.path,
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
     });
@@ -381,6 +395,7 @@ export default function ServiceArticle({
       form.reset();
     }
   }
+
 
   return (
     <main className="bg-white text-neutral-950">
