@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/integrations/supabase/types";
 
@@ -98,7 +99,9 @@ const LABELS: Record<string, string> = {
   courses: "Courses",
 };
 
-export const getContentTypeStats = createServerFn({ method: "GET" }).handler(
+export const getContentTypeStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(
   async (): Promise<{ stats: ContentTypeStat[]; mediaCount: number }> => {
     const sb = serverClient();
     const types = ["page", "post", "product", "courses"];

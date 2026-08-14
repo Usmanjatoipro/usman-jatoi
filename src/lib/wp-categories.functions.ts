@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
@@ -62,7 +63,9 @@ function decodeEntities(s: string | null | undefined): string {
     .replace(/&gt;/g, ">");
 }
 
-export const listCategoriesTree = createServerFn({ method: "GET" }).handler(
+export const listCategoriesTree = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(
   async (): Promise<{ tree: WpCategoryNode[]; flat: WpCategory[] }> => {
     const sb = serverClient();
     const { data, error } = await sb
