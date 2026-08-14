@@ -2,15 +2,7 @@ import { useEffect, useRef } from "react";
 
 export type FlagEntry = { code: string; flag: string; country: string; note: string };
 
-function Row({
-  entries,
-  dir,
-  slug,
-}: {
-  entries: FlagEntry[];
-  dir: "up" | "down";
-  slug: string;
-}) {
+function Row({ entries, dir, slug }: { entries: FlagEntry[]; dir: "up" | "down"; slug: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -34,9 +26,14 @@ function Row({
             href={`/services/${slug}/${e.country.toLowerCase().replace(/\s+/g, "-")}/`}
             className="flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white px-5 py-4 transition hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-lg"
           >
-            <span className="text-3xl leading-none" aria-hidden>
-              {e.flag}
-            </span>
+            <img
+              src={`/site-assets/${e.code}.svg`}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="h-7 w-10 flex-none rounded-sm object-cover shadow-sm"
+            />
+
             <span>
               <span className="block font-bold text-neutral-950">{e.country}</span>
               <span className="block text-sm text-neutral-500">{e.note}</span>
@@ -52,13 +49,7 @@ function Row({
  * Two opposing marquee columns of country cards linking to the
  * location-specific version of this service.
  */
-export default function GlobalFlags({
-  entries,
-  slug,
-}: {
-  entries: FlagEntry[];
-  slug: string;
-}) {
+export default function GlobalFlags({ entries, slug }: { entries: FlagEntry[]; slug: string }) {
   const half = Math.ceil(entries.length / 2);
   return (
     <div className="grid gap-5 sm:grid-cols-2">

@@ -93,6 +93,14 @@ export type ServiceChild = {
   featured_image?: string | null;
 };
 
+export type ServiceRelatedPost = {
+  title: string;
+  href: string;
+  excerpt?: string | null;
+  date?: string | null;
+  slug: string;
+};
+
 const NETWORK_LOGOS = [
   ["Wix", "/site-assets/Wix-Logo-1024x398.webp"],
   ["Bricks Builder", "/site-assets/BrickBuilder-logo-1-e1752473525426.webp"],
@@ -274,10 +282,16 @@ export default function ServiceArticle({
   service,
   children,
   childCount,
+  related = [],
+  industries = [],
+  locations = [],
 }: {
   service: ServiceArticleData;
   children: ServiceChild[];
   childCount: number;
+  related?: ServiceRelatedPost[];
+  industries?: ServiceChild[];
+  locations?: ServiceChild[];
 }) {
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(18);
@@ -324,13 +338,28 @@ export default function ServiceArticle({
       ];
   const maxProcessPage = Math.max(0, processItems.length - 3);
 
+  const catalogChildren = useMemo(() => {
+    const unique = new Map<string, ServiceChild>();
+    for (const child of [...children, ...industries, ...locations]) unique.set(child.href, child);
+    return [...unique.values()];
+  }, [children, industries, locations]);
+
   const filteredChildren = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return children;
-    return children.filter((child) =>
+    if (!needle) return catalogChildren;
+    return catalogChildren.filter((child) =>
       `${child.title} ${child.excerpt || ""}`.toLowerCase().includes(needle),
     );
-  }, [children, query]);
+  }, [catalogChildren, query]);
+
+  const relatedArticles = related.length
+    ? related.slice(0, 3).map((article, index) => ({
+        title: article.title,
+        href: article.href,
+        date: article.date ? displayDate(article.date) : "From the Usman Jatoi library",
+        image: RELATED_ARTICLES[index]?.image || RELATED_ARTICLES[0].image,
+      }))
+    : [...RELATED_ARTICLES];
 
   async function submitContact(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -859,7 +888,7 @@ export default function ServiceArticle({
         </div>
       </section>
 
-      {children.length > 0 && (
+      {catalogChildren.length > 0 && (
         <section
           id="directory"
           className="scroll-mt-20 border-y border-neutral-200 bg-neutral-50 py-20 md:py-28"
@@ -1073,24 +1102,24 @@ export default function ServiceArticle({
           <h2 className="text-center text-3xl font-semibold md:text-4xl">Read our blogs</h2>
           <div className="mt-10 grid gap-5 lg:grid-cols-[1.7fr_.9fr]">
             <a
-              href={RELATED_ARTICLES[0].href}
+              href={relatedArticles[0].href}
               className="group relative min-h-[420px] overflow-hidden rounded-lg border border-neutral-200 bg-white"
             >
               <img
-                src={RELATED_ARTICLES[0].image}
+                src={relatedArticles[0].image}
                 alt=""
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover opacity-35 transition duration-500 group-hover:scale-[1.02]"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white via-white/95 to-transparent p-7 pt-28 md:p-10">
-                <time className="text-xs text-neutral-500">{RELATED_ARTICLES[0].date}</time>
+                <time className="text-xs text-neutral-500">{relatedArticles[0].date}</time>
                 <h3 className="mt-3 max-w-2xl text-2xl font-semibold leading-snug group-hover:underline md:text-3xl">
-                  {RELATED_ARTICLES[0].title}
+                  {relatedArticles[0].title}
                 </h3>
               </div>
             </a>
             <div className="grid gap-5">
-              {RELATED_ARTICLES.slice(1).map((article) => (
+              {relatedArticles.slice(1).map((article) => (
                 <a
                   key={article.href}
                   href={article.href}

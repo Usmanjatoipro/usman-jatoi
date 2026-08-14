@@ -724,6 +724,84 @@ function serviceMetaToHtml(meta: LocalPost["meta"]) {
     .join("");
 }
 
+function importedTagTexts(html: string, tag: string) {
+  return [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, "gi"))]
+    .map((match) => stripTags(match[1]))
+    .filter(Boolean);
+}
+
+function structuredServiceMeta(meta: LocalPost["meta"], key: string) {
+  const raw = metaString(meta, key);
+  const json = parseJson(raw);
+  if (json) return json;
+  if (!raw.trim().startsWith("<")) return null;
+
+  if (key === "hero_section") {
+    const paragraphs = importedTagTexts(raw, "p");
+    return {
+      title: importedTagTexts(raw, "h1")[0] || importedTagTexts(raw, "h2")[0],
+      subtitle: paragraphs[0],
+      description: paragraphs.at(-1),
+      features: importedTagTexts(raw, "li"),
+    };
+  }
+  if (key === "aboutexpertise_section") {
+    const paragraphs = importedTagTexts(raw, "p");
+    const list = importedTagTexts(raw, "li");
+    const midpoint = Math.max(1, Math.ceil(list.length / 2));
+    return {
+      title: importedTagTexts(raw, "h2")[0] || importedTagTexts(raw, "h3")[0],
+      intro: paragraphs[0],
+      paragraphs: paragraphs.slice(1),
+      bullets: list.length
+        ? [
+            { heading: "My expertise", list: list.slice(0, midpoint) },
+            { heading: "How I help", list: list.slice(midpoint) },
+          ].filter((group) => group.list.length)
+        : [],
+    };
+  }
+  if (key === "our_services") {
+    const services = [
+      ...raw.matchAll(/<h3\b[^>]*>([\s\S]*?)<\/h3>[\s\S]*?<p\b[^>]*>([\s\S]*?)<\/p>/gi),
+    ]
+      .map((match) => ({
+        title: stripTags(match[1]),
+        description: stripTags(match[2]),
+        tags: [] as string[],
+      }))
+      .filter((item) => item.title && item.description);
+    return {
+      section_title: importedTagTexts(raw, "h2")[0],
+      section_subtitle: importedTagTexts(raw, "p")[0],
+      services,
+    };
+  }
+  if (key === "process") {
+    return {
+      steps: [
+        ...raw.matchAll(
+          /class=["'][^"']*process-title[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>[\s\S]*?class=["'][^"']*process-description[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/gi,
+        ),
+      ].map((match, index) => ({
+        step_number: index + 1,
+        title: stripTags(match[1]),
+        description: stripTags(match[2]),
+      })),
+    };
+  }
+  if (key === "faqs") {
+    return {
+      faqs: [
+        ...raw.matchAll(
+          /class=["'][^"']*faq-question[^"']*["'][^>]*>([\s\S]*?)<\/button>[\s\S]*?class=["'][^"']*faq-answer[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi,
+        ),
+      ].map((match) => ({ question: stripTags(match[1]), answer: stripTags(match[2]) })),
+    };
+  }
+  return null;
+}
+
 function hydratedPost(post: LocalPost): LocalPost {
   const originalContent = post.content && stripTags(post.content) ? post.content : "";
   const isService = post.post_type === "page" && normalizePath(post.path).startsWith("/services/");
@@ -862,34 +940,114 @@ export const getLocalPostBySlug = createServerFn({ method: "GET" })
     };
   });
 
+type ServiceLink = { title: string; href: string; excerpt?: string | null };
+
+function toLink(row: {
+  title: string | null;
+  path: string | null;
+  excerpt?: string | null;
+}): ServiceLink {
+  return {
+    title:
+      stripTags(row.title) || normalizePath(row.path).split("/").filter(Boolean).pop() || "Service",
+    href: normalizePath(row.path),
+    excerpt: stripTags(row.excerpt || "").slice(0, 130),
+  };
+}
+
+async function serviceTreeFromDb(slug: string) {
+  const base = `/services/${slug}`;
+  const sb = serverClient();
+  const { data: rows } = await sb
+    .from("wp_posts")
+    .select(
+      "id, post_type, status, slug, title, excerpt, content, path, post_date, seo_title, seo_description, fifu_image_url, meta",
+    )
+    .or(`path.eq.${base},path.eq.${base}/`)
+    .eq("status", "publish")
+    .limit(1);
+  const page = (rows || [])[0] as unknown as LocalPost | undefined;
+  if (!page) return null;
+
+  const grab = async (pattern: string, limit: number) => {
+    const { data } = await sb
+      .from("wp_posts")
+      .select("title, path, excerpt")
+      .eq("status", "publish")
+      .like("path", pattern)
+      .order("title", { ascending: true })
+      .limit(limit);
+    return (data || []).filter((row) => normalizePath(row.path) !== base).map(toLink);
+  };
+
+  const [all, industries, locations] = await Promise.all([
+    grab(`${base}/%`, 400),
+    grab(`${base}/industries/%`, 120),
+    grab(`${base}/location/%`, 120),
+  ]);
+  const { count } = await sb
+    .from("wp_posts")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "publish")
+    .like("path", `${base}/%`);
+
+  return { page, children: all, industries, locations, childCount: count || all.length };
+}
+
 export const getLocalServiceBySlug = createServerFn({ method: "GET" })
   .validator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
     const path = `/services/${data.slug}`;
-    const index = await getWpDataIndex();
-    const serviceLine = index.services.find((service) => service.slug === data.slug);
-    const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
-    const page = pages.find(
-      (item) => item.status === "publish" && normalizePath(item.path) === path,
-    );
-    if (!page) return null;
+    let page: LocalPost | undefined;
+    let children: ServiceLink[] = [];
+    let industries: ServiceLink[] = [];
+    let locations: ServiceLink[] = [];
+    let childCount = 0;
+
+    try {
+      const index = await getWpDataIndex();
+      const serviceLine = index.services.find((service) => service.slug === data.slug);
+      const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
+      const found = pages.find(
+        (item) => item.status === "publish" && normalizePath(item.path) === path,
+      );
+      if (found) {
+        page = found;
+        const kids = pages.filter(
+          (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
+        );
+        childCount = kids.length;
+        children = kids.map((item) => toLink(item));
+        industries = kids
+          .filter((item) => normalizePath(item.path).startsWith(`${path}/industries/`))
+          .slice(0, 120)
+          .map((item) => toLink(item));
+        locations = kids
+          .filter((item) => normalizePath(item.path).startsWith(`${path}/location/`))
+          .slice(0, 120)
+          .map((item) => toLink(item));
+      }
+    } catch {
+      page = undefined;
+    }
+
+    if (!page) {
+      const tree = await serviceTreeFromDb(data.slug).catch(() => null);
+      if (!tree) return null;
+      page = tree.page;
+      children = tree.children;
+      industries = tree.industries;
+      locations = tree.locations;
+      childCount = tree.childCount;
+    }
+
     const hydrated = hydratedPost(page);
-    const hero = parseJson(metaString(page.meta, "hero_section")) as any;
-    const about = parseJson(metaString(page.meta, "aboutexpertise_section")) as any;
-    const services = parseJson(metaString(page.meta, "our_services")) as any;
-    const process = parseJson(metaString(page.meta, "process")) as any;
-    const faqs = parseJson(metaString(page.meta, "faqs")) as any;
-    const children = pages
-      .filter(
-        (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
-      )
-      .map((item) => ({
-        title: stripTags(item.title) || item.slug,
-        href: normalizePath(item.path),
-        excerpt: stripTags(item.excerpt).slice(0, 130),
-        featured_image:
-          item.fifu_image_url || metaImageUrl(item.meta) || firstHtmlImage(item.content),
-      }));
+    const hero = structuredServiceMeta(page.meta, "hero_section") as any;
+    const about = structuredServiceMeta(page.meta, "aboutexpertise_section") as any;
+    const services = structuredServiceMeta(page.meta, "our_services") as any;
+    const process = structuredServiceMeta(page.meta, "process") as any;
+    const faqs = structuredServiceMeta(page.meta, "faqs") as any;
+    const related = await relatedPostsForService(data.slug);
     return {
       service: {
         ...hydrated,
@@ -911,16 +1069,61 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
           services,
           process,
           faqs,
-          promoVideo: metaString(page.meta, "promovideo") || null,
+          promoVideo:
+            metaString(page.meta, "promovideo") || metaString(page.meta, "promo_video") || null,
         },
         sections: serviceMetaSections(page.meta),
       },
       children,
-      childCount: pages.filter(
-        (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
-      ).length,
+      industries,
+      locations,
+      related,
+      childCount,
     };
   });
+
+const RELATED_SEGMENT_ALIASES: Record<string, string> = {
+  web: "websites",
+  "web-design": "websites",
+  digital: "digital",
+  "social-media": "social-media",
+  "lead-generaton": "lead-generation",
+  "technical-skills": "technical",
+  supports: "support",
+  "bulk-publishing": "content",
+  dubbing: "creative",
+  game: "game",
+};
+
+async function relatedPostsForService(slug: string) {
+  const segment = RELATED_SEGMENT_ALIASES[slug] || slug;
+  try {
+    const sb = serverClient();
+    const { data } = await sb
+      .from("wp_posts")
+      .select("id, title, excerpt, path, post_date, seo_description")
+      .eq("post_type", "post")
+      .eq("status", "publish")
+      .like("path", `/${segment}/%`)
+      .order("post_date", { ascending: false })
+      .limit(7);
+    return (data || []).map((row) => ({
+      title: stripTags(row.title) || "Article",
+      href: normalizePath(row.path),
+      excerpt: stripTags(row.excerpt || row.seo_description || "").slice(0, 180),
+      date: row.post_date,
+      slug: normalizePath(row.path).split("/").filter(Boolean).pop() || `post-${row.id}`,
+    }));
+  } catch {
+    return [] as {
+      title: string;
+      href: string;
+      excerpt: string;
+      date: string | null;
+      slug: string;
+    }[];
+  }
+}
 
 export const getLocalContentByPath = createServerFn({ method: "GET" })
   .validator((data: { path: string }) => data)
