@@ -146,11 +146,14 @@ function ServicePage() {
   const local = Route.useLoaderData();
   const service = (local?.service || fallbackServices[slug]) as ServiceArticleData;
   const children = (local?.children || []) as ServiceChild[];
+  const related = (local?.related || []) as ServiceRelatedPost[];
   return (
     <ServiceArticle
       service={{ ...service, slug }}
       children={children}
       childCount={local?.childCount || children.length}
+      related={related}
     />
   );
+
 }
