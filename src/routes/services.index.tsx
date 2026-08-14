@@ -7,7 +7,7 @@ import ServiceCover from "@/components/ServiceCover";
 import serviceContent from "@/data/services-content.json";
 import { getLocalImportOverview } from "@/lib/wp-content-stats.functions";
 
-const SITE_ORIGIN = "https://usmanjatoi.lovable.app";
+const SITE_ORIGIN = "https://usmanjatoi.com";
 
 export const Route = createFileRoute("/services/")({
   loader: async () => getLocalImportOverview(),
@@ -62,33 +62,141 @@ function decodeHtml(s: string) {
 
 /** Editorial overrides so every card reads like a real offer, not a slug. */
 const META: Record<string, { name: string; group: string; promise: string }> = {
-  ai: { name: "AI Automation & Agents", group: "AI & Automation", promise: "Custom AI workflows, agents and RAG systems that remove manual work." },
-  "bulk-publishing": { name: "Bulk & Programmatic Publishing", group: "Content", promise: "Publish hundreds of SEO-ready pages from structured data, with quality gates." },
-  consulting: { name: "Digital Consulting", group: "Strategy", promise: "A senior second opinion on strategy, stack, hiring and roadmap." },
-  content: { name: "Content Strategy & Writing", group: "Content", promise: "Research-led content that answers real search intent and converts." },
-  conversion: { name: "Conversion Optimization", group: "Growth", promise: "Landing page, funnel and copy work aimed at measurable lift." },
-  creative: { name: "Creative, Design & Video", group: "Creative", promise: "Brand systems, thumbnails, motion, video edits and 3D visuals." },
-  digital: { name: "Digital Transformation", group: "Strategy", promise: "Move offline processes into clean, automated digital workflows." },
-  dubbing: { name: "Dubbing & Localization", group: "Creative", promise: "Multi-language voice, subtitles and localized creative for global reach." },
-  game: { name: "Game & Interactive", group: "Creative", promise: "Game assets, community building and interactive experiences." },
-  investment: { name: "Investment Support", group: "Business", promise: "Decks, data rooms, research and outreach for raising or deploying capital." },
-  "lead-generaton": { name: "Lead Generation", group: "Growth", promise: "Scraped, verified lists plus multichannel outreach that books calls." },
-  legal: { name: "Legal & Compliance Support", group: "Business", promise: "Policies, contracts groundwork and compliance-safe content workflows." },
-  management: { name: "Project & Team Management", group: "Business", promise: "Ship complex projects with clear owners, sprints and reporting." },
-  marketing: { name: "SEO & Marketing", group: "Growth", promise: "Keyword maps, on-page SEO, digital PR and campaigns that compound." },
-  monetization: { name: "Monetization", group: "Growth", promise: "Ads, affiliates, products and offers turned into repeatable revenue." },
-  operations: { name: "Operations", group: "Business", promise: "SOPs, tooling and automation that make delivery predictable." },
-  pr: { name: "PR & Press Coverage", group: "Growth", promise: "Press releases, placements and founder positioning in real publications." },
-  product: { name: "Product Development", group: "Build", promise: "From idea to shipped MVP with a stack you can actually maintain." },
-  researching: { name: "Research & Analysis", group: "Strategy", promise: "Market, competitor and keyword research you can make decisions on." },
-  security: { name: "Security & Hardening", group: "Build", promise: "Site hardening, access hygiene and safer AI/data practices." },
-  "social-media": { name: "Social Media", group: "Growth", promise: "Channel strategy, content calendars and creative that keeps shipping." },
-  startup: { name: "Startup Support", group: "Business", promise: "Early-stage builders: brand, site, GTM and first growth loops." },
-  supports: { name: "Ongoing Support & Retainers", group: "Business", promise: "Maintenance, monitoring and a person who answers when things break." },
-  "technical-skills": { name: "Technical Skills & Engineering", group: "Build", promise: "Scripting, integrations, APIs and the glue between your tools." },
-  training: { name: "Training & Workshops", group: "Strategy", promise: "Hands-on team training on AI, SEO and modern content workflows." },
-  web: { name: "Website Design & Development", group: "Build", promise: "Fast, custom sites in WordPress, Shopify, Webflow or modern React." },
-  web3: { name: "Web3 & Blockchain", group: "Build", promise: "Token, NFT and community projects handled with a practical head." },
+  ai: {
+    name: "AI Automation & Agents",
+    group: "AI & Automation",
+    promise: "Custom AI workflows, agents and RAG systems that remove manual work.",
+  },
+  "bulk-publishing": {
+    name: "Bulk & Programmatic Publishing",
+    group: "Content",
+    promise: "Publish hundreds of SEO-ready pages from structured data, with quality gates.",
+  },
+  consulting: {
+    name: "Digital Consulting",
+    group: "Strategy",
+    promise: "A senior second opinion on strategy, stack, hiring and roadmap.",
+  },
+  content: {
+    name: "Content Strategy & Writing",
+    group: "Content",
+    promise: "Research-led content that answers real search intent and converts.",
+  },
+  conversion: {
+    name: "Conversion Optimization",
+    group: "Growth",
+    promise: "Landing page, funnel and copy work aimed at measurable lift.",
+  },
+  creative: {
+    name: "Creative, Design & Video",
+    group: "Creative",
+    promise: "Brand systems, thumbnails, motion, video edits and 3D visuals.",
+  },
+  digital: {
+    name: "Digital Transformation",
+    group: "Strategy",
+    promise: "Move offline processes into clean, automated digital workflows.",
+  },
+  dubbing: {
+    name: "Dubbing & Localization",
+    group: "Creative",
+    promise: "Multi-language voice, subtitles and localized creative for global reach.",
+  },
+  game: {
+    name: "Game & Interactive",
+    group: "Creative",
+    promise: "Game assets, community building and interactive experiences.",
+  },
+  investment: {
+    name: "Investment Support",
+    group: "Business",
+    promise: "Decks, data rooms, research and outreach for raising or deploying capital.",
+  },
+  "lead-generaton": {
+    name: "Lead Generation",
+    group: "Growth",
+    promise: "Scraped, verified lists plus multichannel outreach that books calls.",
+  },
+  legal: {
+    name: "Legal & Compliance Support",
+    group: "Business",
+    promise: "Policies, contracts groundwork and compliance-safe content workflows.",
+  },
+  management: {
+    name: "Project & Team Management",
+    group: "Business",
+    promise: "Ship complex projects with clear owners, sprints and reporting.",
+  },
+  marketing: {
+    name: "SEO & Marketing",
+    group: "Growth",
+    promise: "Keyword maps, on-page SEO, digital PR and campaigns that compound.",
+  },
+  monetization: {
+    name: "Monetization",
+    group: "Growth",
+    promise: "Ads, affiliates, products and offers turned into repeatable revenue.",
+  },
+  operations: {
+    name: "Operations",
+    group: "Business",
+    promise: "SOPs, tooling and automation that make delivery predictable.",
+  },
+  pr: {
+    name: "PR & Press Coverage",
+    group: "Growth",
+    promise: "Press releases, placements and founder positioning in real publications.",
+  },
+  product: {
+    name: "Product Development",
+    group: "Build",
+    promise: "From idea to shipped MVP with a stack you can actually maintain.",
+  },
+  researching: {
+    name: "Research & Analysis",
+    group: "Strategy",
+    promise: "Market, competitor and keyword research you can make decisions on.",
+  },
+  security: {
+    name: "Security & Hardening",
+    group: "Build",
+    promise: "Site hardening, access hygiene and safer AI/data practices.",
+  },
+  "social-media": {
+    name: "Social Media",
+    group: "Growth",
+    promise: "Channel strategy, content calendars and creative that keeps shipping.",
+  },
+  startup: {
+    name: "Startup Support",
+    group: "Business",
+    promise: "Early-stage builders: brand, site, GTM and first growth loops.",
+  },
+  supports: {
+    name: "Ongoing Support & Retainers",
+    group: "Business",
+    promise: "Maintenance, monitoring and a person who answers when things break.",
+  },
+  "technical-skills": {
+    name: "Technical Skills & Engineering",
+    group: "Build",
+    promise: "Scripting, integrations, APIs and the glue between your tools.",
+  },
+  training: {
+    name: "Training & Workshops",
+    group: "Strategy",
+    promise: "Hands-on team training on AI, SEO and modern content workflows.",
+  },
+  web: {
+    name: "Website Design & Development",
+    group: "Build",
+    promise: "Fast, custom sites in WordPress, Shopify, Webflow or modern React.",
+  },
+  web3: {
+    name: "Web3 & Blockchain",
+    group: "Build",
+    promise: "Token, NFT and community projects handled with a practical head.",
+  },
 };
 
 const ALL: RawService[] = Object.values(serviceContent as Record<string, RawService>);
@@ -132,18 +240,49 @@ const FEATURED = [
   .filter(Boolean) as Card[];
 
 const PROCESS = [
-  { step: "01", title: "Discovery", body: "We talk through the goal, the constraint and what's already been tried. No template intake forms." },
-  { step: "02", title: "Scope & plan", body: "Clear phases, honest timeline and real trade-offs — before anyone touches a keyboard." },
-  { step: "03", title: "Build", body: "Weekly progress, working demos and a shared workspace so you're never guessing." },
-  { step: "04", title: "Ship & support", body: "Handover with docs and a runbook, plus optional retainers when you want me to stay on." },
+  {
+    step: "01",
+    title: "Discovery",
+    body: "We talk through the goal, the constraint and what's already been tried. No template intake forms.",
+  },
+  {
+    step: "02",
+    title: "Scope & plan",
+    body: "Clear phases, honest timeline and real trade-offs — before anyone touches a keyboard.",
+  },
+  {
+    step: "03",
+    title: "Build",
+    body: "Weekly progress, working demos and a shared workspace so you're never guessing.",
+  },
+  {
+    step: "04",
+    title: "Ship & support",
+    body: "Handover with docs and a runbook, plus optional retainers when you want me to stay on.",
+  },
 ];
 
 const FAQS = [
-  { q: "How do I hire you for one of these services?", a: "Send a short brief through the contact page — the goal, the deadline and what you've already tried. You'll get a real reply with scope and honest timing within 1–2 business days." },
-  { q: "Do you take small, one-off projects?", a: "Yes. Single automations, one landing page, a batch of thumbnails or a short campaign are all fine as long as the scope is clear." },
-  { q: "Can you work alongside our in-house team?", a: "Yes. I've led teams of 19+ and also drop into existing squads as an embedded specialist on a weekly cadence." },
-  { q: "Do you offer white-label delivery for agencies?", a: "Yes — agencies and studios resell these service lines under their own brand. See the white-label partnership page for how it works." },
-  { q: "Which services work best together?", a: "Most clients pair a build service (web, product) with a growth service (SEO & marketing, content, lead generation). Automation is usually added once the workflow is proven." },
+  {
+    q: "How do I hire you for one of these services?",
+    a: "Send a short brief through the contact page — the goal, the deadline and what you've already tried. You'll get a real reply with scope and honest timing within 1–2 business days.",
+  },
+  {
+    q: "Do you take small, one-off projects?",
+    a: "Yes. Single automations, one landing page, a batch of thumbnails or a short campaign are all fine as long as the scope is clear.",
+  },
+  {
+    q: "Can you work alongside our in-house team?",
+    a: "Yes. I've led teams of 19+ and also drop into existing squads as an embedded specialist on a weekly cadence.",
+  },
+  {
+    q: "Do you offer white-label delivery for agencies?",
+    a: "Yes — agencies and studios resell these service lines under their own brand. See the white-label partnership page for how it works.",
+  },
+  {
+    q: "Which services work best together?",
+    a: "Most clients pair a build service (web, product) with a growth service (SEO & marketing, content, lead generation). Automation is usually added once the workflow is proven.",
+  },
 ];
 
 /* ------------------------------------------------------------- component */
@@ -200,7 +339,10 @@ function ServicesPage() {
 
   return (
     <main className="min-h-screen bg-white text-neutral-900">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
 
       <PageHero
         eyebrow="Services · Full-stack digital"
@@ -211,10 +353,16 @@ function ServicesPage() {
 
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="mb-14 flex flex-wrap gap-3">
-          <Link to="/contact-me" className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800">
+          <Link
+            to="/contact-me"
+            className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800"
+          >
             Start a project
           </Link>
-          <Link to="/white-label-partnership" className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-100">
+          <Link
+            to="/white-label-partnership"
+            className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-100"
+          >
             White-label partnership
           </Link>
         </div>
@@ -230,7 +378,8 @@ function ServicesPage() {
                 Featured services
               </h2>
               <p className="mt-2 max-w-2xl text-neutral-600">
-                The eight lanes clients start with most often. Swipe through, or search the full catalog below.
+                The eight lanes clients start with most often. Swipe through, or search the full
+                catalog below.
               </p>
             </div>
           </div>
@@ -251,12 +400,16 @@ function ServicesPage() {
                 All {CARDS.length} services
               </h2>
               <p className="mt-2 max-w-2xl text-neutral-600">
-                Every service line, with what's included and where it fits. Each card opens a full page with scope, deliverables and examples.
+                Every service line, with what's included and where it fits. Each card opens a full
+                page with scope, deliverables and examples.
               </p>
             </div>
             <label className="relative w-full max-w-xs">
               <span className="sr-only">Search services</span>
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" aria-hidden />
+              <Search
+                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
+                aria-hidden
+              />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
@@ -266,7 +419,11 @@ function ServicesPage() {
             </label>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter services by category">
+          <div
+            className="mt-5 flex flex-wrap gap-2"
+            role="group"
+            aria-label="Filter services by category"
+          >
             {GROUPS.map((g) => (
               <button
                 key={g}
@@ -336,13 +493,20 @@ function ServicesPage() {
         <section className="mt-20 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 sm:p-8">
           <h2 className="text-xl font-semibold sm:text-2xl">Have something in mind? Let's talk.</h2>
           <p className="mt-2 text-neutral-700">
-            Send a short brief — goal, timeline and what's been tried so far. You'll get a real reply, not a form response.
+            Send a short brief — goal, timeline and what's been tried so far. You'll get a real
+            reply, not a form response.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link to="/contact-me" className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800">
+            <Link
+              to="/contact-me"
+              className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800"
+            >
               Contact me
             </Link>
-            <Link to="/my-testimonials" className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-100">
+            <Link
+              to="/my-testimonials"
+              className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-100"
+            >
               See testimonials
             </Link>
           </div>
@@ -386,10 +550,16 @@ function ServiceCard({ card, count, eager }: { card: Card; count: number; eager?
           </ul>
         )}
         <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4">
-          <a href={card.path} className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-900 hover:text-[#ff6a00]">
+          <a
+            href={card.path}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-900 hover:text-[#ff6a00]"
+          >
             View service <ArrowRight className="h-4 w-4" aria-hidden />
           </a>
-          <Link to="/contact-me" className="text-sm font-medium text-neutral-500 hover:text-neutral-900">
+          <Link
+            to="/contact-me"
+            className="text-sm font-medium text-neutral-500 hover:text-neutral-900"
+          >
             Get a quote
           </Link>
         </div>

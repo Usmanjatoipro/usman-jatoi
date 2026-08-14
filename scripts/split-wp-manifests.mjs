@@ -66,6 +66,30 @@ function postDateValue(item) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function stripTags(value) {
+  return String(value || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function summaryFor(item, file) {
+  return {
+    id: item.id,
+    file,
+    slug: item.slug || "",
+    path: normalizePath(item.path) || `/blog/${item.slug || item.id}`,
+    title: stripTags(item.title) || item.slug || `Item ${item.id}`,
+    excerpt: stripTags(item.excerpt || item.content).slice(0, 260),
+    date: item.post_date || "",
+    modified: item.post_modified || "",
+    featured_image: item.fifu_image_url || null,
+    featured_alt: item.fifu_image_alt || item.title || "",
+  };
+}
+
 async function readJson(file) {
   return JSON.parse(await readFile(resolve(sourceDir, file), "utf8"));
 }
@@ -122,6 +146,8 @@ async function main() {
     },
     slugs: {},
     paths: {},
+    postsByDate: [],
+    serviceChildren: {},
     services: [],
     categories: {},
   };
@@ -151,7 +177,10 @@ async function main() {
     const rootItem = roots[0] || items[0];
     const slug = normalizePath(rootItem.path).split("/").filter(Boolean)[1] || rootItem.slug;
     const rootPath = `/services/${slug}`;
-    const childCount = items.filter((item) => normalizePath(item.path).startsWith(`${rootPath}/`)).length;
+    const children = items
+      .filter((item) => normalizePath(item.path).startsWith(`${rootPath}/`))
+      .sort((a, b) => normalizePath(a.path).localeCompare(normalizePath(b.path)) || a.id - b.id);
+    const childCount = children.length;
     serviceLines.push({
       slug,
       path: rootPath,
@@ -160,6 +189,7 @@ async function main() {
       count: childCount,
       file,
     });
+    index.serviceChildren[slug] = children.slice(0, 500).map((item) => summaryFor(item, file));
   }
   serviceLines.sort((a, b) => b.count - a.count || a.title.localeCompare(b.title));
   index.services = serviceLines;
@@ -175,6 +205,7 @@ async function main() {
   }
   for (const [file, items] of postBuckets) {
     for (const item of items) {
+      if (item.status === "publish") index.postsByDate.push(summaryFor(item, file));
       for (const term of item.terms || []) {
         if (term.taxonomy !== "category") continue;
         if (!categoryTerms.has(term.slug)) {
@@ -186,6 +217,7 @@ async function main() {
       }
     }
   }
+  index.postsByDate.sort((a, b) => postDateValue({ post_date: b.date }) - postDateValue({ post_date: a.date }));
   for (const category of categoryTerms.values()) {
     category.posts.sort((a, b) => Date.parse(b.date || "") - Date.parse(a.date || ""));
     delete category.date;

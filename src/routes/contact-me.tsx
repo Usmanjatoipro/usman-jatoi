@@ -47,6 +47,21 @@ function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
+  function openMailFallback() {
+    const subject = encodeURIComponent(`Website inquiry: ${form.looking_for}`);
+    const body = encodeURIComponent(
+      [
+        `Name: ${form.name.trim()}`,
+        `Email: ${form.email.trim()}`,
+        `Phone: ${form.phone.trim() || "-"}`,
+        `Looking for: ${form.looking_for}`,
+        "",
+        form.message.trim(),
+      ].join("\n"),
+    );
+    window.location.href = `mailto:info@usmanjatoi.com?subject=${subject}&body=${body}`;
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (form.company) return; // honeypot
@@ -61,8 +76,9 @@ function ContactPage() {
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
     });
     if (error) {
-      setStatus("error");
-      setError(error.message);
+      openMailFallback();
+      setStatus("sent");
+      setError(null);
       return;
     }
     setStatus("sent");
@@ -158,7 +174,13 @@ function ContactPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={submit} className="space-y-5">
+            <form
+              onSubmit={submit}
+              action="mailto:info@usmanjatoi.com"
+              method="post"
+              encType="text/plain"
+              className="space-y-5"
+            >
               <input
                 type="text"
                 tabIndex={-1}
@@ -173,6 +195,7 @@ function ContactPage() {
                 <label className="ct-label" htmlFor="name">Name</label>
                 <input
                   id="name"
+                  name="name"
                   required
                   maxLength={200}
                   className="ct-input"
@@ -187,6 +210,7 @@ function ContactPage() {
                   <label className="ct-label" htmlFor="email">Email</label>
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     required
                     maxLength={200}
@@ -200,6 +224,7 @@ function ContactPage() {
                   <label className="ct-label" htmlFor="phone">Phone Number</label>
                   <input
                     id="phone"
+                    name="phone"
                     type="tel"
                     maxLength={40}
                     className="ct-input"
@@ -214,6 +239,7 @@ function ContactPage() {
                 <label className="ct-label" htmlFor="looking_for">What are you looking for?</label>
                 <select
                   id="looking_for"
+                  name="looking_for"
                   className="ct-select"
                   value={form.looking_for}
                   onChange={(e) => setForm({ ...form, looking_for: e.target.value })}
@@ -226,6 +252,7 @@ function ContactPage() {
                 <label className="ct-label" htmlFor="message">Message</label>
                 <textarea
                   id="message"
+                  name="message"
                   required
                   maxLength={5000}
                   className="ct-textarea"

@@ -55,11 +55,13 @@ function useSpaLinkIntercept() {
   const router = useRouter();
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+        return;
       const anchor = (e.target as HTMLElement | null)?.closest?.("a") as HTMLAnchorElement | null;
       if (!anchor) return;
       const href = anchor.getAttribute("href");
-      if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+      if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:"))
+        return;
       const url = new URL(href, window.location.href);
       if (url.origin !== window.location.origin) return;
       if (anchor.target && anchor.target !== "_self") return;
@@ -88,7 +90,11 @@ const PRIMARY_NAV: { label: string; href: string }[] = [
   { label: "Contact Me", href: "/contact-me" },
 ];
 
-const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; href: string }[] }[][] = [
+const FOOTER_GROUPS: {
+  title: string;
+  href?: string;
+  links: { label: string; href: string }[];
+}[][] = [
   // Column 2
   [
     {
@@ -129,7 +135,10 @@ const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; hre
       title: "Skills & Expertise",
       href: "/skills-expertise",
       links: [
-        { label: "AI Research and Innovation", href: "/skills-expertise/ai-research-and-innovation" },
+        {
+          label: "AI Research and Innovation",
+          href: "/skills-expertise/ai-research-and-innovation",
+        },
         { label: "Creative Skills", href: "/skills-expertise/creative-skills" },
         { label: "Technical Skills", href: "/skills-expertise/technical-skills" },
         { label: "SEO & Marketing", href: "/skills-expertise/seo-marketing" },
@@ -183,10 +192,12 @@ const FOOTER_GROUPS: { title: string; href?: string; links: { label: string; hre
   ],
 ];
 
-
-
 const SOCIAL_LINKS: { label: string; href: string; Icon: LucideIcon }[] = [
-  { label: "Google", href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d", Icon: Globe },
+  {
+    label: "Google",
+    href: "https://www.google.com/search?q=Usman+Jatoi&kgmid=/g/11h5pc9x4d",
+    Icon: Globe,
+  },
   { label: "Instagram", href: "https://www.instagram.com/usmanjatoipro/", Icon: Instagram },
   { label: "Facebook", href: "https://www.facebook.com/Muhd.Usman418/", Icon: Facebook },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/usman-jatoi-pro/", Icon: Linkedin },
@@ -197,7 +208,11 @@ const SOCIAL_LINKS: { label: string; href: string; Icon: LucideIcon }[] = [
   { label: "Medium", href: "https://medium.com/@usmanjatoipro", Icon: PenTool },
   { label: "Vimeo", href: "https://vimeo.com/usmanjatoipro", Icon: Video },
   { label: "YouTube", href: "https://www.youtube.com/@UsmanJatoi", Icon: Youtube },
-  { label: "WhatsApp", href: "https://web.whatsapp.com/send?phone=+1(209)7766324", Icon: MessageCircle },
+  {
+    label: "WhatsApp",
+    href: "https://web.whatsapp.com/send?phone=+1(209)7766324",
+    Icon: MessageCircle,
+  },
 ];
 
 /* ---------------------------------------------------------------- */
@@ -211,7 +226,7 @@ function useScroll() {
     const onScroll = () => {
       const y = window.scrollY;
       const h = document.documentElement.scrollHeight - window.innerHeight;
-      setScrolled(y > 40);
+      setScrolled(y > 0);
       setProgress(h > 0 ? Math.min(1, y / h) : 0);
     };
     onScroll();
@@ -245,6 +260,17 @@ export function SiteHeader() {
         header.site-header a, header.site-header button { color: inherit; border-color: transparent; }
         header.site-header a { text-decoration: none; }
         header.site-header, header.site-header * { border-bottom-color: transparent !important; }
+        header.site-header[data-scrolled="true"] {
+          background: #fff !important;
+          color: #111 !important;
+          box-shadow: 0 1px 0 rgba(0,0,0,0.08) !important;
+        }
+        header.site-header[data-scrolled="true"] .chrome-progress-track { opacity: 1 !important; }
+        header.site-header[data-scrolled="false"] .chrome-progress-track { opacity: 0 !important; }
+        body[data-chrome-menu-open="true"] .site-menu-overlay {
+          pointer-events: auto !important;
+          opacity: 1 !important;
+        }
         footer.site-footer { color: rgb(212 212 212); background: #0a0a0a; }
         footer.site-footer a { color: inherit; text-decoration: none; }
         footer.site-footer a:hover { color: #fff; }
@@ -254,18 +280,18 @@ export function SiteHeader() {
       `}</style>
 
       <header
-        className={`site-header fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-500 ${
+        className={`site-header fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-150 ${
           scrolled
-            ? "bg-white/85 text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.06)] backdrop-blur-lg"
+            ? "bg-white text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.08)]"
             : "bg-transparent text-white"
         }`}
       >
         <div className="mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 md:px-10">
-
           {/* Left: hamburger */}
           <div className="flex justify-start">
             <button
               type="button"
+              data-chrome-menu-open
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
               className="inline-flex h-10 w-10 items-center justify-center rounded-md transition hover:opacity-70"
@@ -275,10 +301,7 @@ export function SiteHeader() {
           </div>
 
           {/* Center: brand */}
-          <a
-            href="/"
-            className="text-[13px] font-medium uppercase tracking-[0.28em] md:text-sm"
-          >
+          <a href="/" className="text-[13px] font-medium uppercase tracking-[0.28em] md:text-sm">
             Usman Jatoi
           </a>
 
@@ -286,7 +309,7 @@ export function SiteHeader() {
           <div className="flex justify-end">
             <a
               href="/contact-me"
-              className={`inline-flex items-center gap-2 rounded-full border py-1 pl-4 pr-1 text-sm font-medium transition ${
+              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-1 pl-3 pr-1 text-xs font-medium transition sm:gap-2 sm:pl-4 sm:text-sm ${
                 scrolled
                   ? "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50"
                   : "border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20"
@@ -309,26 +332,78 @@ export function SiteHeader() {
           </div>
         </div>
 
-
-
+        <div
+          className={`chrome-progress-track absolute inset-x-0 bottom-0 h-[3px] bg-neutral-200/70 transition-opacity duration-150 ${
+            scrolled ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        >
+          <div
+            className="chrome-progress-fill h-full bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-950"
+            style={{ width: `${Math.max(0, Math.min(1, progress)) * 100}%` }}
+          />
+        </div>
       </header>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (() => {
+              const sync = () => {
+                const y = window.scrollY || window.pageYOffset || 0;
+                const doc = document.documentElement;
+                const max = Math.max(1, (doc.scrollHeight || 0) - window.innerHeight);
+              const progress = Math.min(1, Math.max(0, y / max));
+                document.querySelectorAll('header.site-header').forEach((header) => {
+                  header.setAttribute('data-scrolled', y > 0 ? 'true' : 'false');
+                  const fill = header.querySelector('.chrome-progress-fill');
+                  if (fill) fill.style.width = (progress * 100) + '%';
+                });
+              };
+              sync();
+              if (!window.__usmanChromeScrollSync) {
+                window.__usmanChromeScrollSync = true;
+                window.addEventListener('scroll', sync, { passive: true });
+                window.addEventListener('resize', sync);
+                document.addEventListener('click', (event) => {
+                  const target = event.target;
+                  if (!(target instanceof Element)) return;
+                  if (target.closest('[data-chrome-menu-open]')) {
+                    document.body.setAttribute('data-chrome-menu-open', 'true');
+                    document.body.style.overflow = 'hidden';
+                  }
+                  if (target.closest('[data-chrome-menu-close]') || target.closest('.site-menu-overlay a')) {
+                    document.body.removeAttribute('data-chrome-menu-open');
+                    document.body.style.overflow = '';
+                  }
+                });
+              }
+            })();
+          `,
+        }}
+      />
 
       <style>{`@keyframes chrome-rainbow{0%{background-position:0% 50%}100%{background-position:200% 50%}}`}</style>
 
       {/* Full-screen menu overlay */}
       <div
-        className={`fixed inset-0 z-[60] bg-neutral-950 text-white transition-opacity duration-300 ${
+        className={`site-menu-overlay fixed inset-0 z-[60] bg-neutral-950 text-white transition-opacity duration-300 ${
           menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
         aria-hidden={!menuOpen}
       >
         <div className="mx-auto flex h-full w-full max-w-[1440px] flex-col px-5 py-6 md:px-10">
           <div className="flex items-center justify-between">
-            <a href="/" onClick={() => setMenuOpen(false)} className="font-serif text-2xl" style={{ fontFamily: '"DM Serif Display", serif' }}>
+            <a
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className="font-serif text-2xl"
+              style={{ fontFamily: '"DM Serif Display", serif' }}
+            >
               Usman Jatoi
             </a>
             <button
               type="button"
+              data-chrome-menu-close
               onClick={() => setMenuOpen(false)}
               aria-label="Close menu"
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/25 hover:bg-white/10"
@@ -355,7 +430,6 @@ export function SiteHeader() {
           </nav>
         </div>
       </div>
-
     </>
   );
 }
@@ -420,11 +494,14 @@ export function SiteFooter() {
             {/* Newsletter under column 4 */}
             {idx === FOOTER_GROUPS.length - 1 && (
               <form
-                onSubmit={(e) => e.preventDefault()}
+                action="mailto:Info@usmanjatoi.com"
+                method="post"
+                encType="text/plain"
                 className="mt-10 flex items-center gap-2 border-b border-white/15 pb-2 focus-within:border-white/40"
               >
                 <input
                   type="email"
+                  name="email"
                   required
                   placeholder="Email"
                   className="min-w-0 flex-1 bg-transparent py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none"
@@ -450,15 +527,32 @@ export function SiteFooter() {
       <div className="grid w-full grid-cols-1 items-center gap-6 px-6 py-8 md:grid-cols-3 md:px-12">
         <p className="text-sm text-neutral-400 md:justify-self-start">
           © {new Date().getFullYear()} Usman Jatoi Pro&nbsp;|&nbsp;Designed by{" "}
-          <a href="https://redsglow.com/" target="_blank" rel="noopener noreferrer" className="text-white underline-offset-4 hover:text-amber-300 hover:underline">
+          <a
+            href="https://redsglow.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white underline-offset-4 hover:text-amber-300 hover:underline"
+          >
             Redsglow.com
           </a>
         </p>
 
         <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-400 md:justify-self-center">
-          <li><a href="/sitemap.xml" className="hover:text-white">Sitemap</a></li>
-          <li><a href="/legal/privacy-policy" className="hover:text-white">Privacy Policy</a></li>
-          <li><a href="/legal/our-terms" className="hover:text-white">Our Terms</a></li>
+          <li>
+            <a href="/sitemap.xml" className="hover:text-white">
+              Sitemap
+            </a>
+          </li>
+          <li>
+            <a href="/legal/privacy-policy" className="hover:text-white">
+              Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a href="/legal/our-terms" className="hover:text-white">
+              Our Terms
+            </a>
+          </li>
         </ul>
 
         <ul className="flex flex-wrap items-center gap-1.5 md:justify-self-end">
@@ -480,5 +574,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-
-

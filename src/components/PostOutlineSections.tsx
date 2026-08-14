@@ -37,6 +37,47 @@ function linkify(text: string) {
   );
 }
 
+const RESOURCE_DOMAINS: Record<string, string> = {
+  ahrefs: "ahrefs.com",
+  anthropic: "anthropic.com",
+  canva: "canva.com",
+  chatgpt: "openai.com",
+  cloudflare: "cloudflare.com",
+  figma: "figma.com",
+  github: "github.com",
+  google: "google.com",
+  hubspot: "hubspot.com",
+  linkedin: "linkedin.com",
+  openai: "openai.com",
+  semrush: "semrush.com",
+  wordpress: "wordpress.org",
+  youtube: "youtube.com",
+};
+
+function resourceInfo(value: string) {
+  const url = value.match(/https?:\/\/[^\s)]+/i)?.[0];
+  let domain = "";
+  if (url) {
+    try {
+      domain = new URL(url).hostname.replace(/^www\./, "");
+    } catch {}
+  }
+  if (!domain) {
+    const lower = value.toLowerCase();
+    const match = Object.keys(RESOURCE_DOMAINS).find((name) => lower.includes(name));
+    if (match) domain = RESOURCE_DOMAINS[match];
+  }
+  return {
+    label:
+      value
+        .replace(/https?:\/\/[^\s)]+/i, "")
+        .replace(/[-–—:\s]+$/, "")
+        .trim() || domain,
+    href: url || (domain ? `https://${domain}` : ""),
+    domain,
+  };
+}
+
 function SectionHead({
   icon: Icon,
   title,
@@ -73,7 +114,13 @@ export default function PostOutlineSections({ outline }: { outline: PostOutline 
   const citations = outline.citations;
 
   const hasAny =
-    stats.length || insights.length || examples.length || risks.length || tools.length || quote || citations.length;
+    stats.length ||
+    insights.length ||
+    examples.length ||
+    risks.length ||
+    tools.length ||
+    quote ||
+    citations.length;
   if (!hasAny) return null;
 
   return (
@@ -90,7 +137,9 @@ export default function PostOutlineSections({ outline }: { outline: PostOutline 
                   className="rounded-2xl border border-neutral-200 bg-white p-5 hover:border-neutral-900 transition"
                 >
                   {label && (
-                    <div className="text-2xl font-semibold tracking-tight text-neutral-900">{label}</div>
+                    <div className="text-2xl font-semibold tracking-tight text-neutral-900">
+                      {label}
+                    </div>
                   )}
                   <p className="mt-1 text-sm leading-relaxed text-neutral-600">{value}</p>
                 </div>
@@ -165,41 +214,79 @@ export default function PostOutlineSections({ outline }: { outline: PostOutline 
         </div>
       )}
 
-      {tools.length > 0 && (
+      {(tools.length > 0 || citations.length > 0) && (
         <div>
-          <SectionHead icon={Wrench} title="Tools, names and resources" />
-          <div className="flex flex-wrap gap-2">
-            {tools.map((line, index) => (
-              <span
-                key={index}
-                className="rounded-full border border-neutral-300 bg-white px-4 py-1.5 text-sm text-neutral-700"
-              >
-                {line}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {citations.length > 0 && (
-        <div>
-          <SectionHead icon={BookOpen} title="Sources and citations" />
-          <ol className="space-y-2 text-sm leading-relaxed text-neutral-700 list-decimal pl-5">
-            {(showAllCitations ? citations : citations.slice(0, 5)).map((line, index) => (
-              <li key={index}>{linkify(line)}</li>
-            ))}
-          </ol>
-          {citations.length > 5 && (
-            <button
-              type="button"
-              onClick={() => setShowAllCitations((value) => !value)}
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900 hover:text-orange-600"
-            >
-              {showAllCitations ? "Show fewer sources" : `Show all ${citations.length} sources`}
-              <ChevronDown
-                className={`h-4 w-4 transition ${showAllCitations ? "rotate-180" : ""}`}
-              />
-            </button>
+          <SectionHead
+            icon={Wrench}
+            title="Resources and citations"
+            hint="Tools and source material for this topic"
+          />
+          {tools.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {tools.map((line, index) => {
+                const resource = resourceInfo(line);
+                const body = (
+                  <>
+                    {resource.domain ? (
+                      <img
+                        src={`https://www.google.com/s2/favicons?sz=64&domain=${resource.domain}`}
+                        alt=""
+                        className="h-9 w-9 rounded-lg border border-neutral-200 bg-white p-1"
+                      />
+                    ) : (
+                      <span className="grid h-9 w-9 place-items-center rounded-lg bg-neutral-900 text-white">
+                        <BookOpen className="h-4 w-4" />
+                      </span>
+                    )}
+                    <span className="min-w-0 text-sm font-medium text-neutral-800">
+                      {resource.label}
+                    </span>
+                  </>
+                );
+                return resource.href ? (
+                  <a
+                    key={index}
+                    href={resource.href}
+                    target="_blank"
+                    rel="nofollow noopener"
+                    className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 transition hover:border-neutral-900"
+                  >
+                    {body}
+                  </a>
+                ) : (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3"
+                  >
+                    {body}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {citations.length > 0 && (
+            <div className="mt-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                <BookOpen className="h-4 w-4" /> Sources
+              </div>
+              <ol className="space-y-2 text-sm leading-relaxed text-neutral-700 list-decimal pl-5">
+                {(showAllCitations ? citations : citations.slice(0, 5)).map((line, index) => (
+                  <li key={index}>{linkify(line)}</li>
+                ))}
+              </ol>
+              {citations.length > 5 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllCitations((value) => !value)}
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900 hover:text-orange-600"
+                >
+                  {showAllCitations ? "Show fewer sources" : `Show all ${citations.length} sources`}
+                  <ChevronDown
+                    className={`h-4 w-4 transition ${showAllCitations ? "rotate-180" : ""}`}
+                  />
+                </button>
+              )}
+            </div>
           )}
         </div>
       )}

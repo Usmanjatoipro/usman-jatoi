@@ -39,7 +39,6 @@ import contactImg from "@/assets/Usman-Jatoi-Contact-Us-image.webp.asset.json";
 import redsglow from "@/assets/Redsglow-Banner.jpg.asset.json";
 import featuredCta from "@/assets/featured-cta.jpg.asset.json";
 
-
 export type PostArticleData = {
   id: number;
   slug: string;
@@ -51,6 +50,7 @@ export type PostArticleData = {
   path?: string | null;
   seo_title?: string | null;
   seo_description?: string | null;
+  meta?: Record<string, unknown> | null;
   raw?: any;
 };
 
@@ -66,7 +66,10 @@ export type PostArticleTerm = {
 
 function stripHtml(html: string | null | undefined) {
   if (!html) return "";
-  return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 function decodeEntities(s: string) {
   return s
@@ -87,7 +90,9 @@ function formatDate(iso: string | null | undefined) {
   });
 }
 function readingTime(html: string | null | undefined) {
-  const words = stripHtml(html || "").split(/\s+/).filter(Boolean).length;
+  const words = stripHtml(html || "")
+    .split(/\s+/)
+    .filter(Boolean).length;
   return Math.max(1, Math.round(words / 220));
 }
 function slugify(s: string) {
@@ -124,6 +129,22 @@ function extractSources(html: string): SourceLink[] {
     } catch {}
   }
   return out;
+}
+
+function splitArticleHtml(html: string): [string, string] {
+  if (!html) return ["", ""];
+  const sectionEnds = [...html.matchAll(/<\/section>/gi)];
+  if (sectionEnds.length >= 3) {
+    const marker = sectionEnds[Math.max(0, Math.floor(sectionEnds.length / 2) - 1)];
+    const index = (marker.index || 0) + marker[0].length;
+    return [html.slice(0, index), html.slice(index)];
+  }
+  const headings = [...html.matchAll(/<h2\b/gi)];
+  if (headings.length >= 3) {
+    const index = headings[Math.floor(headings.length / 2)].index || 0;
+    return [html.slice(0, index), html.slice(index)];
+  }
+  return [html, ""];
 }
 
 /* ------------------------- component ------------------------- */
@@ -195,15 +216,14 @@ export function PostArticle({
     }
   }
 
-
   const bodyRef = useRef<HTMLDivElement>(null);
-  const [siblings, setSiblings] = useState<{ title: string; href: string }[]>(
-    primaryCategoryChildren
-  );
+  const [siblings, setSiblings] =
+    useState<{ title: string; href: string }[]>(primaryCategoryChildren);
   const [related, setRelated] = useState<
     { title: string; href: string; date: string | null; image: string | null }[]
   >([]);
   const [subcats, setSubcats] = useState<{ name: string; href: string }[]>([]);
+  const [siblingCats, setSiblingCats] = useState<{ name: string; href: string }[]>([]);
   const [allCats, setAllCats] = useState<{ name: string; href: string }[]>([]);
   const [prevNext, setPrevNext] = useState<{
     prev: { title: string; href: string } | null;
@@ -218,15 +238,13 @@ export function PostArticle({
   const totalVotes = useMemo(() => (post.id * 3) % 15, [post.id]);
 
   // Deepest (most specific) category wins for breadcrumb + context copy.
-  const primaryCategory =
-    categories.find((c) => c.parent_id) || categories[0];
+  const primaryCategory = categories.find((c) => c.parent_id) || categories[0];
   const parentCategory = primaryCategory
     ? categories.find((c) => c.id === primaryCategory.parent_id)
     : undefined;
-  const primaryCategoryName = primaryCategory?.name || "Article";
+  const primaryCategoryName = decodeEntities(primaryCategory?.name || "Article");
   const archiveHref =
-    categoryArchivePath ||
-    (primaryCategory ? `/category/${primaryCategory.slug}` : "/blog");
+    categoryArchivePath || (primaryCategory ? `/category/${primaryCategory.slug}` : "/blog");
 
   /* Time-aware greeting shown above the intro (client only, no SSR mismatch). */
   const [greeting, setGreeting] = useState<string | null>(null);
@@ -245,26 +263,22 @@ export function PostArticle({
     setGreeting(`${part[0]} — ${part[1]}. Let's get started.`);
   }, []);
 
-
   /* Enrich HTML with heading anchors + extract TOC. */
   const { enrichedHtml, headings, sources } = useMemo(() => {
     const raw = post.content || "";
     const hs: Heading[] = [];
     const used = new Set<string>();
-    const enriched = raw.replace(
-      /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
-      (_m, lvl, attrs, inner) => {
-        const text = decodeEntities(stripHtml(inner));
-        if (!text) return _m;
-        let id = slugify(text);
-        if (!id) return _m;
-        let i = 2;
-        while (used.has(id)) id = `${slugify(text)}-${i++}`;
-        used.add(id);
-        hs.push({ id, text, level: Number(lvl) as 2 | 3 });
-        return `<h${lvl}${attrs} id="${id}">${inner}</h${lvl}>`;
-      }
-    );
+    const enriched = raw.replace(/<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi, (_m, lvl, attrs, inner) => {
+      const text = decodeEntities(stripHtml(inner));
+      if (!text) return _m;
+      let id = slugify(text);
+      if (!id) return _m;
+      let i = 2;
+      while (used.has(id)) id = `${slugify(text)}-${i++}`;
+      used.add(id);
+      hs.push({ id, text, level: Number(lvl) as 2 | 3 });
+      return `<h${lvl}${attrs} id="${id}">${inner}</h${lvl}>`;
+    });
     return {
       enrichedHtml: enriched,
       headings: hs,
@@ -294,7 +308,7 @@ export function PostArticle({
     });
   }, [enrichedHtml]);
 
-
+  const [articleLead, articleTail] = useMemo(() => splitArticleHtml(enrichedHtml), [enrichedHtml]);
 
   /* Reading progress + active heading + back-to-top. */
   useEffect(() => {
@@ -326,17 +340,43 @@ export function PostArticle({
     (async () => {
       // Subcategories under primary category
       if (primaryCategory) {
-        const { data: subs } = await supabase
-          .from("wp_terms")
-          .select("id,name,slug,parent_id")
-          .eq("parent_id", primaryCategory.id)
-          .limit(12);
+        const [subsResult, siblingsResult] = await Promise.all([
+          supabase
+            .from("wp_terms")
+            .select("id,name,slug,parent_id")
+            .eq("parent_id", primaryCategory.id)
+            .limit(12),
+          primaryCategory.parent_id
+            ? supabase
+                .from("wp_terms")
+                .select("id,name,slug,parent_id")
+                .eq("taxonomy", "category")
+                .eq("parent_id", primaryCategory.parent_id)
+                .neq("id", primaryCategory.id)
+                .limit(12)
+            : supabase
+                .from("wp_terms")
+                .select("id,name,slug,parent_id")
+                .eq("taxonomy", "category")
+                .is("parent_id", null)
+                .neq("id", primaryCategory.id)
+                .limit(12),
+        ]);
+        const subs = subsResult.data;
         if (!cancelled && subs) {
           setSubcats(
             (subs as any[]).map((s) => ({
-              name: s.name,
+              name: decodeEntities(s.name),
               href: `/category/${s.slug}`,
-            }))
+            })),
+          );
+        }
+        if (!cancelled && siblingsResult.data) {
+          setSiblingCats(
+            (siblingsResult.data as any[]).map((category) => ({
+              name: decodeEntities(category.name),
+              href: `/category/${category.slug}`,
+            })),
           );
         }
 
@@ -378,8 +418,7 @@ export function PostArticle({
                   .select("storage_url,source_url")
                   .eq("id", r.featured_media_id)
                   .maybeSingle();
-                image =
-                  (m as any)?.storage_url || (m as any)?.source_url || null;
+                image = (m as any)?.storage_url || (m as any)?.source_url || null;
               }
               return {
                 title: decodeEntities(stripHtml(r.title) || "Untitled"),
@@ -387,7 +426,7 @@ export function PostArticle({
                 date: r.post_date,
                 image,
               };
-            })
+            }),
           );
           if (!cancelled) setRelated(withMedia);
         }
@@ -404,7 +443,7 @@ export function PostArticle({
         setAllCats(
           (allC as any[])
             .filter((c) => c.name && c.name.toLowerCase() !== "uncategorized")
-            .map((c) => ({ name: c.name, href: `/category/${c.slug}` }))
+            .map((c) => ({ name: decodeEntities(c.name), href: `/category/${c.slug}` })),
         );
       }
 
@@ -434,22 +473,14 @@ export function PostArticle({
           setPrevNext({
             prev: prevR.data
               ? {
-                  title: decodeEntities(
-                    stripHtml((prevR.data as any).title) || "Previous"
-                  ),
-                  href:
-                    (prevR.data as any).path ||
-                    `/blog/${(prevR.data as any).slug}`,
+                  title: decodeEntities(stripHtml((prevR.data as any).title) || "Previous"),
+                  href: (prevR.data as any).path || `/blog/${(prevR.data as any).slug}`,
                 }
               : null,
             next: nextR.data
               ? {
-                  title: decodeEntities(
-                    stripHtml((nextR.data as any).title) || "Next"
-                  ),
-                  href:
-                    (nextR.data as any).path ||
-                    `/blog/${(nextR.data as any).slug}`,
+                  title: decodeEntities(stripHtml((nextR.data as any).title) || "Next"),
+                  href: (nextR.data as any).path || `/blog/${(nextR.data as any).slug}`,
                 }
               : null,
           });
@@ -465,7 +496,7 @@ export function PostArticle({
   const shareUrl =
     typeof window !== "undefined"
       ? window.location.href
-      : `https://usmanjatoi.lovable.app${post.path || `/blog/${post.slug}`}`;
+      : `https://usmanjatoi.com${post.path || `/blog/${post.slug}`}`;
   const shareText = encodeURIComponent(title);
   const enc = encodeURIComponent(shareUrl);
   const shares = [
@@ -504,17 +535,11 @@ export function PostArticle({
   return (
     <article className="bg-neutral-50 text-neutral-900 relative">
       {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: faqSchema }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqSchema }} />
       )}
 
       {/* Reading progress */}
-      <div
-        className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent"
-        aria-hidden
-      >
+      <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent" aria-hidden>
         <div
           className="h-full bg-orange-500 transition-[width] duration-150"
           style={{ width: `${progress}%` }}
@@ -529,14 +554,18 @@ export function PostArticle({
         crumbs={[
           { label: "Home", href: "/" },
           ...(parentCategory
-            ? [{ label: parentCategory.name, href: `/category/${parentCategory.slug}` }]
+            ? [
+                {
+                  label: decodeEntities(parentCategory.name),
+                  href: `/category/${parentCategory.slug}`,
+                },
+              ]
             : []),
           ...(primaryCategory
             ? [{ label: primaryCategoryName, href: archiveHref }]
             : [{ label: "Blog", href: "/blog" }]),
           { label: title },
         ]}
-
       />
 
       <div className="h-10" />
@@ -556,7 +585,7 @@ export function PostArticle({
                 fetchPriority="high"
                 decoding="async"
                 onError={() => setHeroFailed(true)}
-                className="aspect-[16/9] w-full rounded-2xl object-cover bg-neutral-100"
+                className="aspect-[16/9] max-h-[430px] w-full rounded-2xl object-contain bg-neutral-100"
               />
             </figure>
           ) : (
@@ -567,10 +596,6 @@ export function PostArticle({
               excerpt={excerpt}
               categories={categories.map((c) => c.name)}
             />
-          )}
-
-          {excerpt && (
-            <p className="max-w-3xl text-lg leading-relaxed text-neutral-600">{excerpt}</p>
           )}
 
           {/* Meta row: views · date · responses  +  sources button */}
@@ -624,9 +649,7 @@ export function PostArticle({
                   >
                     <Star
                       className={`h-5 w-5 transition ${
-                        n <= rating
-                          ? "fill-orange-500 text-orange-500"
-                          : "text-neutral-300"
+                        n <= rating ? "fill-orange-500 text-orange-500" : "text-neutral-300"
                       }`}
                     />
                   </button>
@@ -652,15 +675,43 @@ export function PostArticle({
             </p>
           )}
 
-          {/* Article body */}
-          <div
-            ref={bodyRef}
-            className="post-body mt-6"
-            dangerouslySetInnerHTML={{ __html: enrichedHtml }}
-          />
+          {/* Article sections with research and community modules placed in context. */}
+          <div ref={bodyRef} className="mt-6">
+            <div className="post-body" dangerouslySetInnerHTML={{ __html: articleLead }} />
 
-          <PostOutlineSections outline={outline} />
+            <PostOutlineSections outline={outline} />
 
+            <section
+              className="relative my-10 min-h-[270px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white"
+              style={{
+                backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.96), rgba(0,0,0,.72), rgba(0,0,0,.16)), url(${communityBg.url})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }}
+            >
+              <div className="relative max-w-xl p-7 md:p-10">
+                <h2 className="text-2xl font-semibold leading-tight md:text-3xl">
+                  You&apos;re not alone in exploring {primaryCategoryName}
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-white/80 md:text-base">
+                  Join a community of forward-thinkers sharing practical ideas, useful tools, and
+                  honest lessons around {primaryCategoryName.toLowerCase()}.
+                </p>
+                <a
+                  href="https://discord.gg/usmanjatoi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-neutral-950 transition hover:bg-neutral-200"
+                >
+                  Join the community <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </div>
+            </section>
+
+            {articleTail && (
+              <div className="post-body" dangerouslySetInnerHTML={{ __html: articleTail }} />
+            )}
+          </div>
 
           {/* Featured-in-article CTA — image beside the copy, not behind it */}
           <div className="mt-10 grid gap-0 sm:grid-cols-[1fr_220px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white">
@@ -669,10 +720,9 @@ export function PostArticle({
                 Get Yourself Featured in This Article
               </div>
               <p className="mt-2 text-sm text-white/75 max-w-md">
-                Want your name, brand, or service listed right here? We offer
-                sponsored mentions and do-follow links starting from{" "}
-                <b className="text-orange-400">$49 up to $500</b> depending on
-                placement.
+                Want your name, brand, or service listed right here? We offer sponsored mentions and
+                do-follow links starting from <b className="text-orange-400">$49 up to $500</b>{" "}
+                depending on placement.
               </p>
               <Link
                 to="/contact-me"
@@ -688,8 +738,6 @@ export function PostArticle({
               className="h-full w-full object-cover min-h-[180px]"
             />
           </div>
-
-
 
           {/* Prev / Next */}
           {(prevNext.prev || prevNext.next) && (
@@ -718,9 +766,7 @@ export function PostArticle({
                   className="flex items-center justify-end gap-3 p-5 text-right hover:bg-neutral-50 transition group"
                 >
                   <div className="min-w-0">
-                    <div className="text-xs uppercase tracking-widest text-neutral-500">
-                      Next
-                    </div>
+                    <div className="text-xs uppercase tracking-widest text-neutral-500">Next</div>
                     <div className="text-sm font-medium text-neutral-900 truncate group-hover:underline">
                       {prevNext.next.title}
                     </div>
@@ -733,38 +779,18 @@ export function PostArticle({
             </div>
           )}
 
-          {/* Community CTA — photo on the side, dynamic to the category */}
-          <section className="mt-10 grid gap-0 sm:grid-cols-[1fr_240px] overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-950 text-white">
-            <div className="p-6 md:p-8">
-              <h2 className="text-xl md:text-2xl font-semibold leading-snug">
-                You&apos;re not alone in exploring {primaryCategoryName}
-              </h2>
-              <p className="mt-3 text-sm text-white/75 leading-relaxed max-w-md">
-                I run a community of forward-thinkers who share ideas, tools and
-                breakthroughs around {primaryCategoryName.toLowerCase()} every
-                week. Want in?
-              </p>
-              <a
-                href="https://discord.gg/usmanjatoi"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold hover:bg-orange-600"
-              >
-                Join the community <ArrowUpRight className="h-4 w-4" />
-              </a>
-            </div>
-            <img
-              src={communityBg.url}
-              alt={`Join the ${primaryCategoryName} community`}
-              loading="lazy"
-              className="h-full w-full object-cover min-h-[200px]"
-            />
-          </section>
-
-          {/* About Author — clean white card, no background photo */}
+          {/* About Author */}
           <section className="mt-10">
             <h2 className="text-2xl font-semibold mb-4">About Author</h2>
-            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+            <div
+              className="overflow-hidden rounded-2xl border border-neutral-200 bg-white"
+              style={{
+                backgroundImage: `linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,.96) 58%, rgba(255,255,255,.32) 100%), url(${authorImg.url})`,
+                backgroundPosition: "right center",
+                backgroundSize: "auto 180%",
+                backgroundRepeat: "no-repeat",
+              }}
+            >
               <div className="p-5 md:p-6 flex gap-5 items-start">
                 <img
                   src={authorImg.url}
@@ -775,16 +801,12 @@ export function PostArticle({
                   className="h-20 w-20 rounded-lg object-cover flex-none ring-1 ring-neutral-200"
                 />
                 <div className="min-w-0">
-                  <div className="text-lg font-semibold text-neutral-900">
-                    Usman Jatoi
-                  </div>
+                  <div className="text-lg font-semibold text-neutral-900">Usman Jatoi</div>
                   <p className="text-sm text-neutral-600 mt-1 leading-relaxed">
-                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old
-                    creative artist, and tech innovator who began his digital
-                    journey at just{" "}
-                    <b className="text-neutral-900">7 years old</b> and started
-                    working professionally at{" "}
-                    <b className="text-neutral-900">12</b>.
+                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old creative artist, and
+                    tech innovator who began his digital journey at just{" "}
+                    <b className="text-neutral-900">7 years old</b> and started working
+                    professionally at <b className="text-neutral-900">12</b>.
                   </p>
                   <a
                     href="/author/usman-jatoi"
@@ -792,7 +814,6 @@ export function PostArticle({
                   >
                     About the author — experience, expertise & credentials
                   </a>
-
                 </div>
               </div>
               <div className="border-t border-neutral-200 px-6 py-3 flex items-center gap-3 text-neutral-500">
@@ -811,9 +832,7 @@ export function PostArticle({
               </div>
             </div>
             <div className="mt-4">
-              <div className="text-sm font-semibold text-neutral-900 mb-2">
-                Quick Links:
-              </div>
+              <div className="text-sm font-semibold text-neutral-900 mb-2">Quick Links:</div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-900">
                 <Link to="/about-me" className="hover:underline">
                   About Me
@@ -829,12 +848,10 @@ export function PostArticle({
               </div>
             </div>
           </section>
-
         </main>
 
         {/* ---------- SIDEBAR ---------- */}
         <aside className="space-y-6 self-start">
-
           {/* Meta card — photo background with black overlay */}
           <div className="relative rounded-2xl p-6 text-white overflow-hidden border border-neutral-900">
             <img
@@ -846,12 +863,9 @@ export function PostArticle({
             />
             <div className="absolute inset-0 bg-neutral-950/70" aria-hidden />
             <dl className="relative space-y-2.5 text-sm">
-
               <div>
                 <span className="font-semibold">Published:</span>{" "}
-                <span className="text-white/85">
-                  {formatDate(post.post_date)}
-                </span>
+                <span className="text-white/85">{formatDate(post.post_date)}</span>
               </div>
               <div>
                 <span className="font-semibold">Updated:</span>{" "}
@@ -874,7 +888,7 @@ export function PostArticle({
                             params={{ slug: c.slug } as any}
                             className="hover:underline"
                           >
-                            {c.name}
+                            {decodeEntities(c.name)}
                           </Link>
                           {i < categories.length - 1 && ", "}
                         </span>
@@ -888,8 +902,7 @@ export function PostArticle({
           {/* Ad slot */}
           <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
             <p className="text-[13px] text-neutral-700 leading-snug">
-              My site is professional. Ad is just for 'growth.' (Which means
-              coffee.){" "}
+              My site is professional. Ad is just for 'growth.' (Which means coffee.){" "}
               <Link
                 to={"/legal/our-terms" as any}
                 className="underline font-medium text-neutral-900"
@@ -899,7 +912,6 @@ export function PostArticle({
             </p>
             <AdSlot className="mt-3 min-h-[250px] overflow-hidden rounded-lg bg-white" />
           </div>
-
 
           {/* Explore More Under {Category} — subcategories list */}
           {subcats.length > 0 && (
@@ -923,11 +935,32 @@ export function PostArticle({
             </div>
           )}
 
-          {/* Sibling categories — other topics at the same level */}
+          {siblingCats.length > 0 && (
+            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+              <div className="border-b border-neutral-100 px-5 py-3 text-sm font-semibold text-neutral-900">
+                Sibling Categories
+              </div>
+              <ul className="divide-y divide-neutral-100">
+                {siblingCats.map((category) => (
+                  <li key={category.href}>
+                    <Link
+                      to={category.href as any}
+                      className="flex items-center justify-between px-5 py-2.5 text-sm text-neutral-800 transition hover:bg-neutral-50"
+                    >
+                      <span className="truncate">{category.name}</span>
+                      <ChevronRight className="h-4 w-4 flex-none text-neutral-400" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Broader category discovery */}
           {allCats.length > 1 && (
             <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
               <div className="px-5 py-3 font-semibold text-sm text-neutral-900 border-b border-neutral-100">
-                Related Categories
+                Browse Categories
               </div>
               <ul className="divide-y divide-neutral-100">
                 {allCats
@@ -948,8 +981,6 @@ export function PostArticle({
             </div>
           )}
 
-
-
           {/* Table of contents */}
           {headings.length > 1 && (
             <details
@@ -966,9 +997,7 @@ export function PostArticle({
                     <a
                       href={`#${h.id}`}
                       className={`block px-5 py-1.5 border-l-2 transition ${
-                        h.level === 3
-                          ? "pl-9 text-neutral-600"
-                          : "text-neutral-800"
+                        h.level === 3 ? "pl-9 text-neutral-600" : "text-neutral-800"
                       } ${
                         activeId === h.id
                           ? "border-orange-500 bg-neutral-50 text-neutral-900 font-medium"
@@ -986,9 +1015,7 @@ export function PostArticle({
 
           {/* Share this post */}
           <div className="rounded-2xl border border-neutral-200 bg-white p-5">
-            <div className="text-sm font-semibold text-neutral-900 mb-3">
-              Share this post:
-            </div>
+            <div className="text-sm font-semibold text-neutral-900 mb-3">Share this post:</div>
             <div className="flex items-center gap-3">
               {shares.map(({ label, Icon, href }) => (
                 <a
@@ -1042,7 +1069,11 @@ export function PostArticle({
                 aria-label="Subscribe"
                 className="h-9 w-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-100 flex-none disabled:opacity-60"
               >
-                {newsState === "done" ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+                {newsState === "done" ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </button>
             </form>
             <p className="mt-2 text-xs text-white/60" role="status">
@@ -1053,7 +1084,6 @@ export function PostArticle({
                   : "No spam. Unsubscribe anytime."}
             </p>
           </div>
-
         </aside>
       </div>
 
@@ -1072,12 +1102,14 @@ export function PostArticle({
               RedsGlow — everything your brand needs, under one roof
             </h2>
             <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed">
-              From <b className="text-neutral-900">marketing to automation, technical development to
-              management, creative design to operations, consulting to growth
-              strategy</b> — we deliver it all under one roof. Whether you're
-              launching something new, fixing what's broken, or scaling to the
-              next level, our team makes it simple, fast, and effective. Trusted
-              by clients worldwide for results that last.
+              From{" "}
+              <b className="text-neutral-900">
+                marketing to automation, technical development to management, creative design to
+                operations, consulting to growth strategy
+              </b>{" "}
+              — we deliver it all under one roof. Whether you're launching something new, fixing
+              what's broken, or scaling to the next level, our team makes it simple, fast, and
+              effective. Trusted by clients worldwide for results that last.
             </p>
             <a
               href="https://redsglow.com"
@@ -1089,8 +1121,6 @@ export function PostArticle({
             </a>
           </div>
         </section>
-
-
 
         {/* Explore My All Categories */}
         {allCats.length > 0 && (
@@ -1181,26 +1211,19 @@ export function PostArticle({
             Book a Call with Me to Discuss Your Project in Detail
           </h2>
           <p className="mt-3 text-neutral-600 max-w-2xl mx-auto text-center">
-            Free 30-minute strategy call. Bring your idea, brief, or the mess
-            you want fixed — leave with a plan.
+            Free 30-minute strategy call. Bring your idea, brief, or the mess you want fixed — leave
+            with a plan.
           </p>
           <CalEmbed className="mt-8 rounded-2xl overflow-hidden" />
         </section>
 
-
         {/* Explore More — 3 more posts */}
         {related.length > 3 && (
           <section>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
-              Explore More
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-6">Explore More</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {related.slice(3, 6).map((r) => (
-                <Link
-                  key={r.href}
-                  to={r.href as any}
-                  className="group block"
-                >
+                <Link key={r.href} to={r.href as any} className="group block">
                   <div
                     className="relative aspect-[16/10] rounded-xl overflow-hidden bg-neutral-950"
                     style={{
@@ -1212,9 +1235,7 @@ export function PostArticle({
                     }}
                   >
                     <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
-                      <div className="text-sm font-semibold line-clamp-2">
-                        {r.title}
-                      </div>
+                      <div className="text-sm font-semibold line-clamp-2">{r.title}</div>
                     </div>
                   </div>
                   <div className="mt-3">
@@ -1225,9 +1246,7 @@ export function PostArticle({
                       {r.title}
                     </div>
                     {r.date && (
-                      <div className="mt-2 text-xs text-neutral-500">
-                        {formatDate(r.date)}
-                      </div>
+                      <div className="mt-2 text-xs text-neutral-500">{formatDate(r.date)}</div>
                     )}
                   </div>
                 </Link>
@@ -1241,7 +1260,10 @@ export function PostArticle({
           <form onSubmit={submitContact} className="p-6 md:p-8 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-first">
+                <label
+                  className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5"
+                  htmlFor="uj-first"
+                >
                   First Name
                 </label>
                 <input
@@ -1254,7 +1276,10 @@ export function PostArticle({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-last">
+                <label
+                  className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5"
+                  htmlFor="uj-last"
+                >
                   Last Name
                 </label>
                 <input
@@ -1267,7 +1292,10 @@ export function PostArticle({
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-email">
+              <label
+                className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5"
+                htmlFor="uj-email"
+              >
                 Email
               </label>
               <input
@@ -1280,7 +1308,10 @@ export function PostArticle({
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-phone">
+              <label
+                className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5"
+                htmlFor="uj-phone"
+              >
                 Phone
               </label>
               <input
@@ -1292,7 +1323,10 @@ export function PostArticle({
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-message">
+              <label
+                className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5"
+                htmlFor="uj-message"
+              >
                 Message
               </label>
               <textarea
@@ -1305,7 +1339,10 @@ export function PostArticle({
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5" htmlFor="uj-subject">
+              <label
+                className="block text-[11px] font-semibold tracking-widest text-white/70 uppercase mb-1.5"
+                htmlFor="uj-subject"
+              >
                 Subject
               </label>
               <select
@@ -1324,7 +1361,11 @@ export function PostArticle({
               disabled={contactState === "sending"}
               className="w-full rounded-md bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold tracking-widest py-3 text-sm transition"
             >
-              {contactState === "sending" ? "SENDING…" : contactState === "done" ? "MESSAGE SENT ✓" : "SEND"}
+              {contactState === "sending"
+                ? "SENDING…"
+                : contactState === "done"
+                  ? "MESSAGE SENT ✓"
+                  : "SEND"}
             </button>
             <p className="text-center text-xs text-white/60" role="status">
               {contactState === "done"
@@ -1342,19 +1383,19 @@ export function PostArticle({
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-neutral-950/65" aria-hidden />
+            <div
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-neutral-950/60"
+              aria-hidden
+            />
             <div className="relative">
               <p className="text-white/85 text-sm leading-relaxed max-w-sm">
-                I believe in collaborating with smart, diverse, and creative
-                people — and giving them the freedom to shine. Let's connect.
+                I believe in collaborating with smart, diverse, and creative people — and giving
+                them the freedom to shine. Let's connect.
               </p>
               <div className="mt-4 text-lg font-semibold">Usman Jatoi</div>
-              <div className="text-orange-400 text-sm">
-                Versatile Creative Artist
-              </div>
+              <div className="text-orange-400 text-sm">Versatile Creative Artist</div>
             </div>
           </div>
-
         </section>
 
         <div className="h-8" />
@@ -1385,9 +1426,7 @@ export function PostArticle({
             <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
               <div>
                 <div className="text-lg font-semibold">Sources</div>
-                <div className="text-xs text-neutral-500">
-                  {sources.length} external references
-                </div>
+                <div className="text-xs text-neutral-500">{sources.length} external references</div>
               </div>
               <button
                 type="button"
@@ -1413,12 +1452,8 @@ export function PostArticle({
                       className="h-8 w-8 rounded-md bg-neutral-100 flex-none mt-0.5"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-neutral-900 truncate">
-                        {s.label}
-                      </div>
-                      <div className="text-xs text-neutral-500 truncate">
-                        {s.host}
-                      </div>
+                      <div className="text-sm font-medium text-neutral-900 truncate">{s.label}</div>
+                      <div className="text-xs text-neutral-500 truncate">{s.host}</div>
                     </div>
                     <ExternalLink className="h-4 w-4 text-neutral-400 flex-none mt-1" />
                   </a>
@@ -1450,9 +1485,7 @@ export function PostArticle({
             <div className="text-lg font-semibold text-neutral-900 mb-2">
               Scan to read on your phone
             </div>
-            <p className="text-sm text-neutral-500 mb-4 line-clamp-2">
-              {title}
-            </p>
+            <p className="text-sm text-neutral-500 mb-4 line-clamp-2">{title}</p>
             <img
               src={qrSrc}
               alt="QR code"
@@ -1565,25 +1598,11 @@ export function PostArticle({
           font-size: 13px;
           font-weight: 800;
         }
-        /* Checklist items */
-        .post-body [data-field="checklist"] ul { list-style: none; padding: 0; display: grid; gap: 10px; }
-        .post-body [data-field="checklist"] li {
-          position: relative;
-          border: 1px solid #ececec;
-          border-radius: 12px;
-          background: #fafafa;
-          padding: 12px 14px 12px 42px;
-          margin: 0;
-        }
-        .post-body [data-field="checklist"] li::before {
-          content: "✓";
-          position: absolute; left: 13px; top: 12px;
-          display: inline-flex; align-items: center; justify-content: center;
-          width: 20px; height: 20px; border-radius: 6px;
-          background: #f97316; color: #fff; font-size: 12px; font-weight: 700;
-        }
-        .post-body [data-field="checklist"] li p { margin: 4px 0 0; color:#525252; font-size:.94em; }
         .post-body .migrated-table { overflow-x: auto; }
+        .post-body .migrated-table table { min-width: 720px; width: 100%; border-collapse: collapse; }
+        .post-body .migrated-table th,
+        .post-body .migrated-table td { border: 1px solid #e5e5e5; padding: 12px 14px; text-align: left; vertical-align: top; }
+        .post-body .migrated-table th { background: #f5f5f5; color: #111; font-size: .82em; text-transform: uppercase; letter-spacing: .04em; }
 
         /* FAQ — collapsed by default, black chevron */
         .post-body .migrated-faqs, .post-body .uj-faqs { display: grid; gap: 10px; margin: 1.2em 0; }
@@ -1667,6 +1686,46 @@ export function PostArticle({
         .post-body .uj-tl-card p { margin: 0; color: #525252; font-size: .95em; }
         .post-body .uj-when { display: inline-block; margin-bottom: 6px; font-size: .72em; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #f97316; }
 
+        .post-body .uj-timeline-loop {
+          overflow: hidden;
+          margin: 1.4em 0;
+          padding: 4px 0 12px;
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+        }
+        .post-body .uj-timeline-track {
+          display: flex;
+          width: max-content;
+          gap: 14px;
+          animation: ujTimelineLoop 34s linear infinite;
+        }
+        .post-body .uj-timeline-loop:hover .uj-timeline-track { animation-play-state: paused; }
+        .post-body .uj-timeline-track article {
+          width: clamp(250px, 32vw, 330px);
+          flex: none;
+          border: 1px solid #e5e5e5;
+          border-radius: 14px;
+          background: #fff;
+          padding: 18px;
+        }
+        .post-body .uj-timeline-track article > span {
+          display: inline-grid;
+          place-items: center;
+          width: 30px;
+          height: 30px;
+          border-radius: 999px;
+          background: #111;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 800;
+        }
+        .post-body .uj-timeline-track h3 { margin: 14px 0 6px; font-size: 1.03em; }
+        .post-body .uj-timeline-track p { margin: 0; color: #525252; font-size: .94em; }
+        @keyframes ujTimelineLoop { to { transform: translateX(calc(-50% - 7px)); } }
+        @media (prefers-reduced-motion: reduce) {
+          .post-body .uj-timeline-track { animation: none; }
+          .post-body .uj-timeline-loop { overflow-x: auto; mask-image: none; }
+        }
+
         /* Step-by-step */
         .post-body .uj-steps { display: grid; gap: 16px; margin: 1.4em 0; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
         .post-body .uj-steps article { border: 1px solid #ececec; border-top: 3px solid #0a0a0a; border-radius: 16px; background: #fff; padding: 20px 18px; }
@@ -1686,6 +1745,8 @@ export function PostArticle({
         .post-body .uj-glossary > div { border: 1px solid #ececec; border-radius: 12px; background: #fafafa; padding: 14px 16px; }
         .post-body .uj-glossary dt { font-weight: 700; color: #111; }
         .post-body .uj-glossary dd { margin: 4px 0 0; color: #525252; font-size: .95em; }
+        .post-body .uj-glossary-accordion { margin: 0 0 1.8em; border-color: #d4d4d4; }
+        .post-body .uj-glossary-accordion > summary { font-size: 1.08em; }
 
         /* Bullets & cards */
         .post-body .uj-bullets { list-style: none; padding: 0; display: grid; gap: 10px; margin: 1.2em 0; }

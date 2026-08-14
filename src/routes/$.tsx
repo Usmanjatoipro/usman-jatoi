@@ -842,6 +842,7 @@ function PostArticleFromWp({
         path: post.path,
         seo_title: post.seo_title,
         seo_description: post.seo_description,
+        meta: (post as any).meta ?? null,
         raw: (post as any).raw,
       }}
       heroUrl={heroUrl}

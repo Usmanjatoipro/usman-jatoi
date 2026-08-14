@@ -130,16 +130,14 @@ export const getContentTypeStats = createServerFn({ method: "GET" }).handler(
   },
 );
 
-let localImportCache:
-  | {
-      postCount: number;
-      pageCount: number;
-      servicePageCount: number;
-      serviceRootCount: number;
-      serviceChildCount: number;
-      serviceLines: LocalServiceLine[];
-    }
-  | null = null;
+let localImportCache: {
+  postCount: number;
+  pageCount: number;
+  servicePageCount: number;
+  serviceRootCount: number;
+  serviceChildCount: number;
+  serviceLines: LocalServiceLine[];
+} | null = null;
 const localManifestCache = new Map<string, LocalPost[]>();
 let wpDataIndexCache: WpDataIndex | null = null;
 const wpShardCache = new Map<string, LocalPost[]>();
@@ -285,7 +283,6 @@ async function readWpDataJson<T>(relativePath: string): Promise<T | null> {
   return null;
 }
 
-
 async function getWpDataIndex(): Promise<WpDataIndex> {
   if (wpDataIndexCache) return wpDataIndexCache;
   wpDataIndexCache = (await readWpDataJson<WpDataIndex>("wp-data-index.json.gz")) ?? EMPTY_WP_INDEX;
@@ -299,8 +296,10 @@ async function readWpShard(file: string): Promise<LocalPost[]> {
   return data;
 }
 
-
-async function findItemFromRefs(refs: WpDataRef[] | undefined, predicate: (item: LocalPost) => boolean) {
+async function findItemFromRefs(
+  refs: WpDataRef[] | undefined,
+  predicate: (item: LocalPost) => boolean,
+) {
   for (const ref of refs || []) {
     const items = await readWpShard(ref.file);
     const found = items.find((item) => item.id === ref.id && predicate(item));
@@ -312,7 +311,12 @@ async function findItemFromRefs(refs: WpDataRef[] | undefined, predicate: (item:
 async function findItemByPath(path: string) {
   const index = await getWpDataIndex();
   const ref = index.paths[normalizePath(path)];
-  if (!ref) return { item: null as LocalPost | null, ref: null as WpDataRef | null, siblings: [] as LocalPost[] };
+  if (!ref)
+    return {
+      item: null as LocalPost | null,
+      ref: null as WpDataRef | null,
+      siblings: [] as LocalPost[],
+    };
   const siblings = await readWpShard(ref.file);
   return {
     item: siblings.find((entry) => entry.id === ref.id) || null,
@@ -346,7 +350,12 @@ function directChildren(items: LocalPost[], parentPath: string) {
 }
 
 function stripTags(value: string | null | undefined) {
-  return decodeHtml(value).replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return decodeHtml(value)
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function escapeHtml(value: string | null | undefined) {
@@ -385,7 +394,14 @@ function labelFromKey(key: string) {
     pros_cons: "Pros & Cons",
     why_important: "Why It Matters",
   };
-  return labels[key] || key.replace(/^_+/, "").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return (
+    labels[key] ||
+    key
+      .replace(/^_+/, "")
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/[_-]+/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 }
 
 function parseJson(value: string) {
@@ -399,15 +415,30 @@ function parseJson(value: string) {
 }
 
 function itemTitle(item: any, fallback: string) {
-  return stripTags(item?.title || item?.heading || item?.name || item?.topic || item?.question || fallback);
+  return stripTags(
+    item?.title || item?.heading || item?.name || item?.topic || item?.question || fallback,
+  );
 }
 
 function itemDescription(item: any) {
-  return stripTags(item?.description || item?.subtitle || item?.answer || item?.content || item?.text || "");
+  return stripTags(
+    item?.description || item?.subtitle || item?.answer || item?.content || item?.text || "",
+  );
 }
 
 function listHtml(items: any[]) {
   return `<ul>${items.map((item) => `<li>${escapeHtml(typeof item === "string" ? item : itemTitle(item, "Item"))}${typeof item === "object" && itemDescription(item) ? `<p>${escapeHtml(itemDescription(item))}</p>` : ""}</li>`).join("")}</ul>`;
+}
+
+function cellText(value: any) {
+  if (Array.isArray(value))
+    return value
+      .map((entry) => stripTags(String(entry ?? "")))
+      .filter(Boolean)
+      .join(", ");
+  if (value && typeof value === "object")
+    return stripTags(itemDescription(value) || itemTitle(value, ""));
+  return stripTags(String(value ?? ""));
 }
 
 function tableHtml(data: any) {
@@ -415,17 +446,101 @@ function tableHtml(data: any) {
   const headers = table?.headers || data?.columns;
   const rows = table?.rows || data?.rows;
   if (!Array.isArray(headers) || !Array.isArray(rows)) return "";
-  return `<div class="migrated-table"><table><thead><tr>${headers.map((h: any) => `<th>${escapeHtml(stripTags(String(h)))}</th>`).join("")}</tr></thead><tbody>${rows.slice(0, 24).map((row: any) => {
-    const cells = Array.isArray(row) ? row : [row.name || row.topic, ...(row.values || [])];
-    return `<tr>${cells.map((cell: any) => `<td>${escapeHtml(Array.isArray(cell) ? cell.map(stripTags).join(", ") : stripTags(String(cell || "")))}</td>`).join("")}</tr>`;
-  }).join("")}</tbody></table></div>`;
+  return `<div class="migrated-table"><table><thead><tr>${headers.map((h: any) => `<th>${escapeHtml(stripTags(String(h)))}</th>`).join("")}</tr></thead><tbody>${rows
+    .slice(0, 24)
+    .map((row: any) => {
+      const cells = Array.isArray(row)
+        ? headers.map((_header: any, index: number) => row[index])
+        : headers.map((header: any, index: number) => {
+            const raw = String(header);
+            const slug = raw
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "_")
+              .replace(/^_|_$/g, "");
+            const compact = slug.replace(/_/g, "");
+            const key = Object.keys(row || {}).find((candidate) => {
+              const normalized = candidate
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "_")
+                .replace(/^_|_$/g, "");
+              return normalized === slug || normalized.replace(/_/g, "") === compact;
+            });
+            if (key) return row[key];
+            if (index === 0) return row.topic ?? row.name ?? row.title;
+            return Array.isArray(row.values) ? row.values[index - 1] : "";
+          });
+      return `<tr>${cells.map((cell: any) => `<td>${escapeHtml(cellText(cell))}</td>`).join("")}</tr>`;
+    })
+    .join("")}</tbody></table></div>`;
 }
 
-function jsonToHtml(data: any) {
+function processHtml(data: any) {
+  const steps = Array.isArray(data?.steps) ? data.steps : [];
+  if (!steps.length) return "";
+  return `<div class="uj-steps">${steps.map((item: any, index: number) => `<article><span class="uj-step-n">${escapeHtml(String(item?.step_number || item?.step || index + 1))}</span><h3>${escapeHtml(itemTitle(item, `Step ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p>${Array.isArray(item?.tips) ? `<ul class="uj-tips">${item.tips.map((tip: any) => `<li>${escapeHtml(cellText(tip))}</li>`).join("")}</ul>` : ""}</article>`).join("")}</div>`;
+}
+
+function prosConsHtml(data: any) {
+  const render = (items: any[], kind: "pro" | "con", label: string) =>
+    `<div class="uj-pc-col uj-pc-${kind}"><div class="uj-pc-head">${label}</div><ul>${items.map((item: any) => `<li><strong>${escapeHtml(itemTitle(item, label))}</strong>${itemDescription(item) ? `<p>${escapeHtml(itemDescription(item))}</p>` : ""}</li>`).join("")}</ul></div>`;
+  const pros = Array.isArray(data?.pros) ? data.pros : [];
+  const cons = Array.isArray(data?.cons) ? data.cons : [];
+  if (!pros.length && !cons.length) return "";
+  return `<div class="uj-proscons">${render(pros, "pro", "Pros")}${render(cons, "con", "Cons")}</div>`;
+}
+
+function checklistHtml(data: any) {
+  const items = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
+  if (!items.length) return "";
+  return `<ul class="uj-checklist">${items.map((item: any, index: number) => `<li><label><input type="checkbox" aria-label="Complete ${escapeHtml(itemTitle(item, `Checklist item ${index + 1}`))}"><span class="uj-box" aria-hidden="true"></span><span class="uj-ck-body"><strong>${escapeHtml(itemTitle(item, `Checklist item ${index + 1}`))}</strong>${itemDescription(item) ? `<em>${escapeHtml(itemDescription(item))}</em>` : ""}</span></label></li>`).join("")}</ul>`;
+}
+
+function timelineHtml(data: any) {
+  const items = Array.isArray(data?.items) ? data.items : [];
+  if (!items.length) return "";
+  const cards = (hidden = false) =>
+    items
+      .map(
+        (item: any, index: number) =>
+          `<article${hidden ? ' aria-hidden="true"' : ""}><span>${String(index + 1).padStart(2, "0")}</span><h3>${escapeHtml(itemTitle(item, `Milestone ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p></article>`,
+      )
+      .join("");
+  return `<div class="uj-timeline-loop"><div class="uj-timeline-track">${cards()}${cards(true)}</div></div>`;
+}
+
+function glossaryHtml(value: string) {
+  const withoutHeading = value.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, "");
+  const terms = [...withoutHeading.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map((match) => stripTags(match[1]))
+    .filter(Boolean);
+  if (!terms.length) return withoutHeading;
+  return `<details class="uj-glossary-accordion"><summary>Glossary of Related Terms</summary><dl class="uj-glossary">${terms
+    .map((line) => {
+      const [term, ...definition] = line.split(/\s+[—-]\s+/);
+      return `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(definition.join(" — ") || line)}</dd></div>`;
+    })
+    .join("")}</dl></details>`;
+}
+
+function faqHtml(data: any) {
+  const faqs = Array.isArray(data?.faqs) ? data.faqs : [];
+  if (!faqs.length) return "";
+  return `<div class="migrated-faqs">${faqs.map((item: any) => `<details><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(itemDescription(item))}</p></details>`).join("")}</div>`;
+}
+
+function jsonToHtml(data: any, key = "") {
   if (Array.isArray(data)) return listHtml(data);
   if (!data || typeof data !== "object") return `<p>${escapeHtml(String(data || ""))}</p>`;
+  if (key === "ProcessStep-by-Step" || key === "process") return processHtml(data);
+  if (key === "pros_cons") return prosConsHtml(data);
+  if (key === "checklist") return checklistHtml(data);
+  if (key === "timeline") return timelineHtml(data);
+  if (key === "faqs") return faqHtml(data);
+  if (key === "comparison" || key === "comparison_tables") return tableHtml(data);
   const title = stripTags(data["main-title"] || data.section_title || data.title || "");
-  const subtitle = stripTags(data.section_subtitle || data.subtitle || data.intro || data.description || "");
+  const subtitle = stripTags(
+    data.section_subtitle || data.subtitle || data.intro || data.description || "",
+  );
   const parts = [
     title ? `<h3>${escapeHtml(title)}</h3>` : "",
     subtitle ? `<p>${escapeHtml(subtitle)}</p>` : "",
@@ -433,12 +548,21 @@ function jsonToHtml(data: any) {
   if (Array.isArray(data.features)) parts.push(listHtml(data.features));
   if (Array.isArray(data.bullets)) parts.push(listHtml(data.bullets));
   if (Array.isArray(data.services)) {
-    parts.push(`<div class="migrated-grid">${data.services.map((item: any, index: number) => `<article><h3>${escapeHtml(itemTitle(item, `Service ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p>${item?.link ? `<a href="${String(item.link).replace(/^https?:\/\/usmanjatoi\.com/i, "")}">Open service</a>` : ""}</article>`).join("")}</div>`);
+    parts.push(
+      `<div class="migrated-grid">${data.services.map((item: any, index: number) => `<article><h3>${escapeHtml(itemTitle(item, `Service ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p>${item?.link ? `<a href="${String(item.link).replace(/^https?:\/\/usmanjatoi\.com/i, "")}">Open service</a>` : ""}</article>`).join("")}</div>`,
+    );
   }
-  const steps = Array.isArray(data.steps) ? data.steps : Array.isArray(data.items) ? data.items : [];
-  if (steps.length) parts.push(`<div class="migrated-steps">${steps.map((item: any, index: number) => `<article><span>${escapeHtml(String(item?.step_number || item?.step || index + 1))}</span><h3>${escapeHtml(itemTitle(item, `Step ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p></article>`).join("")}</div>`);
+  const steps = Array.isArray(data.steps)
+    ? data.steps
+    : Array.isArray(data.items)
+      ? data.items
+      : [];
+  if (steps.length)
+    parts.push(
+      `<div class="migrated-steps">${steps.map((item: any, index: number) => `<article><span>${escapeHtml(String(item?.step_number || item?.step || index + 1))}</span><h3>${escapeHtml(itemTitle(item, `Step ${index + 1}`))}</h3><p>${escapeHtml(itemDescription(item))}</p></article>`).join("")}</div>`,
+    );
   if (Array.isArray(data.faqs)) {
-    parts.push(`<div class="migrated-faqs">${data.faqs.map((item: any) => `<details open><summary>${escapeHtml(itemTitle(item, "Question"))}</summary><p>${escapeHtml(itemDescription(item))}</p></details>`).join("")}</div>`);
+    parts.push(faqHtml(data));
   }
   parts.push(tableHtml(data));
   if (parts.filter(Boolean).length <= 1) {
@@ -466,6 +590,7 @@ const SKIP_BODY_META = new Set([
 ]);
 
 const RICH_BODY_META = [
+  "GlossaryRelatedTerms",
   "intro",
   "takeaways",
   "WhatisX",
@@ -482,7 +607,6 @@ const RICH_BODY_META = [
   "comparison_tables",
   "case_studies",
   "timeline",
-  "GlossaryRelatedTerms",
   "BenefitsAdvantages",
   "DrawbacksLimitations",
   "StrategiesFrameworks",
@@ -501,7 +625,11 @@ function metaToHtml(meta: LocalPost["meta"]) {
         : value && typeof value === "object"
           ? JSON.stringify(value)
           : "";
-    return text.trim() && RICH_BODY_META.includes(key as (typeof RICH_BODY_META)[number]) && !SKIP_BODY_META.has(key);
+    return (
+      text.trim() &&
+      RICH_BODY_META.includes(key as (typeof RICH_BODY_META)[number]) &&
+      !SKIP_BODY_META.has(key)
+    );
   });
   if (!entries.length) return "";
   entries.sort(([a], [b]) => {
@@ -509,21 +637,86 @@ function metaToHtml(meta: LocalPost["meta"]) {
     const bi = RICH_BODY_META.indexOf(b as (typeof RICH_BODY_META)[number]);
     return ai - bi;
   });
-  return entries.map(([key, raw]) => {
-    const value = Array.isArray(raw)
-      ? raw.filter((entry): entry is string => typeof entry === "string" && Boolean(entry)).join("\n\n")
-      : typeof raw === "string"
+  return entries
+    .map(([key, raw]) => {
+      const value = Array.isArray(raw)
         ? raw
-        : JSON.stringify(raw);
+            .filter((entry): entry is string => typeof entry === "string" && Boolean(entry))
+            .join("\n\n")
+        : typeof raw === "string"
+          ? raw
+          : JSON.stringify(raw);
+      const parsed = parseJson(value);
+      const body =
+        key === "GlossaryRelatedTerms"
+          ? glossaryHtml(value)
+          : parsed
+            ? jsonToHtml(parsed, key)
+            : /<\/?[a-z][\s\S]*>/i.test(value)
+              ? value.replace(/<script[\s\S]*?<\/script>/gi, "")
+              : `<p>${escapeHtml(value)}</p>`;
+      return `<section class="migrated-field" data-field="${escapeHtml(key)}">${body}</section>`;
+    })
+    .join("");
+}
+
+const SERVICE_BODY_META = [
+  "our_services",
+  "aboutexpertise_section",
+  "process",
+  "overall_process",
+  "benefits",
+  "what_you_will_get",
+  "industry_specific_solution",
+  "_cached_industries_block",
+  "location_specific_solution",
+  "_cached_locations_block_v4",
+  "use_cases",
+  "case_study_example",
+  "testimonials",
+  "pricing",
+  "faqs",
+] as const;
+
+function cleanImportedHtml(value: string) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/\sstyle=("[^"]*"|'[^']*')/gi, "")
+    .replace(/\son\w+=("[^"]*"|'[^']*')/gi, "");
+}
+
+function serviceMetaToHtml(meta: LocalPost["meta"]) {
+  const record = meta && !Array.isArray(meta) && typeof meta === "object" ? meta : {};
+  const sections: string[] = [];
+  for (const key of SERVICE_BODY_META) {
+    const raw = record[key];
+    const value = Array.isArray(raw)
+      ? raw.find((entry) => typeof entry === "string" && entry.trim())
+      : raw;
+    if (typeof value !== "string" || !value.trim()) continue;
     const parsed = parseJson(value);
-    const body = parsed ? jsonToHtml(parsed) : /<\/?[a-z][\s\S]*>/i.test(value) ? value.replace(/<script[\s\S]*?<\/script>/gi, "") : `<p>${escapeHtml(value)}</p>`;
-    return `<section class="migrated-field" data-field="${escapeHtml(key)}"><h2>${escapeHtml(labelFromKey(key))}</h2>${body}</section>`;
-  }).join("");
+    const body = parsed ? jsonToHtml(parsed, key) : cleanImportedHtml(value);
+    if (stripTags(body))
+      sections.push(
+        `<section class="migrated-field service-field service-field-${escapeHtml(key.replace(/^_+/, ""))}" data-field="${escapeHtml(key)}">${body}</section>`,
+      );
+  }
+  const video = metaString(record, "promovideo");
+  const youtubeId = video.match(/(?:youtu\.be\/|[?&]v=)([a-zA-Z0-9_-]{6,})/)?.[1];
+  if (youtubeId) {
+    sections.splice(
+      2,
+      0,
+      `<section class="migrated-field service-field service-video"><div class="service-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(youtubeId)}" title="Service video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></section>`,
+    );
+  }
+  return sections.join("");
 }
 
 function hydratedPost(post: LocalPost): LocalPost {
   const originalContent = post.content && stripTags(post.content) ? post.content : "";
-  const structuredContent = metaToHtml(post.meta);
+  const isService = post.post_type === "page" && normalizePath(post.path).startsWith("/services/");
+  const structuredContent = isService ? serviceMetaToHtml(post.meta) : metaToHtml(post.meta);
   const isPlaceholder = /this is a comprehensive post about/i.test(stripTags(originalContent));
   const content = structuredContent
     ? `${isPlaceholder ? "" : originalContent}${structuredContent}`
@@ -531,9 +724,13 @@ function hydratedPost(post: LocalPost): LocalPost {
   return {
     ...post,
     content,
-    excerpt: post.excerpt || metaString(post.meta, "meta_description") || stripTags(content).slice(0, 220),
+    excerpt:
+      post.excerpt || metaString(post.meta, "meta_description") || stripTags(content).slice(0, 220),
     seo_title: post.seo_title || metaString(post.meta, "meta_title") || post.title,
-    seo_description: post.seo_description || metaString(post.meta, "meta_description") || stripTags(content).slice(0, 158),
+    seo_description:
+      post.seo_description ||
+      metaString(post.meta, "meta_description") ||
+      stripTags(content).slice(0, 158),
   };
 }
 
@@ -579,11 +776,22 @@ async function postFromDatabase(slug: string) {
   }
   heroUrl = heroUrl || metaImageUrl(row.meta) || firstHtmlImage(row.content);
 
-  const { data: links } = await sb.from("wp_post_terms").select("term_id, taxonomy").eq("post_id", row.id);
+  const { data: links } = await sb
+    .from("wp_post_terms")
+    .select("term_id, taxonomy")
+    .eq("post_id", row.id);
   const termIds = (links || []).map((l) => l.term_id);
   const { data: terms } = termIds.length
     ? await sb.from("wp_terms").select("id, name, slug, taxonomy, parent_id").in("id", termIds)
-    : { data: [] as { id: number; name: string | null; slug: string; taxonomy: string; parent_id: number | null }[] };
+    : {
+        data: [] as {
+          id: number;
+          name: string | null;
+          slug: string;
+          taxonomy: string;
+          parent_id: number | null;
+        }[],
+      };
 
   const mapped = (terms || []).map((t) => ({
     id: t.id,
@@ -622,8 +830,24 @@ export const getLocalPostBySlug = createServerFn({ method: "GET" })
     return {
       post: hydrated,
       heroUrl: heroUrl || fallbackHero?.heroUrl || null,
-      categories: (post.terms || []).filter((term) => term.taxonomy === "category").map((term, index) => ({ id: index + 1, name: term.name, slug: term.slug, parent_id: null, taxonomy: term.taxonomy })),
-      tags: (post.terms || []).filter((term) => term.taxonomy === "post_tag").map((term, index) => ({ id: index + 1000, name: term.name, slug: term.slug, parent_id: null, taxonomy: term.taxonomy })),
+      categories: (post.terms || [])
+        .filter((term) => term.taxonomy === "category")
+        .map((term, index) => ({
+          id: index + 1,
+          name: term.name,
+          slug: term.slug,
+          parent_id: null,
+          taxonomy: term.taxonomy,
+        })),
+      tags: (post.terms || [])
+        .filter((term) => term.taxonomy === "post_tag")
+        .map((term, index) => ({
+          id: index + 1000,
+          name: term.name,
+          slug: term.slug,
+          parent_id: null,
+          taxonomy: term.taxonomy,
+        })),
     };
   });
 
@@ -634,15 +858,24 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
     const index = await getWpDataIndex();
     const serviceLine = index.services.find((service) => service.slug === data.slug);
     const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
-    const page = pages.find((item) => item.status === "publish" && normalizePath(item.path) === path);
+    const page = pages.find(
+      (item) => item.status === "publish" && normalizePath(item.path) === path,
+    );
     if (!page) return null;
     const hydrated = hydratedPost(page);
     const hero = parseJson(metaString(page.meta, "hero_section")) as any;
     const about = parseJson(metaString(page.meta, "aboutexpertise_section")) as any;
     const children = pages
-      .filter((item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`))
-      .slice(0, 240)
-      .map((item) => ({ title: stripTags(item.title) || item.slug, href: normalizePath(item.path), excerpt: stripTags(item.excerpt).slice(0, 130) }));
+      .filter(
+        (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
+      )
+      .map((item) => ({
+        title: stripTags(item.title) || item.slug,
+        href: normalizePath(item.path),
+        excerpt: stripTags(item.excerpt).slice(0, 130),
+        featured_image:
+          item.fifu_image_url || metaImageUrl(item.meta) || firstHtmlImage(item.content),
+      }));
     return {
       service: {
         ...hydrated,
@@ -654,11 +887,15 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
         ].filter(Boolean),
         bullets: [
           ...(Array.isArray(hero?.features) ? hero.features.map(stripTags) : []),
-          ...(Array.isArray(about?.bullets) ? about.bullets.map((item: any) => itemTitle(item, "Benefit")) : []),
+          ...(Array.isArray(about?.bullets)
+            ? about.bullets.map((item: any) => itemTitle(item, "Benefit"))
+            : []),
         ].filter(Boolean),
       },
       children,
-      childCount: pages.filter((item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`)).length,
+      childCount: pages.filter(
+        (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
+      ).length,
     };
   });
 
