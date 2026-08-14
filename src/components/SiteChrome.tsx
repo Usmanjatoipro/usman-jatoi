@@ -280,13 +280,14 @@ export function SiteHeader() {
       `}</style>
 
       <header
+        data-scrolled={scrolled ? "true" : "false"}
         className={`site-header fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow,color] duration-150 ${
           scrolled
             ? "bg-white text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.08)]"
             : "bg-transparent text-white"
         }`}
       >
-        <div className="mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 md:px-10">
+        <div className="mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-[40px_1fr_40px] items-center gap-2 px-4 sm:grid-cols-[1fr_auto_1fr] sm:gap-6 sm:px-5 md:px-10">
           {/* Left: hamburger */}
           <div className="flex justify-start">
             <button
@@ -309,18 +310,18 @@ export function SiteHeader() {
           <div className="flex justify-end">
             <a
               href="/contact-me"
-              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-1 pl-3 pr-1 text-xs font-medium transition sm:gap-2 sm:pl-4 sm:text-sm ${
+              className={`inline-flex h-9 w-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border p-1 text-xs font-medium transition sm:h-auto sm:w-auto sm:gap-2 sm:py-1 sm:pl-4 sm:pr-1 sm:text-sm ${
                 scrolled
                   ? "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50"
                   : "border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20"
               }`}
             >
-              <span>Let’s Talk</span>
+              <span className="hidden sm:inline">Let’s Talk</span>
               <span className="flex -space-x-2">
                 <img
                   src="/site-assets/Usman-Jatoi-Pro-252x300.webp"
                   alt=""
-                  className="h-7 w-7 rounded-full object-cover ring-2 ring-white"
+                  className="hidden h-7 w-7 rounded-full object-cover ring-2 ring-white sm:block"
                 />
                 <img
                   src="/site-assets/Me-Playng-Usman-150x150.webp"

@@ -100,24 +100,142 @@ function pickFirst<T>(value: unknown): T | null {
     try {
       return JSON.parse(trimmed) as T;
     } catch {
-      return trimmed as unknown as T;
+      return null;
     }
   }
   if (typeof first === "object") return first as T;
   return null;
 }
 
+function firstMetaString(value: unknown) {
+  const first = Array.isArray(value) ? value[0] : value;
+  return typeof first === "string" ? first.trim() : "";
+}
+
+function decodeHtml(value: string) {
+  const named: Record<string, string> = {
+    amp: "&",
+    apos: "'",
+    gt: ">",
+    lt: "<",
+    nbsp: " ",
+    quot: '"',
+  };
+  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (entity, code: string) => {
+    if (code[0] === "#") {
+      const hex = code[1]?.toLowerCase() === "x";
+      const point = Number.parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
+      return Number.isFinite(point) ? String.fromCodePoint(point) : entity;
+    }
+    return named[code.toLowerCase()] ?? entity;
+  });
+}
+
+function htmlText(value: string) {
+  return decodeHtml(
+    value
+      .replace(/<!--([\s\S]*?)-->/g, " ")
+      .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, " ")
+      .replace(/<br\s*\/?\s*>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim(),
+  );
+}
+
+function tagTexts(html: string, tag: string) {
+  return [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, "gi"))]
+    .map((match) => htmlText(match[1]))
+    .filter(Boolean);
+}
+
+function parseHeroHtml(html: string): HeroSection | null {
+  const title = tagTexts(html, "h1")[0] || tagTexts(html, "h2")[0];
+  if (!title) return null;
+  const paragraphs = tagTexts(html, "p");
+  return {
+    title,
+    subtitle: paragraphs[0],
+    description: paragraphs.at(-1),
+    features: tagTexts(html, "li"),
+  };
+}
+
+function parseAboutHtml(html: string): AboutSection | null {
+  const title = tagTexts(html, "h2")[0] || tagTexts(html, "h3")[0];
+  if (!title) return null;
+  const paragraphs = tagTexts(html, "p");
+  const items = tagTexts(html, "li");
+  const midpoint = Math.max(1, Math.ceil(items.length / 2));
+  return {
+    title,
+    intro: paragraphs[0],
+    paragraphs: paragraphs.slice(1),
+    bullets: items.length
+      ? [
+          { heading: "My expertise", list: items.slice(0, midpoint) },
+          { heading: "How I help", list: items.slice(midpoint) },
+        ].filter((group) => group.list.length)
+      : [],
+  };
+}
+
+function parseServicesHtml(html: string): ServicesSection | null {
+  const heading = tagTexts(html, "h2")[0];
+  const services = [
+    ...html.matchAll(/<h3\b[^>]*>([\s\S]*?)<\/h3>[\s\S]*?<p\b[^>]*>([\s\S]*?)<\/p>/gi),
+  ]
+    .map((match) => ({
+      title: htmlText(match[1]),
+      description: htmlText(match[2]),
+      tags: [] as string[],
+    }))
+    .filter((item) => item.title && item.description);
+  if (!heading && !services.length) return null;
+  const paragraphs = tagTexts(html, "p");
+  return { section_title: heading, section_subtitle: paragraphs[0], services };
+}
+
+function parseProcessHtml(html: string): ProcessSection | null {
+  const steps = [
+    ...html.matchAll(
+      /class=["'][^"']*process-title[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>[\s\S]*?class=["'][^"']*process-description[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/gi,
+    ),
+  ].map((match, index) => ({
+    step_number: index + 1,
+    title: htmlText(match[1]),
+    description: htmlText(match[2]),
+  }));
+  return steps.length ? { steps } : null;
+}
+
+function parseFaqHtml(html: string): FaqSection | null {
+  const faqs = [
+    ...html.matchAll(
+      /class=["'][^"']*faq-question[^"']*["'][^>]*>([\s\S]*?)<\/button>[\s\S]*?class=["'][^"']*faq-answer[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi,
+    ),
+  ].map((match) => ({ question: htmlText(match[1]), answer: htmlText(match[2]) }));
+  return faqs.length ? { faqs } : null;
+}
+
+function structuredField<T>(value: unknown, parseHtml: (html: string) => T | null) {
+  const parsed = pickFirst<T>(value);
+  if (parsed) return parsed;
+  const html = firstMetaString(value);
+  return html.startsWith("<") ? parseHtml(html) : null;
+}
+
 function extractStructured(meta: Record<string, unknown> | null): Structured {
   if (!meta)
     return { hero: null, about: null, process: null, services: null, faqs: null, promoVideo: null };
-  const promo = pickFirst<string>(meta["promovideo"]);
+  const promo = firstMetaString(meta["promovideo"]);
   return {
-    hero: pickFirst<HeroSection>(meta["hero_section"]),
-    about: pickFirst<AboutSection>(meta["aboutexpertise_section"]),
-    process: pickFirst<ProcessSection>(meta["process"]),
-    services: pickFirst<ServicesSection>(meta["our_services"]),
-    faqs: pickFirst<FaqSection>(meta["faqs"]),
-    promoVideo: typeof promo === "string" ? promo : null,
+    hero: structuredField(meta["hero_section"], parseHeroHtml),
+    about: structuredField(meta["aboutexpertise_section"], parseAboutHtml),
+    process: structuredField(meta["process"], parseProcessHtml),
+    services: structuredField(meta["our_services"], parseServicesHtml),
+    faqs: structuredField(meta["faqs"], parseFaqHtml),
+    promoVideo: promo || null,
   };
 }
 
