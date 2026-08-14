@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS wp_posts_pub_post_date_idx ON public.wp_posts (post_type, status, post_date DESC);
