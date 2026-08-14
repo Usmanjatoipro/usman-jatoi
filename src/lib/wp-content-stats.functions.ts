@@ -862,34 +862,118 @@ export const getLocalPostBySlug = createServerFn({ method: "GET" })
     };
   });
 
+type ServiceLink = { title: string; href: string; excerpt?: string | null };
+
+function toLink(row: { title: string | null; path: string | null; excerpt?: string | null }): ServiceLink {
+  return {
+    title: stripTags(row.title) || normalizePath(row.path).split("/").filter(Boolean).pop() || "Service",
+    href: normalizePath(row.path),
+    excerpt: stripTags(row.excerpt || "").slice(0, 130),
+  };
+}
+
+async function serviceTreeFromDb(slug: string) {
+  const base = `/services/${slug}`;
+  const sb = serverClient();
+  const { data: rows } = await sb
+    .from("wp_posts")
+    .select("id, post_type, status, slug, title, excerpt, content, path, post_date, seo_title, seo_description, fifu_image_url, meta")
+    .or(`path.eq.${base},path.eq.${base}/`)
+    .eq("status", "publish")
+    .limit(1);
+  const page = (rows || [])[0] as unknown as LocalPost | undefined;
+  if (!page) return null;
+
+  const grab = async (pattern: string, limit: number) => {
+    const { data } = await sb
+      .from("wp_posts")
+      .select("title, path, excerpt")
+      .eq("status", "publish")
+      .like("path", pattern)
+      .order("title", { ascending: true })
+      .limit(limit);
+    return (data || [])
+      .filter((row) => normalizePath(row.path) !== base)
+      .map(toLink);
+  };
+
+  const [all, industries, locations] = await Promise.all([
+    grab(`${base}/%`, 400),
+    grab(`${base}/industries/%`, 120),
+    grab(`${base}/location/%`, 120),
+  ]);
+  const { count } = await sb
+    .from("wp_posts")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "publish")
+    .like("path", `${base}/%`);
+
+  const direct = all.filter((item) => {
+    const rest = item.href.replace(`${base}/`, "").replace(/\/$/, "");
+    return rest && !rest.includes("/") && rest !== "industries" && rest !== "location";
+  });
+
+  return { page, children: direct, industries, locations, childCount: count || all.length };
+}
+
 export const getLocalServiceBySlug = createServerFn({ method: "GET" })
   .validator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
     const path = `/services/${data.slug}`;
-    const index = await getWpDataIndex();
-    const serviceLine = index.services.find((service) => service.slug === data.slug);
-    const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
-    const page = pages.find(
-      (item) => item.status === "publish" && normalizePath(item.path) === path,
-    );
-    if (!page) return null;
+    let page: LocalPost | undefined;
+    let children: ServiceLink[] = [];
+    let industries: ServiceLink[] = [];
+    let locations: ServiceLink[] = [];
+    let childCount = 0;
+
+    try {
+      const index = await getWpDataIndex();
+      const serviceLine = index.services.find((service) => service.slug === data.slug);
+      const pages = serviceLine ? await readWpShard(serviceLine.file) : [];
+      const found = pages.find(
+        (item) => item.status === "publish" && normalizePath(item.path) === path,
+      );
+      if (found) {
+        page = found;
+        const kids = pages.filter(
+          (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
+        );
+        childCount = kids.length;
+        children = kids
+          .filter((item) => {
+            const rest = normalizePath(item.path).replace(`${path}/`, "");
+            return rest && !rest.includes("/");
+          })
+          .map((item) => toLink(item));
+        industries = kids
+          .filter((item) => normalizePath(item.path).startsWith(`${path}/industries/`))
+          .slice(0, 120)
+          .map((item) => toLink(item));
+        locations = kids
+          .filter((item) => normalizePath(item.path).startsWith(`${path}/location/`))
+          .slice(0, 120)
+          .map((item) => toLink(item));
+      }
+    } catch {
+      page = undefined;
+    }
+
+    if (!page) {
+      const tree = await serviceTreeFromDb(data.slug).catch(() => null);
+      if (!tree) return null;
+      page = tree.page;
+      children = tree.children;
+      industries = tree.industries;
+      locations = tree.locations;
+      childCount = tree.childCount;
+    }
+
     const hydrated = hydratedPost(page);
     const hero = parseJson(metaString(page.meta, "hero_section")) as any;
     const about = parseJson(metaString(page.meta, "aboutexpertise_section")) as any;
     const services = parseJson(metaString(page.meta, "our_services")) as any;
     const process = parseJson(metaString(page.meta, "process")) as any;
     const faqs = parseJson(metaString(page.meta, "faqs")) as any;
-    const children = pages
-      .filter(
-        (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
-      )
-      .map((item) => ({
-        title: stripTags(item.title) || item.slug,
-        href: normalizePath(item.path),
-        excerpt: stripTags(item.excerpt).slice(0, 130),
-        featured_image:
-          item.fifu_image_url || metaImageUrl(item.meta) || firstHtmlImage(item.content),
-      }));
     const related = await relatedPostsForService(data.slug);
     return {
       service: {
@@ -912,17 +996,19 @@ export const getLocalServiceBySlug = createServerFn({ method: "GET" })
           services,
           process,
           faqs,
-          promoVideo: metaString(page.meta, "promovideo") || null,
+          promoVideo:
+            metaString(page.meta, "promovideo") || metaString(page.meta, "promo_video") || null,
         },
         sections: serviceMetaSections(page.meta),
       },
       children,
+      industries,
+      locations,
       related,
-      childCount: pages.filter(
-        (item) => item.status === "publish" && normalizePath(item.path).startsWith(`${path}/`),
-      ).length,
+      childCount,
     };
   });
+
 
 const RELATED_SEGMENT_ALIASES: Record<string, string> = {
   web: "websites",

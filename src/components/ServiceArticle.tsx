@@ -429,11 +429,15 @@ export default function ServiceArticle({
   children,
   childCount,
   related = [],
+  industries = [],
+  locations = [],
 }: {
   service: ServiceArticleData;
   children: ServiceChild[];
   childCount: number;
   related?: ServiceRelatedPost[];
+  industries?: ServiceChild[];
+  locations?: ServiceChild[];
 }) {
   const structured = service.structured || {};
   const sections = service.sections || {};
@@ -515,7 +519,7 @@ export default function ServiceArticle({
 
   return (
     <main className="bg-white text-neutral-950">
-      {/* ------------------------------------------------------------ hero */}
+      {/* ------------------------------------------------- breadcrumb band */}
       <section className="relative isolate overflow-hidden bg-neutral-950 text-white">
         <div
           aria-hidden
@@ -525,37 +529,45 @@ export default function ServiceArticle({
               "radial-gradient(60% 60% at 8% 0%, rgba(255,106,0,.22), transparent 60%), radial-gradient(50% 50% at 90% 20%, rgba(255,106,0,.12), transparent 65%)",
           }}
         />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-20 pt-32 lg:grid-cols-[1.15fr_.85fr] lg:px-10 lg:pb-28 lg:pt-40">
+        <div className="relative mx-auto max-w-7xl px-6 pb-14 pt-32 lg:px-10 lg:pb-16 lg:pt-40">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
+            {service.title} services
+          </p>
+          <p className="mt-5 text-3xl font-bold tracking-tight md:text-5xl">{service.title}</p>
+          <nav
+            className="mt-5 flex flex-wrap items-center gap-2 text-sm text-white/60"
+            aria-label="Breadcrumb"
+          >
+            <Link to="/" className="hover:text-white">
+              Home
+            </Link>
+            <ChevronRight className="h-4 w-4" />
+            <Link to="/services" className="hover:text-white">
+              Services
+            </Link>
+            <ChevronRight className="h-4 w-4" />
+            <span className="text-white">{service.title}</span>
+          </nav>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------ hero */}
+      <section className="bg-white">
+        <div className="mx-auto grid max-w-7xl items-center gap-14 px-6 py-16 lg:grid-cols-[1.15fr_.85fr] lg:px-10 lg:py-24">
           <div>
-            <nav className="flex flex-wrap items-center gap-2 text-sm text-white/60" aria-label="Breadcrumb">
-              <Link to="/" className="hover:text-white">
-                Home
-              </Link>
-              <ChevronRight className="h-4 w-4" />
-              <Link to="/services" className="hover:text-white">
-                Services
-              </Link>
-              <ChevronRight className="h-4 w-4" />
-              <span className="text-white">{service.title}</span>
-            </nav>
-
-            <p className="mt-10 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
-              {service.title} services
-            </p>
-
-            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.03] tracking-tight md:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-neutral-950 md:text-6xl">
               {title}
             </h1>
 
             {subtitle && (
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">{subtitle}</p>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-600">{subtitle}</p>
             )}
 
-            {features.length > 0 && <HeroLoopList items={features} visible={3} tone="dark" />}
+            {features.length > 0 && <HeroLoopList items={features} visible={3} tone="light" />}
 
             {heroDescription && (
-              <p className="mt-6 max-w-2xl leading-7 text-white/60">{heroDescription}</p>
+              <p className="mt-6 max-w-2xl leading-7 text-neutral-500">{heroDescription}</p>
             )}
 
             <div className="mt-9 flex flex-wrap gap-3">
@@ -567,13 +579,13 @@ export default function ServiceArticle({
               </a>
               <a
                 href="#solutions"
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3.5 font-bold transition hover:bg-white hover:text-neutral-950"
+                className="inline-flex items-center gap-2 rounded-full border border-neutral-300 px-7 py-3.5 font-bold text-neutral-900 transition hover:bg-neutral-950 hover:text-white"
               >
                 Explore {service.title.toLowerCase()} solutions
               </a>
             </div>
 
-            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-white/12 pt-6 text-sm text-white/65">
+            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 pt-6 text-sm text-neutral-600">
               <span className="inline-flex items-center gap-2">
                 <span className="flex" aria-hidden>
                   {[0, 1, 2, 3, 4].map((i) => (
@@ -592,14 +604,14 @@ export default function ServiceArticle({
           </div>
 
           <div className="relative">
-            <div className="relative overflow-hidden rounded-3xl border border-white/12">
+            <div className="relative overflow-hidden rounded-3xl border border-neutral-200">
               <img
                 src={heroImage}
                 alt={`${service.title} services by Usman Jatoi`}
                 className="aspect-[4/5] w-full object-cover"
                 loading="eager"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-6 pt-20">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-6 pt-20 text-white">
                 <p className="text-lg font-bold">Usman Jatoi</p>
                 <p className="mt-1 text-sm text-white/70">
                   Independent {service.title.toLowerCase()} practitioner — strategy, build, handover.
@@ -607,7 +619,7 @@ export default function ServiceArticle({
               </div>
             </div>
             {childCount > 0 && (
-              <div className="absolute -left-5 bottom-10 hidden rounded-2xl border border-white/15 bg-neutral-950/90 px-5 py-4 backdrop-blur lg:block">
+              <div className="absolute -left-5 bottom-10 hidden rounded-2xl border border-white/15 bg-neutral-950/90 px-5 py-4 text-white backdrop-blur lg:block">
                 <p className="text-3xl font-bold text-[#FF6A00]">{childCount}</p>
                 <p className="text-xs uppercase tracking-widest text-white/60">
                   specialist pages
@@ -617,6 +629,7 @@ export default function ServiceArticle({
           </div>
         </div>
       </section>
+
 
       {/* -------------------------------------------------------- trusted by */}
       <section className="border-b border-neutral-200 bg-white py-12">
@@ -697,6 +710,26 @@ export default function ServiceArticle({
                 }
               />
             </div>
+            <p className="mt-8 leading-7 text-neutral-600">
+              Every {service.title.toLowerCase()} engagement is scoped around your systems, your
+              team, and the outcome you are measured on — then handed over with documentation so
+              nothing depends on me forever.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-7 py-3.5 font-bold text-white transition hover:bg-[#ff8124]"
+              >
+                Visit now <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href="#directory"
+                className="inline-flex items-center gap-2 rounded-full border border-neutral-300 px-7 py-3.5 font-bold text-neutral-900 transition hover:bg-neutral-950 hover:text-white"
+              >
+                Browse all {service.title.toLowerCase()} pages
+              </a>
+            </div>
+
           </div>
         </div>
       </section>
@@ -796,17 +829,20 @@ export default function ServiceArticle({
             eyebrow="Stack"
             title={`Tools, platforms, and technologies I work with for ${service.title.toLowerCase()}`}
           />
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-10 grid grid-cols-3 items-center gap-px overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-200 sm:grid-cols-4 lg:grid-cols-7">
             {[...TOOL_LOGOS, ...NETWORK_LOGOS].map(([name, src]) => (
-              <span
-                key={`${name}-chip`}
-                className="inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700"
-              >
-                <img src={src} alt="" aria-hidden className="h-5 max-w-[70px] object-contain" />
-                {name}
-              </span>
+              <div key={`${name}-chip`} className="grid min-h-24 place-items-center bg-white p-5">
+                <img
+                  src={src}
+                  alt={name}
+                  title={name}
+                  loading="lazy"
+                  className="max-h-9 max-w-[120px] object-contain opacity-70 transition hover:opacity-100"
+                />
+              </div>
             ))}
           </div>
+
         </div>
       </section>
 
@@ -889,19 +925,20 @@ export default function ServiceArticle({
             title="Understanding potential service delays"
             description="Rare, but honest: these are the only reasons a milestone ever moves. Hover any badge for detail."
           />
-          <ul className="mt-8 flex flex-wrap gap-3">
+          <ul className="mt-8 flex snap-x gap-3 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {DELAYS.map(([label, detail]) => (
-              <li key={label} className="group relative">
-                <span className="inline-flex cursor-help items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition group-hover:border-[#FF6A00]">
-                  <Info className="h-4 w-4 text-[#FF6A00]" />
+              <li key={label} className="group relative flex-none snap-start">
+                <span className="inline-flex cursor-help items-center gap-2 whitespace-nowrap rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition group-hover:border-[#FF6A00]">
+                  <Info className="h-4 w-4 flex-none text-[#FF6A00]" />
                   {label}
                 </span>
-                <span className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-72 rounded-xl bg-neutral-950 p-4 text-sm leading-6 text-white/85 shadow-xl group-hover:block">
+                <span className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-72 whitespace-normal rounded-xl bg-neutral-950 p-4 text-sm leading-6 text-white/85 shadow-xl group-hover:block">
                   {detail}
                 </span>
               </li>
             ))}
           </ul>
+
         </div>
       </section>
 
@@ -1012,7 +1049,10 @@ export default function ServiceArticle({
       </section>
 
       {/* ------------------------------------------------------ hire agency */}
-      {(sections._cached_industries_block || sections._cached_locations_block_v4) && (
+      {(industries.length > 0 ||
+        locations.length > 0 ||
+        sections._cached_industries_block ||
+        sections._cached_locations_block_v4) && (
         <section className="relative isolate overflow-hidden bg-neutral-950 py-20 text-white md:py-28">
           <img
             src="/site-assets/Redsglow-Banner.jpg"
@@ -1030,8 +1070,8 @@ export default function ServiceArticle({
             <div className="mt-8 flex gap-2 rounded-full border border-white/15 p-1 text-sm font-bold sm:w-fit">
               {(
                 [
-                  ["industries", "Industries we serve"],
-                  ["locations", "Locations we serve"],
+                  ["industries", `Industries we serve${industries.length ? ` (${industries.length})` : ""}`],
+                  ["locations", `Locations we serve${locations.length ? ` (${locations.length})` : ""}`],
                 ] as const
               ).map(([key, label]) => (
                 <button
@@ -1046,19 +1086,36 @@ export default function ServiceArticle({
                 </button>
               ))}
             </div>
-            <div
-              className="uj-service-block mt-8 rounded-2xl border border-white/12 bg-white/[.04] p-6 md:p-9"
-              dangerouslySetInnerHTML={{
-                __html:
-                  (agencyTab === "industries"
-                    ? sections._cached_industries_block
-                    : sections._cached_locations_block_v4) ||
-                  sections._cached_industries_block ||
-                  sections._cached_locations_block_v4 ||
-                  "",
-              }}
-            />
+            {(agencyTab === "industries" ? industries : locations).length > 0 ? (
+              <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {(agencyTab === "industries" ? industries : locations).slice(0, 60).map((item) => (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      className="flex h-full items-center justify-between gap-3 rounded-xl border border-white/12 bg-white/[.04] px-5 py-4 text-sm font-semibold transition hover:border-[#FF6A00] hover:bg-white/[.08]"
+                    >
+                      <span className="leading-6">{item.title}</span>
+                      <ArrowUpRight className="h-4 w-4 flex-none text-[#FF6A00]" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div
+                className="uj-service-block mt-8 rounded-2xl border border-white/12 bg-white/[.04] p-6 md:p-9"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    (agencyTab === "industries"
+                      ? sections._cached_industries_block
+                      : sections._cached_locations_block_v4) ||
+                    sections._cached_industries_block ||
+                    sections._cached_locations_block_v4 ||
+                    "",
+                }}
+              />
+            )}
           </div>
+
         </section>
       )}
 
@@ -1189,96 +1246,118 @@ export default function ServiceArticle({
       )}
 
       {/* ----------------------------------------------------------- contact */}
-      <section id="contact" className="scroll-mt-24 py-20 md:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1fr_1fr] lg:px-10">
-          <div>
-            <SectionHead
-              eyebrow="Contact"
-              title={`Tell me about your ${service.title.toLowerCase()} project`}
-              description="Send the brief and I reply personally, usually within one business day."
-            />
-            <ul className="mt-8 space-y-4">
-              {[
-                "Direct reply from me — not a sales team",
-                "Clear scope, timeline, and price before work starts",
-                "NDA-friendly and confidential by default",
-              ].map((item) => (
-                <li key={item} className="flex gap-3 leading-7 text-neutral-700">
-                  <Check className="mt-1.5 h-4 w-4 flex-none text-[#FF6A00]" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <form
-            onSubmit={submitContact}
-            className="rounded-2xl border border-neutral-200 bg-neutral-50 p-7"
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                name="name"
+      <section id="contact" className="scroll-mt-24 bg-white py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="grid overflow-hidden rounded-3xl border border-neutral-200 bg-neutral-950 text-white lg:grid-cols-[1.05fr_.95fr]">
+            <form onSubmit={submitContact} className="p-8 md:p-12">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#FF6A00]">
+                Contact
+              </p>
+              <h2 className="mt-4 text-3xl font-bold leading-tight md:text-4xl">
+                Tell me about your {service.title.toLowerCase()} project
+              </h2>
+              <p className="mt-4 max-w-lg leading-7 text-white/65">
+                Send the brief and I reply personally, usually within one business day.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <input
+                  name="name"
+                  required
+                  placeholder="Your name"
+                  className="rounded-xl border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-[#FF6A00]"
+                />
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Email address"
+                  className="rounded-xl border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-[#FF6A00]"
+                />
+                <input
+                  name="phone"
+                  placeholder="Phone (optional)"
+                  className="rounded-xl border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-[#FF6A00]"
+                />
+                <select
+                  name="interest"
+                  defaultValue=""
+                  className="rounded-xl border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-white outline-none focus:border-[#FF6A00] [&>option]:text-neutral-900"
+                  aria-label={`Which ${service.title} service do you need?`}
+                >
+                  <option value="">{`Any ${service.title.toLowerCase()} service`}</option>
+                  {(solutions.length
+                    ? solutions.map((item) => stripTags(item.title))
+                    : children.slice(0, 25).map((child) => child.title)
+                  ).map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <textarea
+                name="message"
                 required
-                placeholder="Your name"
-                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
+                rows={5}
+                placeholder={`What do you need help with in ${service.title.toLowerCase()}?`}
+                className="mt-4 w-full rounded-xl border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-[#FF6A00]"
               />
-              <input
-                name="email"
-                type="email"
-                required
-                placeholder="Email address"
-                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
-              />
-              <input
-                name="phone"
-                placeholder="Phone (optional)"
-                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
-              />
-              <select
-                name="interest"
-                defaultValue=""
-                className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
-                aria-label={`Which ${service.title} service do you need?`}
+              <input type="hidden" name="service" value={service.title} />
+              <button
+                type="submit"
+                disabled={contactState === "sending"}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-8 py-3.5 font-bold text-white transition hover:bg-[#ff8124] disabled:opacity-60"
               >
-                <option value="">{`Any ${service.title.toLowerCase()} service`}</option>
-                {(solutions.length
-                  ? solutions.map((item) => stripTags(item.title))
-                  : children.slice(0, 25).map((child) => child.title)
-                ).map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+                {contactState === "sending" ? "Sending…" : "Send"}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              {contactState === "done" && (
+                <p className="mt-4 text-sm font-semibold text-emerald-400">
+                  Thank you — your {service.title.toLowerCase()} brief is with me.
+                </p>
+              )}
+              {contactState === "error" && (
+                <p className="mt-4 text-sm font-semibold text-red-400">
+                  Something went wrong. Please email hello@usmanjatoi.com instead.
+                </p>
+              )}
+            </form>
+
+            <div className="relative isolate min-h-[420px] overflow-hidden">
+              <img
+                src="/site-assets/Usman-Jatoi-Contact-Us-image.webp"
+                alt="Usman Jatoi"
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/45 to-transparent" />
+              <div className="relative flex h-full flex-col justify-end p-8 md:p-12">
+                <p className="text-xl font-bold leading-relaxed md:text-2xl">
+                  “You talk to me directly — scope, build, and handover, with no account-manager
+                  relay in between.”
+                </p>
+                <p className="mt-5 text-lg font-bold">Usman Jatoi</p>
+                <p className="text-sm text-white/60">
+                  Independent {service.title.toLowerCase()} practitioner
+                </p>
+                <ul className="mt-7 space-y-3 border-t border-white/12 pt-6 text-sm text-white/70">
+                  {[
+                    "Direct reply from me — not a sales team",
+                    "Clear scope, timeline, and price before work starts",
+                    "NDA-friendly and confidential by default",
+                  ].map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <Check className="mt-1 h-4 w-4 flex-none text-[#FF6A00]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <textarea
-              name="message"
-              required
-              rows={5}
-              placeholder={`What do you need help with in ${service.title.toLowerCase()}?`}
-              className="mt-4 w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF6A00]"
-            />
-            <input type="hidden" name="service" value={service.title} />
-            <button
-              type="submit"
-              disabled={contactState === "sending"}
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-7 py-3.5 font-bold text-white transition hover:bg-[#ff8124] disabled:opacity-60"
-            >
-              {contactState === "sending" ? "Sending…" : "Send the brief"}
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            {contactState === "done" && (
-              <p className="mt-4 text-sm font-semibold text-emerald-600">
-                Thank you — your {service.title.toLowerCase()} brief is with me.
-              </p>
-            )}
-            {contactState === "error" && (
-              <p className="mt-4 text-sm font-semibold text-red-600">
-                Something went wrong. Please email hello@usmanjatoi.com instead.
-              </p>
-            )}
-          </form>
+          </div>
         </div>
       </section>
+
 
       <style>{`
         .uj-service-block h2{font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:.5rem}
