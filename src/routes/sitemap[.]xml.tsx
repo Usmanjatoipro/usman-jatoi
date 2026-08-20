@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
-const SITE = "https://usmanjatoi.lovable.app";
+const SITE = "https://usmanjatoi.com";
 const CHUNK = 2000;
 
 const GROUPS: Array<{ key: string; types: string[] }> = [
