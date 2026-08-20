@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import CalEmbed from "@/components/CalEmbed";
+import AiChatTrigger from "@/components/AiChatTrigger";
 
 type ServiceHero = {
   title?: string;
@@ -607,6 +608,14 @@ export default function ServiceArticle({
             </a>
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 lg:px-10">
+        <AiChatTrigger
+          serviceTitle={service.title}
+          slug={service.slug}
+          platform={service.structured?.hero?.title || service.title}
+        />
       </section>
 
       <section id="solutions" className="scroll-mt-20 border-y border-neutral-200 py-20 md:py-28">
