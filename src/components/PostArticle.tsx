@@ -386,34 +386,88 @@ export function PostArticle({
           );
         }
 
+        let candidatePostIds: number[] = [];
+        if (primaryCategory) {
+          const { data: termRows } = await supabase
+            .from("wp_post_terms")
+            .select("post_id")
+            .eq("term_id", primaryCategory.id)
+            .limit(24);
+          if (termRows && termRows.length) {
+            candidatePostIds = termRows
+              .map((r: any) => r.post_id)
+              .filter((id: number) => id !== post.id);
+          }
+        }
+
         if (siblings.length === 0) {
-          const { data: sib } = await supabase
+          let sibQuery = supabase
             .from("wp_posts")
             .select("id,title,path,slug,post_type,featured_media_id,post_date")
             .eq("status", "publish")
-            .contains("raw", { categories: [primaryCategory.id] })
             .neq("id", post.id)
             .order("post_date", { ascending: false })
             .limit(12);
-          if (!cancelled && sib) {
+
+          if (candidatePostIds.length > 0) {
+            sibQuery = sibQuery.in("id", candidatePostIds);
+          }
+
+          const { data: sib } = await sibQuery;
+          if (!cancelled && sib && sib.length > 0) {
             const list = (sib as any[]).map((r) => ({
               title: decodeEntities(stripHtml(r.title) || "Untitled"),
               href: (r.path as string) || `/blog/${r.slug}`,
             }));
             setSiblings(list);
+          } else if (!cancelled) {
+            // Fallback to recent posts if category posts are empty
+            const { data: fallbackSib } = await supabase
+              .from("wp_posts")
+              .select("id,title,path,slug,post_type,featured_media_id,post_date")
+              .eq("status", "publish")
+              .neq("id", post.id)
+              .order("post_date", { ascending: false })
+              .limit(12);
+            if (!cancelled && fallbackSib) {
+              setSiblings(
+                (fallbackSib as any[]).map((r) => ({
+                  title: decodeEntities(stripHtml(r.title) || "Untitled"),
+                  href: (r.path as string) || `/blog/${r.slug}`,
+                })),
+              );
+            }
           }
         }
 
         // Related posts with images (bento + explore-more)
-        const { data: rel } = await supabase
+        let relQuery = supabase
           .from("wp_posts")
           .select("id,title,path,slug,featured_media_id,post_date")
           .eq("status", "publish")
           .eq("post_type", "post")
-          .contains("raw", { categories: [primaryCategory.id] })
           .neq("id", post.id)
           .order("post_date", { ascending: false })
           .limit(6);
+
+        if (candidatePostIds.length > 0) {
+          relQuery = relQuery.in("id", candidatePostIds);
+        }
+
+        let { data: rel } = await relQuery;
+        if (!rel || rel.length === 0) {
+          // Fallback to recent published posts
+          const { data: fallbackRel } = await supabase
+            .from("wp_posts")
+            .select("id,title,path,slug,featured_media_id,post_date")
+            .eq("status", "publish")
+            .eq("post_type", "post")
+            .neq("id", post.id)
+            .order("post_date", { ascending: false })
+            .limit(6);
+          rel = fallbackRel;
+        }
+
         if (!cancelled && rel) {
           const withMedia = await Promise.all(
             (rel as any[]).map(async (r) => {
@@ -1775,7 +1829,72 @@ export function PostArticle({
         .post-body .uj-cards h3 { margin: 0 0 8px; font-size: 1.05em; }
         .post-body .uj-cards p { margin: 0; font-size: .95em; color: #525252; }
 
-
+        /* WordPress Gutenberg Block Enhancements */
+        .post-body table, .post-body .wp-block-table table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 1.5em 0;
+          font-size: 0.95em;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+        .post-body .wp-block-table {
+          overflow-x: auto;
+          margin: 1.5em 0;
+        }
+        .post-body th, .post-body td {
+          padding: 10px 14px;
+          border: 1px solid #e5e7eb;
+          text-align: left;
+        }
+        .post-body th {
+          background-color: #f9fafb;
+          font-weight: 650;
+          color: #111827;
+        }
+        .post-body tr:nth-child(even) td {
+          background-color: #fcfcfd;
+        }
+        .post-body blockquote, .post-body .wp-block-quote {
+          border-left: 4px solid #f97316;
+          padding: 12px 18px;
+          margin: 1.5em 0;
+          background: #fff7ed;
+          border-radius: 0 8px 8px 0;
+          font-style: italic;
+          color: #374151;
+        }
+        .post-body pre, .post-body .wp-block-code {
+          background: #0f172a;
+          color: #f8fafc;
+          padding: 16px;
+          border-radius: 10px;
+          overflow-x: auto;
+          font-size: 0.9em;
+          margin: 1.5em 0;
+        }
+        .post-body code:not(pre code) {
+          background: #f1f5f9;
+          color: #0f172a;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 0.88em;
+        }
+        .post-body figure, .post-body .wp-block-image {
+          margin: 1.8em 0;
+        }
+        .post-body figure img, .post-body .wp-block-image img {
+          border-radius: 12px;
+          max-width: 100%;
+          height: auto;
+        }
+        .post-body figcaption {
+          text-align: center;
+          font-size: 0.85em;
+          color: #6b7280;
+          margin-top: 6px;
+        }
 
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }

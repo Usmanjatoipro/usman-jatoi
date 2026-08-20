@@ -57,7 +57,7 @@ function ComparisonsIndex() {
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     if (!needle) return items;
-    return items.filter((i) => i.title.toLowerCase().includes(needle));
+    return items.filter((i: any) => i.title.toLowerCase().includes(needle));
   }, [items, q]);
 
   return (
@@ -91,7 +91,7 @@ function ComparisonsIndex() {
         </div>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((c) => (
+          {filtered.map((c: any) => (
             <Link
               key={c.slug}
               to="/comparisons/$slug"

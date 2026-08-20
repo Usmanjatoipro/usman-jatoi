@@ -64,37 +64,37 @@ const stack = [
 
 const services = [
   {
-    icon: "",
+    icon: "🌐",
     tag: "CMS · Web Development",
     title: "WordPress Development",
     body: "Stunning, easy-to-manage WordPress sites — Elementor, Divi, Oxygen, or Breakdance. Custom themes and plugins when the templates aren't enough.",
   },
   {
-    icon: "",
+    icon: "🛍️",
     tag: "E-commerce · CMS",
     title: "Shopify Solutions",
     body: "Store setup, theme customization, Liquid/JSON edits, apps, and checkout tuning — for stores that actually convert.",
   },
   {
-    icon: "",
+    icon: "⚡",
     tag: "CMS · Web Development",
     title: "Drupal Development",
     body: "Complex, scalable sites where flexibility and multi-editor workflows matter — Drupal built the right way.",
   },
   {
-    icon: "",
+    icon: "✨",
     tag: "CMS · Web Design",
     title: "Squarespace Websites",
     body: "Beautifully crafted Squarespace sites for creatives and small businesses — clean, quick to launch, easy to maintain.",
   },
   {
-    icon: "",
+    icon: "💻",
     tag: "Custom · Web Development",
     title: "Custom Web Development",
     body: "Built from scratch when off-the-shelf can't cut it — React, TanStack, Node, and modern edge-hosted stacks.",
   },
   {
-    icon: "",
+    icon: "🎨",
     tag: "CMS · Web Design",
     title: "Wix Website Creation",
     body: "Visually strong Wix sites with drag-and-drop flexibility — great for fast turnarounds and content-heavy pages.",
@@ -132,11 +132,11 @@ const countries = [
 ];
 
 const delays = [
-  { icon: "", label: "Family events" },
-  { icon: "", label: "Health issues" },
-  { icon: "", label: "Personal emergencies" },
-  { icon: "", label: "Public holidays" },
-  { icon: "", label: "Technical outages" },
+  { icon: "👨‍👩‍👧‍👦", label: "Family events" },
+  { icon: "🩺", label: "Health issues" },
+  { icon: "🚨", label: "Personal emergencies" },
+  { icon: "🎉", label: "Public holidays" },
+  { icon: "🔌", label: "Technical outages" },
 ];
 
 const faqs = [

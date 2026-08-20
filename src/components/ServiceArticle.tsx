@@ -295,7 +295,15 @@ export default function ServiceArticle({
 }) {
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(18);
-  const [portfolioTab, setPortfolioTab] = useState<PortfolioTab>("Creative work");
+  const initialPortfolioTab = useMemo<PortfolioTab>(() => {
+    const s = (service.slug || service.title || "").toLowerCase();
+    if (/web|site|dev|code|frontend|cms|wordpress|shopify|drupal|squarespace|wix/i.test(s)) return "Websites";
+    if (/ai|automation|agent|rag|bot|tool|product|saas|app|bulk-publishing/i.test(s)) return "Products";
+    if (/brand|logo|identity|consulting|strategy/i.test(s)) return "Brands";
+    return "Creative work";
+  }, [service.slug, service.title]);
+
+  const [portfolioTab, setPortfolioTab] = useState<PortfolioTab>(initialPortfolioTab);
   const [processPage, setProcessPage] = useState(0);
   const [activeDelay, setActiveDelay] = useState(0);
   const [contactState, setContactState] = useState<"idle" | "sending" | "done" | "error">("idle");
@@ -898,7 +906,7 @@ export default function ServiceArticle({
             Get expert advice and customized solutions for your project. No pressure, just useful
             next steps.
           </p>
-          <CalEmbed className="mt-10 min-h-[720px] overflow-hidden rounded-lg border border-white/15 bg-neutral-950" />
+          <CalEmbed className="mt-10 min-h-[540px] sm:min-h-[640px] md:min-h-[720px] overflow-hidden rounded-lg border border-white/15 bg-neutral-950" />
         </div>
       </section>
 

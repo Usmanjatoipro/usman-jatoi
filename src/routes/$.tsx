@@ -881,7 +881,7 @@ function DynamicPage() {
 
   if (post.post_type === "page" && /^\/services\//.test(post.path || "")) {
     const aboutLists = structured.about?.bullets?.flatMap((item) => item.list || []) || [];
-    const serviceChildren: ServiceChild[] = (children || []).map((child) => {
+    const serviceChildren: ServiceChild[] = (children || []).map((child: any) => {
       const childMedia = child.featured_media_id
         ? (childrenMedia as Record<number, WpMedia>)[child.featured_media_id]
         : null;

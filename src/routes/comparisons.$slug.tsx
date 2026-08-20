@@ -187,7 +187,7 @@ function ComparisonPage() {
           <div className="mx-auto max-w-6xl px-5 py-14 md:px-8">
             <h2 className="text-xl font-bold text-neutral-900 md:text-2xl">More comparisons</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((c) => (
+              {related.map((c: any) => (
                 <Link
                   key={c.slug}
                   to="/comparisons/$slug"
