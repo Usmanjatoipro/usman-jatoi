@@ -212,9 +212,10 @@ export default function PearlLemonExperience() {
             About Me
           </Link>
           <ChevronRight className="h-3.5 w-3.5 text-neutral-500" />
-          <Link to="/about-me/my-journey/professional-experience" className="hover:text-orange-400">
+          <a href="/about-me/my-journey/professional-experience" className="hover:text-orange-400">
             Professional Experience
-          </Link>
+          </a>
+
           <ChevronRight className="h-3.5 w-3.5 text-neutral-500" />
           <span className="text-orange-400 font-semibold">Pearl Lemon</span>
         </div>
