@@ -492,6 +492,71 @@ export const Route = createFileRoute("/$")({
       });
     }
 
+    // BreadcrumbList Schema (Google Rich Results compliant)
+    const pathParts = splat.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean);
+    if (pathParts.length > 0) {
+      const itemListElement = [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://usmanjatoi.com/",
+        },
+      ];
+      let currentPath = "https://usmanjatoi.com";
+      pathParts.forEach((seg, idx) => {
+        currentPath += `/${seg}`;
+        const isLast = idx === pathParts.length - 1;
+        const name = isLast
+          ? post.title || seg.replace(/-/g, " ")
+          : seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        itemListElement.push({
+          "@type": "ListItem",
+          position: idx + 2,
+          name,
+          item: `${currentPath}/`,
+        });
+      });
+
+      jsonLdEntries.push({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement,
+      });
+    }
+
+    // Service Schema for /services/ routes
+    if (splat.startsWith("services/") || (post.path && post.path.startsWith("/services/"))) {
+      jsonLdEntries.push({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: post.title || "Usman Jatoi Services",
+        description: desc,
+        provider: {
+          "@type": "Person",
+          name: "Usman Jatoi",
+          url: "https://usmanjatoi.com",
+          jobTitle: "Full-Stack Developer & AI Systems Architect",
+        },
+        areaServed: "Worldwide",
+        url,
+      });
+    }
+
+    // VideoObject Schema if video is present
+    if (structured.promoVideo) {
+      jsonLdEntries.push({
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: `${post.title || "Usman Jatoi"} — Video Overview`,
+        description: desc,
+        thumbnailUrl: image ? [image] : ["https://usmanjatoi.com/favicon.ico"],
+        uploadDate: post.post_date || new Date().toISOString(),
+        contentUrl: structured.promoVideo,
+        embedUrl: toYouTubeEmbed(structured.promoVideo) || structured.promoVideo,
+      });
+    }
+
     return {
       meta: [
         { title },
