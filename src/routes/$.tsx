@@ -21,6 +21,7 @@ import ServiceArticle, {
 } from "@/components/ServiceArticle";
 
 import PageHero from "@/components/PageHero";
+import PearlLemonExperience from "@/components/PearlLemonExperience";
 import { getLocalContentByPath } from "@/lib/wp-content-stats.functions";
 import { hydrateContentHtml } from "@/lib/wp-hydrate";
 
@@ -878,6 +879,13 @@ function DynamicPage() {
       return data || [];
     },
   });
+
+  if (
+    post.slug === "pearl-lemon" ||
+    (post.path || "").replace(/\/+$/, "") === "/about-me/my-journey/professional-experience/pearl-lemon"
+  ) {
+    return <PearlLemonExperience />;
+  }
 
   if (post.post_type === "page" && /^\/services\//.test(post.path || "")) {
     const aboutLists = structured.about?.bullets?.flatMap((item) => item.list || []) || [];
