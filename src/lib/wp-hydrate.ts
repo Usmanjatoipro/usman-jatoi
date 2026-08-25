@@ -53,6 +53,11 @@ const LABELS: Record<string, string> = {
   timeline: "Project & Implementation Timeline",
   examples: "Real-World Examples",
   intro: "Introduction",
+  FuturePredictions: "Future Predictions & Trends",
+  BenefitsAdvantages: "Key Benefits & Advantages",
+  DrawbacksLimitations: "Potential Drawbacks & Limitations",
+  StrategiesFrameworks: "Strategic Frameworks & Best Practices",
+  ActionPlanHowtoImplement: "Action Plan & Implementation Roadmap",
 };
 
 function labelFromKey(key: string) {

@@ -9,213 +9,78 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-partnership'
-import { Route as TrustRouteImport } from './routes/trust'
-import { Route as TestimonialsRouteImport } from './routes/testimonials'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ShopRouteImport } from './routes/shop'
-import { Route as SeoStudioRouteImport } from './routes/seo-studio'
-import { Route as PressReleaseRouteImport } from './routes/press-release'
-import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
-import { Route as MyCertificationsRouteImport } from './routes/my-certifications'
-import { Route as MyAwardsRouteImport } from './routes/my-awards'
-import { Route as MediaKitRouteImport } from './routes/media-kit'
-import { Route as LogRouteImport } from './routes/log'
-import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
-import { Route as LegalRouteImport } from './routes/legal'
-import { Route as CoursesRouteImport } from './routes/courses'
-import { Route as ContactUsRouteImport } from './routes/contact-us'
-import { Route as ContactMeRouteImport } from './routes/contact-me'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CertificationsRouteImport } from './routes/certifications'
-import { Route as CaseStudiesRouteImport } from './routes/case-studies'
-import { Route as CareersRouteImport } from './routes/careers'
-import { Route as CallRouteImport } from './routes/call'
-import { Route as BusinessesRouteImport } from './routes/businesses'
-import { Route as BlogRouteImport } from './routes/blog'
-import { Route as AwardsRouteImport } from './routes/awards'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutMeRouteImport } from './routes/about-me'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expertise.index'
-import { Route as SitemapIndexRouteImport } from './routes/sitemap.index'
-import { Route as ServicesIndexRouteImport } from './routes/services.index'
-import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
-import { Route as ComparisonsIndexRouteImport } from './routes/comparisons.index'
-import { Route as BlogIndexRouteImport } from './routes/blog.index'
-import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/skills-expertise.technical-skills'
-import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
-import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
-import { Route as SkillsExpertiseAiResearchAndInnovationRouteImport } from './routes/skills-expertise.ai-research-and-innovation'
-import { Route as SitemapNameDotxmlRouteImport } from './routes/sitemap.$name[.]xml'
-import { Route as ServicesWebRouteImport } from './routes/services.web'
-import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
-import { Route as PortfolioWebsitesRouteImport } from './routes/portfolio.websites'
-import { Route as PortfolioGamingLifeRouteImport } from './routes/portfolio.gaming-life'
-import { Route as PortfolioCreativeProjectsRouteImport } from './routes/portfolio.creative-projects'
-import { Route as PortfolioBrandsBusinessesRouteImport } from './routes/portfolio.brands-businesses'
-import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
-import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
-import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
-import { Route as LegalPrivacyPolicyRouteImport } from './routes/legal.privacy-policy'
-import { Route as LegalOurTermsRouteImport } from './routes/legal.our-terms'
-import { Route as ComparisonsSlugRouteImport } from './routes/comparisons.$slug'
-import { Route as CategorySlugRouteImport } from './routes/category.$slug'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as AuthorUsmanJatoiRouteImport } from './routes/author.usman-jatoi'
-import { Route as AboutMeVisionValuesRouteImport } from './routes/about-me.vision-values'
-import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
-import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
-import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
-import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
-import { Route as AuthenticatedSeedRouteImport } from './routes/_authenticated/seed'
-import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/intel'
-import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
-import { Route as AuthenticatedCmsRouteImport } from './routes/_authenticated/cms'
+import { Route as AboutMeRouteImport } from './routes/about-me'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AwardsRouteImport } from './routes/awards'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BusinessesRouteImport } from './routes/businesses'
+import { Route as CallRouteImport } from './routes/call'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CaseStudiesRouteImport } from './routes/case-studies'
+import { Route as CertificationsRouteImport } from './routes/certifications'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ContactMeRouteImport } from './routes/contact-me'
+import { Route as ContactUsRouteImport } from './routes/contact-us'
+import { Route as CoursesRouteImport } from './routes/courses'
+import { Route as LegalRouteImport } from './routes/legal'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as LogRouteImport } from './routes/log'
+import { Route as MediaKitRouteImport } from './routes/media-kit'
+import { Route as MyAwardsRouteImport } from './routes/my-awards'
+import { Route as MyCertificationsRouteImport } from './routes/my-certifications'
+import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as PressReleaseRouteImport } from './routes/press-release'
+import { Route as SeoStudioRouteImport } from './routes/seo-studio'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TestimonialsRouteImport } from './routes/testimonials'
+import { Route as TrustRouteImport } from './routes/trust'
+import { Route as WhiteLabelPartnershipRouteImport } from './routes/white-label-partnership'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedCmsRouteImport } from './routes/_authenticated/cms'
+import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
+import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/intel'
+import { Route as AuthenticatedSeedRouteImport } from './routes/_authenticated/seed'
+import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
+import { Route as AboutMeMyJourneyRouteImport } from './routes/about-me.my-journey'
+import { Route as AboutMePersonalLifeRouteImport } from './routes/about-me.personal-life'
+import { Route as AboutMeSocialMediaRouteImport } from './routes/about-me.social-media'
+import { Route as AboutMeVisionValuesRouteImport } from './routes/about-me.vision-values'
+import { Route as AuthorUsmanJatoiRouteImport } from './routes/author.usman-jatoi'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
+import { Route as ComparisonsIndexRouteImport } from './routes/comparisons.index'
+import { Route as ComparisonsSlugRouteImport } from './routes/comparisons.$slug'
+import { Route as LegalOurTermsRouteImport } from './routes/legal.our-terms'
+import { Route as LegalPrivacyPolicyRouteImport } from './routes/legal.privacy-policy'
+import { Route as MyLifestyleIndexRouteImport } from './routes/my-lifestyle.index'
+import { Route as MyLifestyleFitnessHealthRouteImport } from './routes/my-lifestyle.fitness-health'
+import { Route as MyLifestyleGamingLifeRouteImport } from './routes/my-lifestyle.gaming-life'
+import { Route as MyLifestyleHobbiesRouteImport } from './routes/my-lifestyle.hobbies'
+import { Route as PortfolioBrandsBusinessesRouteImport } from './routes/portfolio.brands-businesses'
+import { Route as PortfolioCreativeProjectsRouteImport } from './routes/portfolio.creative-projects'
+import { Route as PortfolioGamingLifeRouteImport } from './routes/portfolio.gaming-life'
+import { Route as PortfolioWebsitesRouteImport } from './routes/portfolio.websites'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as ServicesWebRouteImport } from './routes/services.web'
+import { Route as SitemapIndexRouteImport } from './routes/sitemap.index'
+import { Route as SitemapNameRouteImport } from './routes/sitemap.$name'
+import { Route as SkillsExpertiseIndexRouteImport } from './routes/skills-expertise.index'
+import { Route as SkillsExpertiseAiResearchAndInnovationRouteImport } from './routes/skills-expertise.ai-research-and-innovation'
+import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
+import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills-expertise.seo-marketing'
+import { Route as SkillsExpertiseTechnicalSkillsRouteImport } from './routes/skills-expertise.technical-skills'
 import { Route as ApiPublicContentRouteImport } from './routes/api/public/content'
 
-const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
-  id: '/white-label-partnership',
-  path: '/white-label-partnership',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrustRoute = TrustRouteImport.update({
-  id: '/trust',
-  path: '/trust',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestimonialsRoute = TestimonialsRouteImport.update({
-  id: '/testimonials',
-  path: '/testimonials',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShopRoute = ShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SeoStudioRoute = SeoStudioRouteImport.update({
-  id: '/seo-studio',
-  path: '/seo-studio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PressReleaseRoute = PressReleaseRouteImport.update({
-  id: '/press-release',
-  path: '/press-release',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioRoute = PortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyTestimonialsRoute = MyTestimonialsRouteImport.update({
-  id: '/my-testimonials',
-  path: '/my-testimonials',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyCertificationsRoute = MyCertificationsRouteImport.update({
-  id: '/my-certifications',
-  path: '/my-certifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyAwardsRoute = MyAwardsRouteImport.update({
-  id: '/my-awards',
-  path: '/my-awards',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MediaKitRoute = MediaKitRouteImport.update({
-  id: '/media-kit',
-  path: '/media-kit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LogRoute = LogRouteImport.update({
-  id: '/log',
-  path: '/log',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
-  id: '/llms.txt',
-  path: '/llms.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LegalRoute = LegalRouteImport.update({
-  id: '/legal',
-  path: '/legal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CoursesRoute = CoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactUsRoute = ContactUsRouteImport.update({
-  id: '/contact-us',
-  path: '/contact-us',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactMeRoute = ContactMeRouteImport.update({
-  id: '/contact-me',
-  path: '/contact-me',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CertificationsRoute = CertificationsRouteImport.update({
-  id: '/certifications',
-  path: '/certifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CaseStudiesRoute = CaseStudiesRouteImport.update({
-  id: '/case-studies',
-  path: '/case-studies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersRoute = CareersRouteImport.update({
-  id: '/careers',
-  path: '/careers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CallRoute = CallRouteImport.update({
-  id: '/call',
-  path: '/call',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessesRoute = BusinessesRouteImport.update({
-  id: '/businesses',
-  path: '/businesses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AwardsRoute = AwardsRouteImport.update({
-  id: '/awards',
-  path: '/awards',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutMeRoute = AboutMeRouteImport.update({
-  id: '/about-me',
-  path: '/about-me',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SplatRoute = SplatRouteImport.update({
@@ -227,34 +92,199 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AboutMeRoute = AboutMeRouteImport.update({
+  id: '/about-me',
+  path: '/about-me',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SkillsExpertiseIndexRoute = SkillsExpertiseIndexRouteImport.update({
-  id: '/skills-expertise/',
-  path: '/skills-expertise/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapIndexRoute = SitemapIndexRouteImport.update({
-  id: '/sitemap/',
-  path: '/sitemap/',
+const AwardsRoute = AwardsRouteImport.update({
+  id: '/awards',
+  path: '/awards',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicesIndexRoute = ServicesIndexRouteImport.update({
-  id: '/services/',
-  path: '/services/',
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
-  id: '/my-lifestyle/',
-  path: '/my-lifestyle/',
+const BusinessesRoute = BusinessesRouteImport.update({
+  id: '/businesses',
+  path: '/businesses',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ComparisonsIndexRoute = ComparisonsIndexRouteImport.update({
-  id: '/comparisons/',
-  path: '/comparisons/',
+const CallRoute = CallRouteImport.update({
+  id: '/call',
+  path: '/call',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaseStudiesRoute = CaseStudiesRouteImport.update({
+  id: '/case-studies',
+  path: '/case-studies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertificationsRoute = CertificationsRouteImport.update({
+  id: '/certifications',
+  path: '/certifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactMeRoute = ContactMeRouteImport.update({
+  id: '/contact-me',
+  path: '/contact-me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactUsRoute = ContactUsRouteImport.update({
+  id: '/contact-us',
+  path: '/contact-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesRoute = CoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogRoute = LogRouteImport.update({
+  id: '/log',
+  path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MediaKitRoute = MediaKitRouteImport.update({
+  id: '/media-kit',
+  path: '/media-kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyAwardsRoute = MyAwardsRouteImport.update({
+  id: '/my-awards',
+  path: '/my-awards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyCertificationsRoute = MyCertificationsRouteImport.update({
+  id: '/my-certifications',
+  path: '/my-certifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyTestimonialsRoute = MyTestimonialsRouteImport.update({
+  id: '/my-testimonials',
+  path: '/my-testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PressReleaseRoute = PressReleaseRouteImport.update({
+  id: '/press-release',
+  path: '/press-release',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeoStudioRoute = SeoStudioRouteImport.update({
+  id: '/seo-studio',
+  path: '/seo-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestimonialsRoute = TestimonialsRouteImport.update({
+  id: '/testimonials',
+  path: '/testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
+  id: '/white-label-partnership',
+  path: '/white-label-partnership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCmsRoute = AuthenticatedCmsRouteImport.update({
+  id: '/cms',
+  path: '/cms',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedIntelRoute = AuthenticatedIntelRouteImport.update({
+  id: '/intel',
+  path: '/intel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSeedRoute = AuthenticatedSeedRouteImport.update({
+  id: '/seed',
+  path: '/seed',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSeoRoute = AuthenticatedSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AboutMeMyJourneyRoute = AboutMeMyJourneyRouteImport.update({
+  id: '/my-journey',
+  path: '/my-journey',
+  getParentRoute: () => AboutMeRoute,
+} as any)
+const AboutMePersonalLifeRoute = AboutMePersonalLifeRouteImport.update({
+  id: '/personal-life',
+  path: '/personal-life',
+  getParentRoute: () => AboutMeRoute,
+} as any)
+const AboutMeSocialMediaRoute = AboutMeSocialMediaRouteImport.update({
+  id: '/social-media',
+  path: '/social-media',
+  getParentRoute: () => AboutMeRoute,
+} as any)
+const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
+  id: '/vision-values',
+  path: '/vision-values',
+  getParentRoute: () => AboutMeRoute,
+} as any)
+const AuthorUsmanJatoiRoute = AuthorUsmanJatoiRouteImport.update({
+  id: '/author/usman-jatoi',
+  path: '/author/usman-jatoi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -262,75 +292,39 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BlogRoute,
 } as any)
-const SkillsExpertiseTechnicalSkillsRoute =
-  SkillsExpertiseTechnicalSkillsRouteImport.update({
-    id: '/skills-expertise/technical-skills',
-    path: '/skills-expertise/technical-skills',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SkillsExpertiseSeoMarketingRoute =
-  SkillsExpertiseSeoMarketingRouteImport.update({
-    id: '/skills-expertise/seo-marketing',
-    path: '/skills-expertise/seo-marketing',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SkillsExpertiseCreativeSkillsRoute =
-  SkillsExpertiseCreativeSkillsRouteImport.update({
-    id: '/skills-expertise/creative-skills',
-    path: '/skills-expertise/creative-skills',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SkillsExpertiseAiResearchAndInnovationRoute =
-  SkillsExpertiseAiResearchAndInnovationRouteImport.update({
-    id: '/skills-expertise/ai-research-and-innovation',
-    path: '/skills-expertise/ai-research-and-innovation',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SitemapNameDotxmlRoute = SitemapNameDotxmlRouteImport.update({
-  id: '/sitemap/$name.xml',
-  path: '/sitemap/$name.xml',
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicesWebRoute = ServicesWebRouteImport.update({
-  id: '/services/web',
-  path: '/services/web',
+const ComparisonsIndexRoute = ComparisonsIndexRouteImport.update({
+  id: '/comparisons/',
+  path: '/comparisons/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicesSlugRoute = ServicesSlugRouteImport.update({
-  id: '/services/$slug',
-  path: '/services/$slug',
+const ComparisonsSlugRoute = ComparisonsSlugRouteImport.update({
+  id: '/comparisons/$slug',
+  path: '/comparisons/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PortfolioWebsitesRoute = PortfolioWebsitesRouteImport.update({
-  id: '/websites',
-  path: '/websites',
-  getParentRoute: () => PortfolioRoute,
+const LegalOurTermsRoute = LegalOurTermsRouteImport.update({
+  id: '/our-terms',
+  path: '/our-terms',
+  getParentRoute: () => LegalRoute,
 } as any)
-const PortfolioGamingLifeRoute = PortfolioGamingLifeRouteImport.update({
-  id: '/gaming-life',
-  path: '/gaming-life',
-  getParentRoute: () => PortfolioRoute,
+const LegalPrivacyPolicyRoute = LegalPrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => LegalRoute,
 } as any)
-const PortfolioCreativeProjectsRoute =
-  PortfolioCreativeProjectsRouteImport.update({
-    id: '/creative-projects',
-    path: '/creative-projects',
-    getParentRoute: () => PortfolioRoute,
-  } as any)
-const PortfolioBrandsBusinessesRoute =
-  PortfolioBrandsBusinessesRouteImport.update({
-    id: '/brands-businesses',
-    path: '/brands-businesses',
-    getParentRoute: () => PortfolioRoute,
-  } as any)
-const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
-  id: '/my-lifestyle/hobbies',
-  path: '/my-lifestyle/hobbies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyLifestyleGamingLifeRoute = MyLifestyleGamingLifeRouteImport.update({
-  id: '/my-lifestyle/gaming-life',
-  path: '/my-lifestyle/gaming-life',
+const MyLifestyleIndexRoute = MyLifestyleIndexRouteImport.update({
+  id: '/my-lifestyle/',
+  path: '/my-lifestyle/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyLifestyleFitnessHealthRoute =
@@ -339,86 +333,92 @@ const MyLifestyleFitnessHealthRoute =
     path: '/my-lifestyle/fitness-health',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LegalPrivacyPolicyRoute = LegalPrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => LegalRoute,
-} as any)
-const LegalOurTermsRoute = LegalOurTermsRouteImport.update({
-  id: '/our-terms',
-  path: '/our-terms',
-  getParentRoute: () => LegalRoute,
-} as any)
-const ComparisonsSlugRoute = ComparisonsSlugRouteImport.update({
-  id: '/comparisons/$slug',
-  path: '/comparisons/$slug',
+const MyLifestyleGamingLifeRoute = MyLifestyleGamingLifeRouteImport.update({
+  id: '/my-lifestyle/gaming-life',
+  path: '/my-lifestyle/gaming-life',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategorySlugRoute = CategorySlugRouteImport.update({
-  id: '/category/$slug',
-  path: '/category/$slug',
+const MyLifestyleHobbiesRoute = MyLifestyleHobbiesRouteImport.update({
+  id: '/my-lifestyle/hobbies',
+  path: '/my-lifestyle/hobbies',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
+const PortfolioBrandsBusinessesRoute =
+  PortfolioBrandsBusinessesRouteImport.update({
+    id: '/brands-businesses',
+    path: '/brands-businesses',
+    getParentRoute: () => PortfolioRoute,
+  } as any)
+const PortfolioCreativeProjectsRoute =
+  PortfolioCreativeProjectsRouteImport.update({
+    id: '/creative-projects',
+    path: '/creative-projects',
+    getParentRoute: () => PortfolioRoute,
+  } as any)
+const PortfolioGamingLifeRoute = PortfolioGamingLifeRouteImport.update({
+  id: '/gaming-life',
+  path: '/gaming-life',
+  getParentRoute: () => PortfolioRoute,
 } as any)
-const AuthorUsmanJatoiRoute = AuthorUsmanJatoiRouteImport.update({
-  id: '/author/usman-jatoi',
-  path: '/author/usman-jatoi',
+const PortfolioWebsitesRoute = PortfolioWebsitesRouteImport.update({
+  id: '/websites',
+  path: '/websites',
+  getParentRoute: () => PortfolioRoute,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutMeVisionValuesRoute = AboutMeVisionValuesRouteImport.update({
-  id: '/vision-values',
-  path: '/vision-values',
-  getParentRoute: () => AboutMeRoute,
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/services/$slug',
+  path: '/services/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AboutMeSocialMediaRoute = AboutMeSocialMediaRouteImport.update({
-  id: '/social-media',
-  path: '/social-media',
-  getParentRoute: () => AboutMeRoute,
+const ServicesWebRoute = ServicesWebRouteImport.update({
+  id: '/services/web',
+  path: '/services/web',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AboutMePersonalLifeRoute = AboutMePersonalLifeRouteImport.update({
-  id: '/personal-life',
-  path: '/personal-life',
-  getParentRoute: () => AboutMeRoute,
+const SitemapIndexRoute = SitemapIndexRouteImport.update({
+  id: '/sitemap/',
+  path: '/sitemap/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AboutMeMyJourneyRoute = AboutMeMyJourneyRouteImport.update({
-  id: '/my-journey',
-  path: '/my-journey',
-  getParentRoute: () => AboutMeRoute,
+const SitemapNameRoute = SitemapNameRouteImport.update({
+  id: '/sitemap/$name',
+  path: '/sitemap/$name',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSeoRoute = AuthenticatedSeoRouteImport.update({
-  id: '/seo',
-  path: '/seo',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const SkillsExpertiseIndexRoute = SkillsExpertiseIndexRouteImport.update({
+  id: '/skills-expertise/',
+  path: '/skills-expertise/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSeedRoute = AuthenticatedSeedRouteImport.update({
-  id: '/seed',
-  path: '/seed',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedIntelRoute = AuthenticatedIntelRouteImport.update({
-  id: '/intel',
-  path: '/intel',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
-  id: '/import',
-  path: '/import',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCmsRoute = AuthenticatedCmsRouteImport.update({
-  id: '/cms',
-  path: '/cms',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const SkillsExpertiseAiResearchAndInnovationRoute =
+  SkillsExpertiseAiResearchAndInnovationRouteImport.update({
+    id: '/skills-expertise/ai-research-and-innovation',
+    path: '/skills-expertise/ai-research-and-innovation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SkillsExpertiseCreativeSkillsRoute =
+  SkillsExpertiseCreativeSkillsRouteImport.update({
+    id: '/skills-expertise/creative-skills',
+    path: '/skills-expertise/creative-skills',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SkillsExpertiseSeoMarketingRoute =
+  SkillsExpertiseSeoMarketingRouteImport.update({
+    id: '/skills-expertise/seo-marketing',
+    path: '/skills-expertise/seo-marketing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SkillsExpertiseTechnicalSkillsRoute =
+  SkillsExpertiseTechnicalSkillsRouteImport.update({
+    id: '/skills-expertise/technical-skills',
+    path: '/skills-expertise/technical-skills',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicContentRoute = ApiPublicContentRouteImport.update({
   id: '/api/public/content',
   path: '/api/public/content',
@@ -481,7 +481,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
-  '/sitemap/$name.xml': typeof SitemapNameDotxmlRoute
+  '/sitemap/$name': typeof SitemapNameRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
@@ -549,7 +549,7 @@ export interface FileRoutesByTo {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
-  '/sitemap/$name.xml': typeof SitemapNameDotxmlRoute
+  '/sitemap/$name': typeof SitemapNameRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
@@ -620,7 +620,7 @@ export interface FileRoutesById {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
-  '/sitemap/$name.xml': typeof SitemapNameDotxmlRoute
+  '/sitemap/$name': typeof SitemapNameRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
   '/skills-expertise/seo-marketing': typeof SkillsExpertiseSeoMarketingRoute
@@ -691,7 +691,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
-    | '/sitemap/$name.xml'
+    | '/sitemap/$name'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
@@ -759,7 +759,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
-    | '/sitemap/$name.xml'
+    | '/sitemap/$name'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
@@ -829,7 +829,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
-    | '/sitemap/$name.xml'
+    | '/sitemap/$name'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
     | '/skills-expertise/seo-marketing'
@@ -883,7 +883,7 @@ export interface RootRouteChildren {
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesWebRoute: typeof ServicesWebRoute
-  SitemapNameDotxmlRoute: typeof SitemapNameDotxmlRoute
+  SitemapNameRoute: typeof SitemapNameRoute
   SkillsExpertiseAiResearchAndInnovationRoute: typeof SkillsExpertiseAiResearchAndInnovationRoute
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
   SkillsExpertiseSeoMarketingRoute: typeof SkillsExpertiseSeoMarketingRoute
@@ -898,200 +898,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/white-label-partnership': {
-      id: '/white-label-partnership'
-      path: '/white-label-partnership'
-      fullPath: '/white-label-partnership'
-      preLoaderRoute: typeof WhiteLabelPartnershipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trust': {
-      id: '/trust'
-      path: '/trust'
-      fullPath: '/trust'
-      preLoaderRoute: typeof TrustRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/testimonials': {
-      id: '/testimonials'
-      path: '/testimonials'
-      fullPath: '/testimonials'
-      preLoaderRoute: typeof TestimonialsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/shop': {
-      id: '/shop'
-      path: '/shop'
-      fullPath: '/shop'
-      preLoaderRoute: typeof ShopRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/seo-studio': {
-      id: '/seo-studio'
-      path: '/seo-studio'
-      fullPath: '/seo-studio'
-      preLoaderRoute: typeof SeoStudioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/press-release': {
-      id: '/press-release'
-      path: '/press-release'
-      fullPath: '/press-release'
-      preLoaderRoute: typeof PressReleaseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio': {
-      id: '/portfolio'
-      path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-testimonials': {
-      id: '/my-testimonials'
-      path: '/my-testimonials'
-      fullPath: '/my-testimonials'
-      preLoaderRoute: typeof MyTestimonialsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-certifications': {
-      id: '/my-certifications'
-      path: '/my-certifications'
-      fullPath: '/my-certifications'
-      preLoaderRoute: typeof MyCertificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-awards': {
-      id: '/my-awards'
-      path: '/my-awards'
-      fullPath: '/my-awards'
-      preLoaderRoute: typeof MyAwardsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/media-kit': {
-      id: '/media-kit'
-      path: '/media-kit'
-      fullPath: '/media-kit'
-      preLoaderRoute: typeof MediaKitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/log': {
-      id: '/log'
-      path: '/log'
-      fullPath: '/log'
-      preLoaderRoute: typeof LogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/llms.txt': {
-      id: '/llms.txt'
-      path: '/llms.txt'
-      fullPath: '/llms.txt'
-      preLoaderRoute: typeof LlmsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/legal': {
-      id: '/legal'
-      path: '/legal'
-      fullPath: '/legal'
-      preLoaderRoute: typeof LegalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/courses': {
-      id: '/courses'
-      path: '/courses'
-      fullPath: '/courses'
-      preLoaderRoute: typeof CoursesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact-us': {
-      id: '/contact-us'
-      path: '/contact-us'
-      fullPath: '/contact-us'
-      preLoaderRoute: typeof ContactUsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact-me': {
-      id: '/contact-me'
-      path: '/contact-me'
-      fullPath: '/contact-me'
-      preLoaderRoute: typeof ContactMeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/certifications': {
-      id: '/certifications'
-      path: '/certifications'
-      fullPath: '/certifications'
-      preLoaderRoute: typeof CertificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/case-studies': {
-      id: '/case-studies'
-      path: '/case-studies'
-      fullPath: '/case-studies'
-      preLoaderRoute: typeof CaseStudiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers': {
-      id: '/careers'
-      path: '/careers'
-      fullPath: '/careers'
-      preLoaderRoute: typeof CareersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/call': {
-      id: '/call'
-      path: '/call'
-      fullPath: '/call'
-      preLoaderRoute: typeof CallRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/businesses': {
-      id: '/businesses'
-      path: '/businesses'
-      fullPath: '/businesses'
-      preLoaderRoute: typeof BusinessesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/awards': {
-      id: '/awards'
-      path: '/awards'
-      fullPath: '/awards'
-      preLoaderRoute: typeof AwardsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about-me': {
-      id: '/about-me'
-      path: '/about-me'
-      fullPath: '/about-me'
-      preLoaderRoute: typeof AboutMeRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$': {
@@ -1108,249 +919,207 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about-me': {
+      id: '/about-me'
+      path: '/about-me'
+      fullPath: '/about-me'
+      preLoaderRoute: typeof AboutMeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skills-expertise/': {
-      id: '/skills-expertise/'
-      path: '/skills-expertise'
-      fullPath: '/skills-expertise/'
-      preLoaderRoute: typeof SkillsExpertiseIndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap/': {
-      id: '/sitemap/'
-      path: '/sitemap'
-      fullPath: '/sitemap/'
-      preLoaderRoute: typeof SitemapIndexRouteImport
+    '/awards': {
+      id: '/awards'
+      path: '/awards'
+      fullPath: '/awards'
+      preLoaderRoute: typeof AwardsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services/': {
-      id: '/services/'
-      path: '/services'
-      fullPath: '/services/'
-      preLoaderRoute: typeof ServicesIndexRouteImport
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/my-lifestyle/': {
-      id: '/my-lifestyle/'
-      path: '/my-lifestyle'
-      fullPath: '/my-lifestyle/'
-      preLoaderRoute: typeof MyLifestyleIndexRouteImport
+    '/businesses': {
+      id: '/businesses'
+      path: '/businesses'
+      fullPath: '/businesses'
+      preLoaderRoute: typeof BusinessesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/comparisons/': {
-      id: '/comparisons/'
-      path: '/comparisons'
-      fullPath: '/comparisons/'
-      preLoaderRoute: typeof ComparisonsIndexRouteImport
+    '/call': {
+      id: '/call'
+      path: '/call'
+      fullPath: '/call'
+      preLoaderRoute: typeof CallRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/': {
-      id: '/blog/'
-      path: '/'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/skills-expertise/technical-skills': {
-      id: '/skills-expertise/technical-skills'
-      path: '/skills-expertise/technical-skills'
-      fullPath: '/skills-expertise/technical-skills'
-      preLoaderRoute: typeof SkillsExpertiseTechnicalSkillsRouteImport
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skills-expertise/seo-marketing': {
-      id: '/skills-expertise/seo-marketing'
-      path: '/skills-expertise/seo-marketing'
-      fullPath: '/skills-expertise/seo-marketing'
-      preLoaderRoute: typeof SkillsExpertiseSeoMarketingRouteImport
+    '/case-studies': {
+      id: '/case-studies'
+      path: '/case-studies'
+      fullPath: '/case-studies'
+      preLoaderRoute: typeof CaseStudiesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skills-expertise/creative-skills': {
-      id: '/skills-expertise/creative-skills'
-      path: '/skills-expertise/creative-skills'
-      fullPath: '/skills-expertise/creative-skills'
-      preLoaderRoute: typeof SkillsExpertiseCreativeSkillsRouteImport
+    '/certifications': {
+      id: '/certifications'
+      path: '/certifications'
+      fullPath: '/certifications'
+      preLoaderRoute: typeof CertificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skills-expertise/ai-research-and-innovation': {
-      id: '/skills-expertise/ai-research-and-innovation'
-      path: '/skills-expertise/ai-research-and-innovation'
-      fullPath: '/skills-expertise/ai-research-and-innovation'
-      preLoaderRoute: typeof SkillsExpertiseAiResearchAndInnovationRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap/$name.xml': {
-      id: '/sitemap/$name.xml'
-      path: '/sitemap/$name.xml'
-      fullPath: '/sitemap/$name.xml'
-      preLoaderRoute: typeof SitemapNameDotxmlRouteImport
+    '/contact-me': {
+      id: '/contact-me'
+      path: '/contact-me'
+      fullPath: '/contact-me'
+      preLoaderRoute: typeof ContactMeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services/web': {
-      id: '/services/web'
-      path: '/services/web'
-      fullPath: '/services/web'
-      preLoaderRoute: typeof ServicesWebRouteImport
+    '/contact-us': {
+      id: '/contact-us'
+      path: '/contact-us'
+      fullPath: '/contact-us'
+      preLoaderRoute: typeof ContactUsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services/$slug': {
-      id: '/services/$slug'
-      path: '/services/$slug'
-      fullPath: '/services/$slug'
-      preLoaderRoute: typeof ServicesSlugRouteImport
+    '/courses': {
+      id: '/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof CoursesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/portfolio/websites': {
-      id: '/portfolio/websites'
-      path: '/websites'
-      fullPath: '/portfolio/websites'
-      preLoaderRoute: typeof PortfolioWebsitesRouteImport
-      parentRoute: typeof PortfolioRoute
-    }
-    '/portfolio/gaming-life': {
-      id: '/portfolio/gaming-life'
-      path: '/gaming-life'
-      fullPath: '/portfolio/gaming-life'
-      preLoaderRoute: typeof PortfolioGamingLifeRouteImport
-      parentRoute: typeof PortfolioRoute
-    }
-    '/portfolio/creative-projects': {
-      id: '/portfolio/creative-projects'
-      path: '/creative-projects'
-      fullPath: '/portfolio/creative-projects'
-      preLoaderRoute: typeof PortfolioCreativeProjectsRouteImport
-      parentRoute: typeof PortfolioRoute
-    }
-    '/portfolio/brands-businesses': {
-      id: '/portfolio/brands-businesses'
-      path: '/brands-businesses'
-      fullPath: '/portfolio/brands-businesses'
-      preLoaderRoute: typeof PortfolioBrandsBusinessesRouteImport
-      parentRoute: typeof PortfolioRoute
-    }
-    '/my-lifestyle/hobbies': {
-      id: '/my-lifestyle/hobbies'
-      path: '/my-lifestyle/hobbies'
-      fullPath: '/my-lifestyle/hobbies'
-      preLoaderRoute: typeof MyLifestyleHobbiesRouteImport
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/my-lifestyle/gaming-life': {
-      id: '/my-lifestyle/gaming-life'
-      path: '/my-lifestyle/gaming-life'
-      fullPath: '/my-lifestyle/gaming-life'
-      preLoaderRoute: typeof MyLifestyleGamingLifeRouteImport
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/my-lifestyle/fitness-health': {
-      id: '/my-lifestyle/fitness-health'
-      path: '/my-lifestyle/fitness-health'
-      fullPath: '/my-lifestyle/fitness-health'
-      preLoaderRoute: typeof MyLifestyleFitnessHealthRouteImport
+    '/log': {
+      id: '/log'
+      path: '/log'
+      fullPath: '/log'
+      preLoaderRoute: typeof LogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/legal/privacy-policy': {
-      id: '/legal/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/legal/privacy-policy'
-      preLoaderRoute: typeof LegalPrivacyPolicyRouteImport
-      parentRoute: typeof LegalRoute
-    }
-    '/legal/our-terms': {
-      id: '/legal/our-terms'
-      path: '/our-terms'
-      fullPath: '/legal/our-terms'
-      preLoaderRoute: typeof LegalOurTermsRouteImport
-      parentRoute: typeof LegalRoute
-    }
-    '/comparisons/$slug': {
-      id: '/comparisons/$slug'
-      path: '/comparisons/$slug'
-      fullPath: '/comparisons/$slug'
-      preLoaderRoute: typeof ComparisonsSlugRouteImport
+    '/media-kit': {
+      id: '/media-kit'
+      path: '/media-kit'
+      fullPath: '/media-kit'
+      preLoaderRoute: typeof MediaKitRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/category/$slug': {
-      id: '/category/$slug'
-      path: '/category/$slug'
-      fullPath: '/category/$slug'
-      preLoaderRoute: typeof CategorySlugRouteImport
+    '/my-awards': {
+      id: '/my-awards'
+      path: '/my-awards'
+      fullPath: '/my-awards'
+      preLoaderRoute: typeof MyAwardsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/author/usman-jatoi': {
-      id: '/author/usman-jatoi'
-      path: '/author/usman-jatoi'
-      fullPath: '/author/usman-jatoi'
-      preLoaderRoute: typeof AuthorUsmanJatoiRouteImport
+    '/my-certifications': {
+      id: '/my-certifications'
+      path: '/my-certifications'
+      fullPath: '/my-certifications'
+      preLoaderRoute: typeof MyCertificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about-me/vision-values': {
-      id: '/about-me/vision-values'
-      path: '/vision-values'
-      fullPath: '/about-me/vision-values'
-      preLoaderRoute: typeof AboutMeVisionValuesRouteImport
-      parentRoute: typeof AboutMeRoute
+    '/my-testimonials': {
+      id: '/my-testimonials'
+      path: '/my-testimonials'
+      fullPath: '/my-testimonials'
+      preLoaderRoute: typeof MyTestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/about-me/social-media': {
-      id: '/about-me/social-media'
-      path: '/social-media'
-      fullPath: '/about-me/social-media'
-      preLoaderRoute: typeof AboutMeSocialMediaRouteImport
-      parentRoute: typeof AboutMeRoute
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/about-me/personal-life': {
-      id: '/about-me/personal-life'
-      path: '/personal-life'
-      fullPath: '/about-me/personal-life'
-      preLoaderRoute: typeof AboutMePersonalLifeRouteImport
-      parentRoute: typeof AboutMeRoute
+    '/press-release': {
+      id: '/press-release'
+      path: '/press-release'
+      fullPath: '/press-release'
+      preLoaderRoute: typeof PressReleaseRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/about-me/my-journey': {
-      id: '/about-me/my-journey'
-      path: '/my-journey'
-      fullPath: '/about-me/my-journey'
-      preLoaderRoute: typeof AboutMeMyJourneyRouteImport
-      parentRoute: typeof AboutMeRoute
+    '/seo-studio': {
+      id: '/seo-studio'
+      path: '/seo-studio'
+      fullPath: '/seo-studio'
+      preLoaderRoute: typeof SeoStudioRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/seo': {
-      id: '/_authenticated/seo'
-      path: '/seo'
-      fullPath: '/seo'
-      preLoaderRoute: typeof AuthenticatedSeoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/seed': {
-      id: '/_authenticated/seed'
-      path: '/seed'
-      fullPath: '/seed'
-      preLoaderRoute: typeof AuthenticatedSeedRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/intel': {
-      id: '/_authenticated/intel'
-      path: '/intel'
-      fullPath: '/intel'
-      preLoaderRoute: typeof AuthenticatedIntelRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/testimonials': {
+      id: '/testimonials'
+      path: '/testimonials'
+      fullPath: '/testimonials'
+      preLoaderRoute: typeof TestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/import': {
-      id: '/_authenticated/import'
-      path: '/import'
-      fullPath: '/import'
-      preLoaderRoute: typeof AuthenticatedImportRouteImport
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/white-label-partnership': {
+      id: '/white-label-partnership'
+      path: '/white-label-partnership'
+      fullPath: '/white-label-partnership'
+      preLoaderRoute: typeof WhiteLabelPartnershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/cms': {
@@ -1360,12 +1129,243 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCmsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/_authenticated/import': {
+      id: '/_authenticated/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AuthenticatedImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/intel': {
+      id: '/_authenticated/intel'
+      path: '/intel'
+      fullPath: '/intel'
+      preLoaderRoute: typeof AuthenticatedIntelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/seed': {
+      id: '/_authenticated/seed'
+      path: '/seed'
+      fullPath: '/seed'
+      preLoaderRoute: typeof AuthenticatedSeedRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/seo': {
+      id: '/_authenticated/seo'
+      path: '/seo'
+      fullPath: '/seo'
+      preLoaderRoute: typeof AuthenticatedSeoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/about-me/my-journey': {
+      id: '/about-me/my-journey'
+      path: '/my-journey'
+      fullPath: '/about-me/my-journey'
+      preLoaderRoute: typeof AboutMeMyJourneyRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
+    '/about-me/personal-life': {
+      id: '/about-me/personal-life'
+      path: '/personal-life'
+      fullPath: '/about-me/personal-life'
+      preLoaderRoute: typeof AboutMePersonalLifeRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
+    '/about-me/social-media': {
+      id: '/about-me/social-media'
+      path: '/social-media'
+      fullPath: '/about-me/social-media'
+      preLoaderRoute: typeof AboutMeSocialMediaRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
+    '/about-me/vision-values': {
+      id: '/about-me/vision-values'
+      path: '/vision-values'
+      fullPath: '/about-me/vision-values'
+      preLoaderRoute: typeof AboutMeVisionValuesRouteImport
+      parentRoute: typeof AboutMeRoute
+    }
+    '/author/usman-jatoi': {
+      id: '/author/usman-jatoi'
+      path: '/author/usman-jatoi'
+      fullPath: '/author/usman-jatoi'
+      preLoaderRoute: typeof AuthorUsmanJatoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparisons/': {
+      id: '/comparisons/'
+      path: '/comparisons'
+      fullPath: '/comparisons/'
+      preLoaderRoute: typeof ComparisonsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparisons/$slug': {
+      id: '/comparisons/$slug'
+      path: '/comparisons/$slug'
+      fullPath: '/comparisons/$slug'
+      preLoaderRoute: typeof ComparisonsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/our-terms': {
+      id: '/legal/our-terms'
+      path: '/our-terms'
+      fullPath: '/legal/our-terms'
+      preLoaderRoute: typeof LegalOurTermsRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/privacy-policy': {
+      id: '/legal/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/legal/privacy-policy'
+      preLoaderRoute: typeof LegalPrivacyPolicyRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/my-lifestyle/': {
+      id: '/my-lifestyle/'
+      path: '/my-lifestyle'
+      fullPath: '/my-lifestyle/'
+      preLoaderRoute: typeof MyLifestyleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-lifestyle/fitness-health': {
+      id: '/my-lifestyle/fitness-health'
+      path: '/my-lifestyle/fitness-health'
+      fullPath: '/my-lifestyle/fitness-health'
+      preLoaderRoute: typeof MyLifestyleFitnessHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-lifestyle/gaming-life': {
+      id: '/my-lifestyle/gaming-life'
+      path: '/my-lifestyle/gaming-life'
+      fullPath: '/my-lifestyle/gaming-life'
+      preLoaderRoute: typeof MyLifestyleGamingLifeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-lifestyle/hobbies': {
+      id: '/my-lifestyle/hobbies'
+      path: '/my-lifestyle/hobbies'
+      fullPath: '/my-lifestyle/hobbies'
+      preLoaderRoute: typeof MyLifestyleHobbiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/brands-businesses': {
+      id: '/portfolio/brands-businesses'
+      path: '/brands-businesses'
+      fullPath: '/portfolio/brands-businesses'
+      preLoaderRoute: typeof PortfolioBrandsBusinessesRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/portfolio/creative-projects': {
+      id: '/portfolio/creative-projects'
+      path: '/creative-projects'
+      fullPath: '/portfolio/creative-projects'
+      preLoaderRoute: typeof PortfolioCreativeProjectsRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/portfolio/gaming-life': {
+      id: '/portfolio/gaming-life'
+      path: '/gaming-life'
+      fullPath: '/portfolio/gaming-life'
+      preLoaderRoute: typeof PortfolioGamingLifeRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/portfolio/websites': {
+      id: '/portfolio/websites'
+      path: '/websites'
+      fullPath: '/portfolio/websites'
+      preLoaderRoute: typeof PortfolioWebsitesRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/services/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/web': {
+      id: '/services/web'
+      path: '/services/web'
+      fullPath: '/services/web'
+      preLoaderRoute: typeof ServicesWebRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap/': {
+      id: '/sitemap/'
+      path: '/sitemap'
+      fullPath: '/sitemap/'
+      preLoaderRoute: typeof SitemapIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap/$name': {
+      id: '/sitemap/$name'
+      path: '/sitemap/$name'
+      fullPath: '/sitemap/$name'
+      preLoaderRoute: typeof SitemapNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills-expertise/': {
+      id: '/skills-expertise/'
+      path: '/skills-expertise'
+      fullPath: '/skills-expertise/'
+      preLoaderRoute: typeof SkillsExpertiseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills-expertise/ai-research-and-innovation': {
+      id: '/skills-expertise/ai-research-and-innovation'
+      path: '/skills-expertise/ai-research-and-innovation'
+      fullPath: '/skills-expertise/ai-research-and-innovation'
+      preLoaderRoute: typeof SkillsExpertiseAiResearchAndInnovationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills-expertise/creative-skills': {
+      id: '/skills-expertise/creative-skills'
+      path: '/skills-expertise/creative-skills'
+      fullPath: '/skills-expertise/creative-skills'
+      preLoaderRoute: typeof SkillsExpertiseCreativeSkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills-expertise/seo-marketing': {
+      id: '/skills-expertise/seo-marketing'
+      path: '/skills-expertise/seo-marketing'
+      fullPath: '/skills-expertise/seo-marketing'
+      preLoaderRoute: typeof SkillsExpertiseSeoMarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills-expertise/technical-skills': {
+      id: '/skills-expertise/technical-skills'
+      path: '/skills-expertise/technical-skills'
+      fullPath: '/skills-expertise/technical-skills'
+      preLoaderRoute: typeof SkillsExpertiseTechnicalSkillsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/content': {
       id: '/api/public/content'
@@ -1497,7 +1497,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   ServicesWebRoute: ServicesWebRoute,
-  SitemapNameDotxmlRoute: SitemapNameDotxmlRoute,
+  SitemapNameRoute: SitemapNameRoute,
   SkillsExpertiseAiResearchAndInnovationRoute:
     SkillsExpertiseAiResearchAndInnovationRoute,
   SkillsExpertiseCreativeSkillsRoute: SkillsExpertiseCreativeSkillsRoute,
@@ -1513,13 +1513,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
