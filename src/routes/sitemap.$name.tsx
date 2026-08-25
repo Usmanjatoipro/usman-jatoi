@@ -91,24 +91,6 @@ export const Route = createFileRoute("/sitemap/$name")({
 
         const from = (page - 1) * CHUNK;
         const to = from + CHUNK - 1;
-
-        if (group === "categories") {
-          const { data, error } = await supa
-            .from("wp_terms")
-            .select("slug")
-            .eq("taxonomy", "category")
-            .order("id", { ascending: true })
-            .range(from, to);
-          if (error || !data) return respond(wrap([]));
-          return respond(
-            wrap(
-              (data as Array<{ slug: string }>)
-                .filter((r) => r.slug)
-                .map((r) => ({ loc: `${SITE}/category/${r.slug}`, priority: "0.5" })),
-            ),
-          );
-        }
-
         const types = TYPE_MAP[group];
         if (!types) return respond(wrap([]), 404);
 

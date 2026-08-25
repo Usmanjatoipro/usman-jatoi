@@ -65,15 +65,6 @@ export const Route = createFileRoute("/sitemap.xml")({
           }
         }
 
-        const { count: catCount } = await supa
-          .from("wp_terms")
-          .select("id", { count: "exact", head: true })
-          .eq("taxonomy", "category");
-        const catPages = Math.ceil((catCount ?? 0) / CHUNK);
-        for (let i = 1; i <= catPages; i++) {
-          children.push(`${SITE}/sitemap/categories-${i}.xml`);
-        }
-
         const xml =
           `<?xml version="1.0" encoding="UTF-8"?>\n` +
           `<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n` +
