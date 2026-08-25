@@ -32,27 +32,27 @@ function escapeHtml(value: string | null | undefined) {
 
 const LABELS: Record<string, string> = {
   aboutexpertise_section: "About & Expertise",
-  BestPracticesTips: "",
-  CommonMistakesMyths: "",
+  BestPracticesTips: "Best Practices & Pro Tips",
+  CommonMistakesMyths: "Common Mistakes & Myths",
   GlossaryRelatedTerms: "Glossary of Related Terms",
-  "ProcessStep-by-Step": "",
-  WhatisX: "",
-  beginners_tips: "",
-  advanced_tips: "",
+  "ProcessStep-by-Step": "Step-by-Step Implementation",
+  WhatisX: "Overview & Fundamentals",
+  beginners_tips: "Beginner's Guide & Tips",
+  advanced_tips: "Advanced Strategies & Insights",
   comparison_tables: "Comparison Table",
   comparison: "Comparison Table",
   hero_section: "Overview",
   our_services: "Our Services",
-  pros_cons: "Pros & Cons",
-  why_important: "",
-  process: "",
+  pros_cons: "Pros & Cons Analysis",
+  why_important: "Why This Matters",
+  process: "Step-by-Step Process",
   faqs: "Frequently Asked Questions",
   takeaways: "Key Takeaways",
   case_studies: "Case Studies",
-  checklist: "Checklist",
-  timeline: "Timeline",
-  examples: "",
-  intro: "",
+  checklist: "Action Checklist",
+  timeline: "Project & Implementation Timeline",
+  examples: "Real-World Examples",
+  intro: "Introduction",
 };
 
 function labelFromKey(key: string) {
@@ -289,10 +289,10 @@ function cardsHtml(items: any[], fallbackLabel: string): string {
 
 /** Render one structured (JSON) field into its designed markup. */
 function renderJsonSection(key: string, data: any): { heading: string; body: string } {
-  const heading =
+  let heading =
     (data &&
       !Array.isArray(data) &&
-      stripTags(data["main-title"] || data.section_title || data.title || "")) ||
+      stripTags(data["main-title"] || data.section_title || data.title || data.heading || "")) ||
     labelFromKey(key) ||
     "";
   const intro =
@@ -308,31 +308,52 @@ function renderJsonSection(key: string, data: any): { heading: string; body: str
     body = cardsHtml(data, "Item");
   } else if (k.includes("faq")) {
     body = faqHtml(data);
+    if (!heading) heading = "Frequently Asked Questions";
   } else if (k.includes("pros") || k.includes("cons")) {
     body = prosConsHtml(data);
+    if (!heading) heading = "Pros & Cons Analysis";
   } else if (k.includes("comparison")) {
     body = comparisonHtml(data);
+    if (!heading) heading = "Comparison Table";
   } else if (k.includes("checklist")) {
     body = checklistHtml(data);
+    if (!heading) heading = "Action Checklist";
   } else if (k.includes("timeline")) {
     body = timelineHtml(data);
+    if (!heading) heading = "Project & Implementation Timeline";
   } else if (k.includes("process") || k.includes("step") || k.includes("action")) {
     body = stepsHtml(data);
+    if (!heading) heading = "Step-by-Step Implementation";
   } else if (k.includes("glossary")) {
     body = glossaryHtml(data);
+    if (!heading) heading = "Glossary of Related Terms";
   }
 
   if (!body) {
-    body =
-      prosConsHtml(data) ||
-      comparisonHtml(data) ||
-      stepsHtml(data) ||
-      timelineHtml(data) ||
-      faqHtml(data) ||
-      glossaryHtml(data) ||
-      bulletsHtml(data) ||
-      (Array.isArray(data?.services) ? cardsHtml(data.services, "Service") : "") ||
-      (Array.isArray(data?.items) ? cardsHtml(data.items, "Item") : "");
+    if (data?.pros || data?.cons || data?.benefits || data?.drawbacks) {
+      body = prosConsHtml(data);
+      if (!heading) heading = "Pros & Cons Analysis";
+    } else if (data?.comparison || data?.table || (Array.isArray(data?.rows) && data.rows.length)) {
+      body = comparisonHtml(data);
+      if (!heading) heading = "Comparison Table";
+    } else if (data?.steps || (Array.isArray(data?.items) && data.items?.[0]?.step_number)) {
+      body = stepsHtml(data);
+      if (!heading) heading = "Step-by-Step Implementation";
+    } else if (data?.timeline || data?.events) {
+      body = timelineHtml(data);
+      if (!heading) heading = "Project & Implementation Timeline";
+    } else if (data?.faqs || data?.questions) {
+      body = faqHtml(data);
+      if (!heading) heading = "Frequently Asked Questions";
+    } else if (data?.terms || data?.glossary) {
+      body = glossaryHtml(data);
+      if (!heading) heading = "Glossary of Related Terms";
+    } else {
+      body =
+        bulletsHtml(data) ||
+        (Array.isArray(data?.services) ? cardsHtml(data.services, "Service") : "") ||
+        (Array.isArray(data?.items) ? cardsHtml(data.items, "Item") : "");
+    }
   }
 
   return { heading, body: `${lead}${body}` };

@@ -1133,7 +1133,7 @@ function PostArticleFromWp({
         id: post.id,
         slug: post.slug,
         title: post.title,
-        content: post.content,
+        content: hydrateContentHtml(post.content, (post as any).meta ?? null),
         excerpt: post.excerpt,
         post_date: post.post_date,
         post_modified: (post as any).post_modified ?? null,

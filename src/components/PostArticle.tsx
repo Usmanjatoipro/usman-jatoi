@@ -252,6 +252,18 @@ export function PostArticle({
   const archiveHref =
     categoryArchivePath || (primaryCategory ? `/category/${primaryCategory.slug}` : "/blog");
 
+  /* Dynamic author age calculation (born April 2006) */
+  const authorAge = useMemo(() => {
+    const birthDate = new Date(2006, 3, 1);
+    const now = new Date();
+    let age = now.getFullYear() - birthDate.getFullYear();
+    const m = now.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return Math.max(18, age);
+  }, []);
+
   /* Time-aware greeting shown above the intro (client only, no SSR mismatch). */
   const [greeting, setGreeting] = useState<string | null>(null);
   useEffect(() => {
@@ -842,15 +854,7 @@ export function PostArticle({
           {/* About Author */}
           <section className="mt-10">
             <h2 className="text-2xl font-semibold mb-4">About Author</h2>
-            <div
-              className="overflow-hidden rounded-2xl border border-neutral-200 bg-white"
-              style={{
-                backgroundImage: `linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,.96) 58%, rgba(255,255,255,.32) 100%), url(${authorImg.url})`,
-                backgroundPosition: "right center",
-                backgroundSize: "auto 180%",
-                backgroundRepeat: "no-repeat",
-              }}
-            >
+            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
               <div className="p-5 md:p-6 flex gap-5 items-start">
                 <img
                   src={authorImg.url}
@@ -863,16 +867,16 @@ export function PostArticle({
                 <div className="min-w-0">
                   <div className="text-lg font-semibold text-neutral-900">Usman Jatoi</div>
                   <p className="text-sm text-neutral-600 mt-1 leading-relaxed">
-                    Usman Jatoi — also known as Usman Jatoi Pro — a 19-year-old creative artist, and
-                    tech innovator who began his digital journey at just{" "}
-                    <b className="text-neutral-900">7 years old</b> and started working
+                    Usman Jatoi — also known as Usman Jatoi Pro — a {authorAge}-year-old Entrepreneur,
+                    Full-Stack Expert &amp; Digital Systems Specialist who began his digital journey at just{" "}
+                    <b className="text-neutral-900">7 years old</b> and started building systems
                     professionally at <b className="text-neutral-900">12</b>.
                   </p>
                   <a
                     href="/author/usman-jatoi"
                     className="mt-2 inline-block text-xs font-medium underline decoration-neutral-300 hover:text-neutral-900"
                   >
-                    About the author — experience, expertise & credentials
+                    About the author — experience, expertise &amp; credentials
                   </a>
                 </div>
               </div>
@@ -1291,37 +1295,61 @@ export function PostArticle({
           <CalEmbed className="mt-8 rounded-2xl overflow-hidden" />
         </section>
 
-        {/* Explore More — 3 more posts */}
-        {related.length > 3 && (
-          <section>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">Explore More</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {related.slice(3, 6).map((r) => (
-                <Link key={r.href} to={r.href as any} className="group block">
+        {/* Explore More & Forward Reading — 4-card grid */}
+        {related.length > 0 && (
+          <section className="mt-12">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-500">
+                  Continue Reading
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mt-1">
+                  Related Articles &amp; Recommended Insights
+                </h2>
+              </div>
+              <Link
+                to={archiveHref as any}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-700 hover:text-neutral-950 transition"
+              >
+                View all in {primaryCategoryName} <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {(related.slice(0, 4)).map((r) => (
+                <Link
+                  key={r.href}
+                  to={r.href as any}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white transition hover:-translate-y-1 hover:border-neutral-900 hover:shadow-[0_16px_36px_rgba(15,23,42,.08)]"
+                >
                   <div
-                    className="relative aspect-[16/10] rounded-xl overflow-hidden bg-neutral-950"
+                    className="relative aspect-[16/10] overflow-hidden bg-neutral-950"
                     style={{
                       backgroundImage: r.image
-                        ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.85)), url(${r.image})`
-                        : undefined,
+                        ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)), url(${r.image})`
+                        : "linear-gradient(135deg, #18181b 0%, #27272a 100%)",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
                   >
                     <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
-                      <div className="text-sm font-semibold line-clamp-2">{r.title}</div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400">
+                        {primaryCategoryName}
+                      </span>
                     </div>
                   </div>
-                  <div className="mt-3">
-                    <div className="text-[11px] uppercase tracking-widest text-neutral-500">
-                      {primaryCategoryName}
+                  <div className="p-4 flex flex-col flex-1 justify-between">
+                    <div>
+                      <div className="text-xs text-neutral-500">
+                        {r.date ? formatDate(r.date) : "Recent Article"}
+                      </div>
+                      <h3 className="mt-1.5 text-sm font-semibold leading-snug text-neutral-900 group-hover:text-orange-600 line-clamp-2">
+                        {r.title}
+                      </h3>
                     </div>
-                    <div className="mt-1 text-base font-semibold text-neutral-900 group-hover:underline line-clamp-2">
-                      {r.title}
+                    <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center text-xs font-semibold text-neutral-900 group-hover:text-orange-600">
+                      Read Article <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                     </div>
-                    {r.date && (
-                      <div className="mt-2 text-xs text-neutral-500">{formatDate(r.date)}</div>
-                    )}
                   </div>
                 </Link>
               ))}
@@ -1467,7 +1495,7 @@ export function PostArticle({
                 them the freedom to shine. Let's connect.
               </p>
               <div className="mt-4 text-lg font-semibold">Usman Jatoi</div>
-              <div className="text-orange-400 text-sm">Versatile Creative Artist</div>
+              <div className="text-orange-400 text-sm">Entrepreneur &amp; Full-Stack Systems Expert</div>
             </div>
           </div>
         </section>
