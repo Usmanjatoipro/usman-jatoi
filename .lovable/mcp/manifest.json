@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "sdk_version": "0.28.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://urhcozrdjdzlivdinbdj.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "usman-jatoi",
+      "version": "0.1.0",
+      "title": "Usman Jatoi"
+    },
+    "tools": [
+      {
+        "name": "search_content",
+        "title": "Search content",
+        "description": "Search published posts, pages, services and comparisons on usmanjatoi.com by title. Returns slugs, paths and excerpts.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Words to match against the title."
+            },
+            "post_type": {
+              "description": "Optional content type filter, e.g. 'post', 'page', 'service'.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max results (default 10).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_content",
+        "title": "Get content item",
+        "description": "Fetch one published item by slug or path, including its body text, SEO title and description.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "description": "Slug of the item, e.g. 'ai'.",
+              "type": "string"
+            },
+            "path": {
+              "description": "Full site path, e.g. '/services/ai/'.",
+              "type": "string"
+            },
+            "include_html": {
+              "description": "Return rendered HTML instead of plain content.",
+              "type": "boolean"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "content_stats",
+        "title": "Content stats",
+        "description": "Count published items on the site, optionally filtered by content type.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "post_type": {
+              "description": "Optional content type, e.g. 'post' or 'page'.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_leads",
+        "title": "List contact leads",
+        "description": "List recent contact form submissions. Only site administrators can read these; other users get an empty list.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Max rows (default 20).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

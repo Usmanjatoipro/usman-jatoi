@@ -22,6 +22,7 @@ import { Route as MyTestimonialsRouteImport } from './routes/my-testimonials'
 import { Route as MyCertificationsRouteImport } from './routes/my-certifications'
 import { Route as MyAwardsRouteImport } from './routes/my-awards'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
@@ -78,7 +79,11 @@ import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedCmsRouteImport } from './routes/_authenticated/cms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicContentRouteImport } from './routes/api/public/content'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
 const WhiteLabelPartnershipRoute = WhiteLabelPartnershipRouteImport.update({
   id: '/white-label-partnership',
@@ -143,6 +148,11 @@ const MyAwardsRoute = MyAwardsRouteImport.update({
 const MediaKitRoute = MediaKitRouteImport.update({
   id: '/media-kit',
   path: '/media-kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogRoute = LogRouteImport.update({
@@ -431,9 +441,32 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicContentRoute = ApiPublicContentRouteImport.update({
   id: '/api/public/content',
   path: '/api/public/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -457,6 +490,7 @@ export interface FileRoutesByFullPath {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
+  '/mcp': typeof McpRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
   '/my-certifications': typeof MyCertificationsRoute
@@ -470,6 +504,8 @@ export interface FileRoutesByFullPath {
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/cms': typeof AuthenticatedCmsRoute
   '/import': typeof AuthenticatedImportRoute
@@ -506,6 +542,8 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/content': typeof ApiPublicContentRoute
 }
 export interface FileRoutesByTo {
@@ -527,6 +565,7 @@ export interface FileRoutesByTo {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
+  '/mcp': typeof McpRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
   '/my-certifications': typeof MyCertificationsRoute
@@ -540,6 +579,8 @@ export interface FileRoutesByTo {
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/cms': typeof AuthenticatedCmsRoute
   '/import': typeof AuthenticatedImportRoute
@@ -576,6 +617,8 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/sitemap': typeof SitemapIndexRoute
   '/skills-expertise': typeof SkillsExpertiseIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/content': typeof ApiPublicContentRoute
 }
 export interface FileRoutesById {
@@ -600,6 +643,7 @@ export interface FileRoutesById {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
+  '/mcp': typeof McpRoute
   '/media-kit': typeof MediaKitRoute
   '/my-awards': typeof MyAwardsRoute
   '/my-certifications': typeof MyCertificationsRoute
@@ -613,6 +657,8 @@ export interface FileRoutesById {
   '/testimonials': typeof TestimonialsRoute
   '/trust': typeof TrustRoute
   '/white-label-partnership': typeof WhiteLabelPartnershipRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/cms': typeof AuthenticatedCmsRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
@@ -649,6 +695,8 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/sitemap/': typeof SitemapIndexRoute
   '/skills-expertise/': typeof SkillsExpertiseIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/content': typeof ApiPublicContentRoute
 }
 export interface FileRouteTypes {
@@ -673,6 +721,7 @@ export interface FileRouteTypes {
     | '/llms-full.txt'
     | '/llms.txt'
     | '/log'
+    | '/mcp'
     | '/media-kit'
     | '/my-awards'
     | '/my-certifications'
@@ -686,6 +735,8 @@ export interface FileRouteTypes {
     | '/testimonials'
     | '/trust'
     | '/white-label-partnership'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/cms'
     | '/import'
@@ -722,6 +773,8 @@ export interface FileRouteTypes {
     | '/services/'
     | '/sitemap/'
     | '/skills-expertise/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/content'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -743,6 +796,7 @@ export interface FileRouteTypes {
     | '/llms-full.txt'
     | '/llms.txt'
     | '/log'
+    | '/mcp'
     | '/media-kit'
     | '/my-awards'
     | '/my-certifications'
@@ -756,6 +810,8 @@ export interface FileRouteTypes {
     | '/testimonials'
     | '/trust'
     | '/white-label-partnership'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/cms'
     | '/import'
@@ -792,6 +848,8 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap'
     | '/skills-expertise'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/content'
   id:
     | '__root__'
@@ -815,6 +873,7 @@ export interface FileRouteTypes {
     | '/llms-full.txt'
     | '/llms.txt'
     | '/log'
+    | '/mcp'
     | '/media-kit'
     | '/my-awards'
     | '/my-certifications'
@@ -828,6 +887,8 @@ export interface FileRouteTypes {
     | '/testimonials'
     | '/trust'
     | '/white-label-partnership'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
     | '/_authenticated/cms'
     | '/_authenticated/import'
@@ -864,6 +925,8 @@ export interface FileRouteTypes {
     | '/services/'
     | '/sitemap/'
     | '/skills-expertise/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/content'
   fileRoutesById: FileRoutesById
 }
@@ -888,6 +951,7 @@ export interface RootRouteChildren {
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   LogRoute: typeof LogRoute
+  McpRoute: typeof McpRoute
   MediaKitRoute: typeof MediaKitRoute
   MyAwardsRoute: typeof MyAwardsRoute
   MyCertificationsRoute: typeof MyCertificationsRoute
@@ -901,6 +965,8 @@ export interface RootRouteChildren {
   TestimonialsRoute: typeof TestimonialsRoute
   TrustRoute: typeof TrustRoute
   WhiteLabelPartnershipRoute: typeof WhiteLabelPartnershipRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AuthorUsmanJatoiRoute: typeof AuthorUsmanJatoiRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ComparisonsSlugRoute: typeof ComparisonsSlugRoute
@@ -919,6 +985,8 @@ export interface RootRouteChildren {
   ServicesIndexRoute: typeof ServicesIndexRoute
   SitemapIndexRoute: typeof SitemapIndexRoute
   SkillsExpertiseIndexRoute: typeof SkillsExpertiseIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicContentRoute: typeof ApiPublicContentRoute
 }
 
@@ -1013,6 +1081,13 @@ declare module '@tanstack/react-router' {
       path: '/media-kit'
       fullPath: '/media-kit'
       preLoaderRoute: typeof MediaKitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/log': {
@@ -1407,11 +1482,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/content': {
       id: '/api/public/content'
       path: '/api/public/content'
       fullPath: '/api/public/content'
       preLoaderRoute: typeof ApiPublicContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1518,6 +1621,7 @@ const rootRouteChildren: RootRouteChildren = {
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   LogRoute: LogRoute,
+  McpRoute: McpRoute,
   MediaKitRoute: MediaKitRoute,
   MyAwardsRoute: MyAwardsRoute,
   MyCertificationsRoute: MyCertificationsRoute,
@@ -1531,6 +1635,9 @@ const rootRouteChildren: RootRouteChildren = {
   TestimonialsRoute: TestimonialsRoute,
   TrustRoute: TrustRoute,
   WhiteLabelPartnershipRoute: WhiteLabelPartnershipRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AuthorUsmanJatoiRoute: AuthorUsmanJatoiRoute,
   CategorySlugRoute: CategorySlugRoute,
   ComparisonsSlugRoute: ComparisonsSlugRoute,
@@ -1550,6 +1657,8 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIndexRoute: ServicesIndexRoute,
   SitemapIndexRoute: SitemapIndexRoute,
   SkillsExpertiseIndexRoute: SkillsExpertiseIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicContentRoute: ApiPublicContentRoute,
 }
 export const routeTree = rootRouteImport
