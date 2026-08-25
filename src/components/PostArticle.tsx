@@ -38,6 +38,7 @@ import authorImg from "@/assets/Usman-Jatoi-Official.webp.asset.json";
 import contactImg from "@/assets/Usman-Jatoi-Contact-Us-image.webp.asset.json";
 import redsglow from "@/assets/Redsglow-Banner.jpg.asset.json";
 import featuredCta from "@/assets/featured-cta.jpg.asset.json";
+import { formatArticleContent } from "@/lib/wp-format";
 
 export type PostArticleData = {
   id: number;
@@ -283,7 +284,7 @@ export function PostArticle({
 
   /* Enrich HTML with heading anchors + extract TOC. */
   const { enrichedHtml, headings, sources } = useMemo(() => {
-    const raw = post.content || "";
+    const raw = formatArticleContent(post.content || "");
     const hs: Heading[] = [];
     const used = new Set<string>();
     const enriched = raw.replace(/<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi, (_m, lvl, attrs, inner) => {
