@@ -1150,37 +1150,40 @@ export function PostArticle({
       {/* ================= FULL-WIDTH SECTIONS ================= */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-16 space-y-16">
         {/* RedsGlow banner — clean image, no dark overlay */}
-        <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-white">
+        <section className="relative overflow-hidden rounded-3xl border border-neutral-200 bg-white">
           <img
             src={redsglow.url}
             alt="RedsGlow Creative Agency"
             loading="lazy"
-            className="h-auto w-full object-cover"
+            className="block h-auto w-full object-cover"
           />
-          <div className="p-6 md:p-10 max-w-3xl">
-            <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900">
-              RedsGlow — everything your brand needs, under one roof
-            </h2>
-            <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed">
-              From{" "}
-              <b className="text-neutral-900">
-                marketing to automation, technical development to management, creative design to
-                operations, consulting to growth strategy
-              </b>{" "}
-              — we deliver it all under one roof. Whether you're launching something new, fixing
-              what's broken, or scaling to the next level, our team makes it simple, fast, and
-              effective. Trusted by clients worldwide for results that last.
-            </p>
-            <a
-              href="https://redsglow.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 hover:bg-orange-600"
-            >
-              VISIT NOW <ArrowRight className="h-4 w-4" />
-            </a>
+          <div className="absolute inset-0 flex items-center">
+            <div className="p-5 sm:p-8 md:p-12 max-w-[56%] md:max-w-[46%]">
+              <h2 className="text-base sm:text-2xl md:text-4xl font-semibold text-neutral-900 leading-tight">
+                RedsGlow — everything your brand needs, under one roof
+              </h2>
+              <p className="mt-2 md:mt-4 hidden sm:block text-xs md:text-base text-neutral-700 leading-relaxed">
+                From{" "}
+                <b className="text-neutral-900">
+                  marketing to automation, technical development to management, creative design to
+                  operations, consulting to growth strategy
+                </b>{" "}
+                — we deliver it all under one roof. Whether you're launching something new, fixing
+                what's broken, or scaling to the next level, our team makes it simple, fast, and
+                effective.
+              </p>
+              <a
+                href="https://redsglow.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 md:mt-6 inline-flex items-center gap-2 rounded-full bg-orange-500 text-white text-xs md:text-sm font-semibold px-4 md:px-5 py-2 md:py-2.5 hover:bg-orange-600"
+              >
+                VISIT NOW <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </section>
+
 
         {/* Explore My All Categories */}
         {allCats.length > 0 && (
