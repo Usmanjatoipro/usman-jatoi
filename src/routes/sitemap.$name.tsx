@@ -5,6 +5,7 @@ const SITE = "https://usmanjatoi.com";
 const CHUNK = 2000;
 
 const TYPE_MAP: Record<string, string[]> = {
+  services: ["page"],
   pages: ["page"],
   posts: ["post"],
   products: ["product"],
@@ -116,16 +117,48 @@ export const Route = createFileRoute("/sitemap/$name")({
         // Supabase caps a single response at 1000 rows, so fetch the chunk in slices.
         for (let offset = from; offset <= to; offset += 1000) {
           const sliceTo = Math.min(offset + 999, to);
-          const { data, error } = await supa
-            .from("wp_posts")
-            .select("path, post_modified, post_type")
-            .in("post_type", types)
-            .eq("status", "publish")
-            .not("path", "is", null)
-            .order("id", { ascending: true })
-            .range(offset, sliceTo);
+          let data: Row[] | null = null;
+          let error: any = null;
+
+          if (group === "services") {
+            const res = await supa
+              .from("wp_posts")
+              .select("path, post_modified, post_type")
+              .in("post_type", types)
+              .eq("status", "publish")
+              .not("path", "is", null)
+              .ilike("path", "/services/%")
+              .order("id", { ascending: true })
+              .range(offset, sliceTo);
+            data = res.data as Row[] | null;
+            error = res.error;
+          } else if (group === "pages") {
+            const res = await supa
+              .from("wp_posts")
+              .select("path, post_modified, post_type")
+              .in("post_type", types)
+              .eq("status", "publish")
+              .not("path", "is", null)
+              .not("path", "ilike", "/services/%")
+              .order("id", { ascending: true })
+              .range(offset, sliceTo);
+            data = res.data as Row[] | null;
+            error = res.error;
+          } else {
+            const res = await supa
+              .from("wp_posts")
+              .select("path, post_modified, post_type")
+              .in("post_type", types)
+              .eq("status", "publish")
+              .not("path", "is", null)
+              .order("id", { ascending: true })
+              .range(offset, sliceTo);
+            data = res.data as Row[] | null;
+            error = res.error;
+          }
+
           if (error || !data) break;
-          rows.push(...(data as Row[]));
+          rows.push(...data);
           if (data.length < sliceTo - offset + 1) break;
         }
 
@@ -134,7 +167,12 @@ export const Route = createFileRoute("/sitemap/$name")({
           .map((r) => ({
             loc: `${SITE}${r.path.replace(/\/+$/, "")}`,
             lastmod: r.post_modified ? new Date(r.post_modified).toISOString() : undefined,
-            priority: r.post_type === "page" ? "0.7" : "0.6",
+            priority:
+              group === "services"
+                ? "1.0"
+                : r.post_type === "page"
+                  ? "0.8"
+                  : "0.7",
           }));
 
         return respond(wrap(urls));
