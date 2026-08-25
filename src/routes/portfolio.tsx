@@ -2,11 +2,17 @@ import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router";
 import { PageShell, LinkGrid } from "../components/PageShell";
 
 export const Route = createFileRoute("/portfolio")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Portfolio — Usman Jatoi" },
-      { name: "description", content: "Selected websites, brands, creative projects and gaming work." },
+      { title: "Portfolio & Case Studies — Usman Jatoi" },
+      { name: "description", content: "Explore websites, creative projects, digital brands, and high-scale systems built by Usman Jatoi." },
+      { property: "og:title", content: "Portfolio & Case Studies — Usman Jatoi" },
+      { property: "og:description", content: "Explore websites, creative projects, digital brands, and high-scale systems built by Usman Jatoi." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/portfolio" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/portfolio" }],
   }),
   component: PortfolioLayout,
 });

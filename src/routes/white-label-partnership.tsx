@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/white-label-partnership")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "White Label Partnership - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "White-label design, development, SEO, content and automation support for agencies.",
-      },
-      { property: "og:title", content: "White Label Partnership - Usman Jatoi" },
+      { title: "White-Label Agency Partnerships — Usman Jatoi" },
+      { name: "description", content: "Scalable white-label development and SEO execution for agencies worldwide." },
+      { property: "og:title", content: "White-Label Agency Partnerships — Usman Jatoi" },
+      { property: "og:description", content: "Scalable white-label development and SEO execution for agencies worldwide." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/white-label-partnership" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/white-label-partnership" }],
   }),
   component: WhiteLabelPage,
 });

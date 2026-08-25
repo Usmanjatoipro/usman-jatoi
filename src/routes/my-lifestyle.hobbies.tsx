@@ -18,14 +18,14 @@ export const Route = createFileRoute("/my-lifestyle/hobbies")({
       { property: "og:type", content: "article" },
       {
         property: "og:url",
-        content: "https://usmanjatoi.lovable.app/my-lifestyle/hobbies",
+        content: "https://usmanjatoi.com/my-lifestyle/hobbies",
       },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
         rel: "canonical",
-        href: "https://usmanjatoi.lovable.app/my-lifestyle/hobbies",
+        href: "https://usmanjatoi.com/my-lifestyle/hobbies",
       },
     ],
   }),

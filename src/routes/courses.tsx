@@ -2,11 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/courses")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Courses — Usman Jatoi" },
-      { name: "description", content: "Practical courses on AI automation, bulk publishing, SEO and creative production." },
+      { title: "Courses & Training — Usman Jatoi" },
+      { name: "description", content: "Masterclasses on full-stack development, programmatic SEO, and modern web architectures." },
+      { property: "og:title", content: "Courses & Training — Usman Jatoi" },
+      { property: "og:description", content: "Masterclasses on full-stack development, programmatic SEO, and modern web architectures." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/courses" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/courses" }],
   }),
   component: () => (
     <PageShell

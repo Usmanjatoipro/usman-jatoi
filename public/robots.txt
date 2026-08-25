@@ -26,4 +26,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://usmanjatoi.lovable.app/sitemap.xml
+Sitemap: https://usmanjatoi.com/sitemap.xml

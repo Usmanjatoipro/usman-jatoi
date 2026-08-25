@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LinkGrid, PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/my-lifestyle/")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "My Lifestyle - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "How Usman Jatoi lives: focused work, learning, health, hobbies and purpose.",
-      },
-      { property: "og:title", content: "My Lifestyle - Usman Jatoi" },
+      { title: "My Lifestyle — Usman Jatoi" },
+      { name: "description", content: "Mindset, wellness routines, hobbies, and personal philosophy." },
+      { property: "og:title", content: "My Lifestyle — Usman Jatoi" },
+      { property: "og:description", content: "Mindset, wellness routines, hobbies, and personal philosophy." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/my-lifestyle" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/my-lifestyle" }],
   }),
   component: LifestylePage,
 });

@@ -2,14 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/awards")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Awards - Usman Jatoi" },
-      { name: "description", content: "Awards, recognition and public proof for Usman Jatoi." },
-      { property: "og:title", content: "Awards - Usman Jatoi" },
+      { title: "Awards & Honors — Usman Jatoi" },
+      { name: "description", content: "Industry recognition, digital awards, and milestones achieved." },
+      { property: "og:title", content: "Awards & Honors — Usman Jatoi" },
+      { property: "og:description", content: "Industry recognition, digital awards, and milestones achieved." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/awards" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/awards" }],
   }),
   component: AwardsPage,
 });

@@ -11,7 +11,7 @@ import {
   Trophy,
 } from "lucide-react";
 
-const SITE = "https://usmanjatoi.lovable.app";
+const SITE = "https://usmanjatoi.com";
 
 export const Route = createFileRoute("/seo-studio")({
   head: () => ({

@@ -8,7 +8,7 @@ import homeStylesRaw from "../data/homeStyles.css?raw";
 const TITLE = "Usman Jatoi — Top 0.1% Full-Stack Digital Expert & Entrepreneur";
 const DESC =
   "Official site of Usman Jatoi — Top 0.1% Full-Stack Digital Expert & Entrepreneur. Courses, services, blog, tools and resources.";
-const SITE_URL = "https://usman-connects-us.lovable.app";
+const SITE_URL = "https://usmanjatoi.com";
 
 function localizeUsmanAssets(value: string) {
   return value

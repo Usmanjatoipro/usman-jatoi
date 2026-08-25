@@ -25,14 +25,14 @@ export const Route = createFileRoute(
       {
         property: "og:url",
         content:
-          "https://usmanjatoi.lovable.app/skills-expertise/ai-research-and-innovation",
+          "https://usmanjatoi.com/skills-expertise/ai-research-and-innovation",
       },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
         rel: "canonical",
-        href: "https://usmanjatoi.lovable.app/skills-expertise/ai-research-and-innovation",
+        href: "https://usmanjatoi.com/skills-expertise/ai-research-and-innovation",
       },
     ],
   }),

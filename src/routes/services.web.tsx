@@ -22,11 +22,11 @@ export const Route = createFileRoute("/services/web")({
       { property: "og:type", content: "article" },
       {
         property: "og:url",
-        content: "https://usmanjatoi.lovable.app/services/web",
+        content: "https://usmanjatoi.com/services/web",
       },
     ],
     links: [
-      { rel: "canonical", href: "https://usmanjatoi.lovable.app/services/web" },
+      { rel: "canonical", href: "https://usmanjatoi.com/services/web" },
     ],
   }),
   component: WebServicesPage,

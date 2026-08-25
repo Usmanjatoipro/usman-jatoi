@@ -386,7 +386,7 @@ export const Route = createFileRoute("/$")({
       .select("to_path")
       .in("from_path", [p, p + "/"])
       .maybeSingle();
-    if (rd?.to_path) throw redirect({ to: rd.to_path as string });
+    if (rd?.to_path) throw redirect({ to: rd.to_path as string, statusCode: 301 });
 
     throw notFound();
   },
@@ -397,8 +397,13 @@ export const Route = createFileRoute("/$")({
       };
 
     const splat = (params as { _splat?: string })._splat ?? "";
-    // Canonical always points at the production property, never the preview host.
-    const url = `https://usmanjatoi.com/${splat}`;
+    const cleanPath =
+      loaderData.kind === "category"
+        ? `/category/${loaderData.archive.category.slug}`
+        : loaderData.post.path
+          ? `/${loaderData.post.path.replace(/^\/+|\/+$/g, "")}`
+          : `/${splat.replace(/^\/+|\/+$/g, "")}`;
+    const url = `https://usmanjatoi.com${cleanPath}`;
 
     const truncate = (s: string, n: number) => {
       const c = (s || "")

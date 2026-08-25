@@ -18,13 +18,13 @@ export const Route = createFileRoute("/about-me/social-media")({
       { property: "og:type", content: "profile" },
       {
         property: "og:url",
-        content: "https://usmanjatoi.lovable.app/about-me/social-media",
+        content: "https://usmanjatoi.com/about-me/social-media",
       },
     ],
     links: [
       {
         rel: "canonical",
-        href: "https://usmanjatoi.lovable.app/about-me/social-media",
+        href: "https://usmanjatoi.com/about-me/social-media",
       },
     ],
   }),

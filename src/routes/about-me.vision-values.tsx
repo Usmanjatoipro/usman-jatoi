@@ -2,11 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/about-me/vision-values")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Vision & Values — Usman Jatoi" },
-      { name: "description", content: "The vision and core values guiding every project, partnership and product." },
+      { name: "description", content: "The core principles, work ethic, and long-term vision guiding Usman Jatoi." },
+      { property: "og:title", content: "Vision & Values — Usman Jatoi" },
+      { property: "og:description", content: "The core principles, work ethic, and long-term vision guiding Usman Jatoi." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/about-me/vision-values" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/about-me/vision-values" }],
   }),
   component: () => (
     <PageShell

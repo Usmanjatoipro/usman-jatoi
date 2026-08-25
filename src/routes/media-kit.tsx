@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/media-kit")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Media Kit - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Official bio, logos, photos, stats and contact details for featuring Usman Jatoi.",
-      },
-      { property: "og:title", content: "Media Kit - Usman Jatoi" },
+      { title: "Media Kit & Brand Assets — Usman Jatoi" },
+      { name: "description", content: "Official bios, headshots, brand logos, and press resources for Usman Jatoi." },
+      { property: "og:title", content: "Media Kit & Brand Assets — Usman Jatoi" },
+      { property: "og:description", content: "Official bios, headshots, brand logos, and press resources for Usman Jatoi." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/media-kit" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/media-kit" }],
   }),
   component: MediaKitPage,
 });

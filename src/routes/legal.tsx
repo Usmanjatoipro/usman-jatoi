@@ -2,11 +2,17 @@ import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router";
 import { PageShell, LinkGrid } from "../components/PageShell";
 
 export const Route = createFileRoute("/legal")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Legal — Usman Jatoi" },
-      { name: "description", content: "Terms of service and privacy policy." },
+      { title: "Legal Information — Usman Jatoi" },
+      { name: "description", content: "Legal disclosures, operational terms, and policies." },
+      { property: "og:title", content: "Legal Information — Usman Jatoi" },
+      { property: "og:description", content: "Legal disclosures, operational terms, and policies." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/legal" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/legal" }],
   }),
   component: LegalLayout,
 });

@@ -2,13 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell, LinkGrid } from "../components/PageShell";
 
 export const Route = createFileRoute("/about-me")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "About Me — Usman Jatoi" },
       { name: "description", content: "Get to know Usman Jatoi — journey, personal life, vision, values and social presence." },
       { property: "og:title", content: "About Me — Usman Jatoi" },
-      { property: "og:description", content: "Journey, personal life, vision and values." },
+      { property: "og:description", content: "Get to know Usman Jatoi — journey, personal life, vision, values and social presence." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/about-me" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/about-me" }],
   }),
   component: () => (
     <PageShell

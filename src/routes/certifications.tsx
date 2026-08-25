@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/certifications")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Certifications - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Certifications and learning proof across AI, marketing, web, creative and technical work.",
-      },
-      { property: "og:title", content: "Certifications - Usman Jatoi" },
+      { title: "Certifications & Credentials — Usman Jatoi" },
+      { name: "description", content: "Professional certifications across development, cloud platforms, and digital marketing." },
+      { property: "og:title", content: "Certifications & Credentials — Usman Jatoi" },
+      { property: "og:description", content: "Professional certifications across development, cloud platforms, and digital marketing." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/certifications" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/certifications" }],
   }),
   component: CertificationsPage,
 });

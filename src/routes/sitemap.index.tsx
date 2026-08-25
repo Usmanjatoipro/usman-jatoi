@@ -5,7 +5,7 @@ import {
   type SitemapLink,
 } from "@/lib/html-sitemap.functions";
 
-const SITE = "https://usmanjatoi.lovable.app";
+const SITE = "https://usmanjatoi.com";
 
 type Kind = "post" | "page" | "category";
 

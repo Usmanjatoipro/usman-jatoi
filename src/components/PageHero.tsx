@@ -19,7 +19,7 @@ const SIZE = {
   lg: "pt-44 pb-20 md:pt-52 md:pb-28",
 };
 
-const SITE_ORIGIN = "https://usmanjatoi.lovable.app";
+const SITE_ORIGIN = "https://usmanjatoi.com";
 
 /**
  * Global dark hero used across every non-home route.

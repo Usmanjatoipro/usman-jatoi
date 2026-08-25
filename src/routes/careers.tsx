@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/careers")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Careers - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Remote-first roles and collaboration opportunities across design, development, content and automation.",
-      },
-      { property: "og:title", content: "Careers - Usman Jatoi" },
+      { title: "Careers & Opportunities — Usman Jatoi" },
+      { name: "description", content: "Join the team, collaborate on digital systems, and scale modern web initiatives." },
+      { property: "og:title", content: "Careers & Opportunities — Usman Jatoi" },
+      { property: "og:description", content: "Join the team, collaborate on digital systems, and scale modern web initiatives." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/careers" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/careers" }],
   }),
   component: CareersPage,
 });

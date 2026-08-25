@@ -4,22 +4,17 @@ import PageHero from "@/components/PageHero";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/contact-me")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Contact - Let's Collaborate | Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Get in touch with Usman Jatoi for projects, partnerships, or collaborations. Reach out via email or the contact form.",
-      },
-      { property: "og:title", content: "Contact - Let's Collaborate | Usman Jatoi" },
-      {
-        property: "og:description",
-        content: "Reach out for projects, partnerships, or collaborations.",
-      },
+      { title: "Contact Me — Usman Jatoi" },
+      { name: "description", content: "Get in touch for custom web development, SEO consultations, and AI engineering projects." },
+      { property: "og:title", content: "Contact Me — Usman Jatoi" },
+      { property: "og:description", content: "Get in touch for custom web development, SEO consultations, and AI engineering projects." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/contact-me" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/contact-me" }],
   }),
   component: ContactPage,
 });

@@ -2,11 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/portfolio/creative-projects")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Portfolio — Creative Projects" },
-      { name: "description", content: "Creative work: branding, thumbnails, social posters, mascots, video and 3D." },
+      { title: "Creative Projects — Usman Jatoi" },
+      { name: "description", content: "Design systems, motion graphics, video assets, and creative campaigns." },
+      { property: "og:title", content: "Creative Projects — Usman Jatoi" },
+      { property: "og:description", content: "Design systems, motion graphics, video assets, and creative campaigns." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/portfolio/creative-projects" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/portfolio/creative-projects" }],
   }),
   component: () => (
     <PageShell

@@ -22,14 +22,14 @@ export const Route = createFileRoute("/my-lifestyle/gaming-life")({
       { property: "og:type", content: "article" },
       {
         property: "og:url",
-        content: "https://usmanjatoi.lovable.app/my-lifestyle/gaming-life",
+        content: "https://usmanjatoi.com/my-lifestyle/gaming-life",
       },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
         rel: "canonical",
-        href: "https://usmanjatoi.lovable.app/my-lifestyle/gaming-life",
+        href: "https://usmanjatoi.com/my-lifestyle/gaming-life",
       },
     ],
   }),

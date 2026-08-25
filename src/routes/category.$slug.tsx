@@ -4,7 +4,7 @@ import { getCategoryBySlug } from "@/lib/wp-categories.functions";
 import { getLocalCategoryArchiveBySlug } from "@/lib/wp-content-stats.functions";
 import PageHero, { type Crumb } from "@/components/PageHero";
 
-const SITE = "https://usman-connects-us.lovable.app";
+const SITE = "https://usmanjatoi.com";
 
 type CategoryViewItem = {
   id: number;

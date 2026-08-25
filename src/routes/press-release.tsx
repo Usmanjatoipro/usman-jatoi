@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/press-release")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Press Release - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Official press release page for news, launches and public updates from Usman Jatoi.",
-      },
-      { property: "og:title", content: "Press Release - Usman Jatoi" },
+      { title: "Press Releases & Media — Usman Jatoi" },
+      { name: "description", content: "Official press announcements, company news, and public updates." },
+      { property: "og:title", content: "Press Releases & Media — Usman Jatoi" },
+      { property: "og:description", content: "Official press announcements, company news, and public updates." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/press-release" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/press-release" }],
   }),
   component: PressReleasePage,
 });

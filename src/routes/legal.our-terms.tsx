@@ -2,11 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/legal/our-terms")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Terms of Service — Usman Jatoi" },
-      { name: "description", content: "Terms governing use of this website and its services." },
+      { name: "description", content: "Terms and conditions governing services and digital assets on UsmanJatoi.com." },
+      { property: "og:title", content: "Terms of Service — Usman Jatoi" },
+      { property: "og:description", content: "Terms and conditions governing services and digital assets on UsmanJatoi.com." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/legal/our-terms" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/legal/our-terms" }],
   }),
   component: () => (
     <PageShell

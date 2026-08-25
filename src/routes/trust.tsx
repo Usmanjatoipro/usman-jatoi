@@ -1,23 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/trust")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Trust & Safety — Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "How UsmanJatoi.com approaches privacy, security, data handling, and responsible disclosure. Maintained by Usman Jatoi.",
-      },
-      { property: "og:title", content: "Trust & Safety — Usman Jatoi" },
-      {
-        property: "og:description",
-        content:
-          "Privacy, security, and data-handling practices for UsmanJatoi.com.",
-      },
+      { title: "Trust & Transparency — Usman Jatoi" },
+      { name: "description", content: "Security standards, client confidentiality, and operational integrity." },
+      { property: "og:title", content: "Trust & Transparency — Usman Jatoi" },
+      { property: "og:description", content: "Security standards, client confidentiality, and operational integrity." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/trust" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/trust" }],
   }),
   component: TrustPage,
 });

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
-const SITE = "https://usmanjatoi.lovable.app";
+const SITE = "https://usmanjatoi.com";
 
 type Cluster = { slug: string; name: string | null; posts: number };
 

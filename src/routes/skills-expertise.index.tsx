@@ -2,18 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/skills-expertise/")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Skills & Expertise - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Leadership, creative, technical, SEO, AI and business skills by Usman Jatoi.",
-      },
-      { property: "og:title", content: "Skills & Expertise - Usman Jatoi" },
+      { title: "Skills & Expertise — Usman Jatoi" },
+      { name: "description", content: "Core technical capabilities: web architecture, SEO algorithms, AI tooling, and design systems." },
+      { property: "og:title", content: "Skills & Expertise — Usman Jatoi" },
+      { property: "og:description", content: "Core technical capabilities: web architecture, SEO algorithms, AI tooling, and design systems." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/skills-expertise" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/skills-expertise" }],
   }),
   component: SkillsIndex,
 });

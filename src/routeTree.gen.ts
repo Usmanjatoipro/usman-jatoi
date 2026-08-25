@@ -26,6 +26,7 @@ import { Route as ContactMeRouteImport } from './routes/contact-me'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as MediaKitRouteImport } from './routes/media-kit'
@@ -161,6 +162,11 @@ const CoursesRoute = CoursesRouteImport.update({
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
   path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
@@ -448,6 +454,7 @@ export interface FileRoutesByFullPath {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
@@ -589,6 +597,7 @@ export interface FileRoutesById {
   '/contact-us': typeof ContactUsRoute
   '/courses': typeof CoursesRoute
   '/legal': typeof LegalRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/log': typeof LogRoute
   '/media-kit': typeof MediaKitRoute
@@ -661,6 +670,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms-full.txt'
     | '/llms.txt'
     | '/log'
     | '/media-kit'
@@ -730,6 +740,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms-full.txt'
     | '/llms.txt'
     | '/log'
     | '/media-kit'
@@ -801,6 +812,7 @@ export interface FileRouteTypes {
     | '/contact-us'
     | '/courses'
     | '/legal'
+    | '/llms-full.txt'
     | '/llms.txt'
     | '/log'
     | '/media-kit'
@@ -873,6 +885,7 @@ export interface RootRouteChildren {
   ContactUsRoute: typeof ContactUsRoute
   CoursesRoute: typeof CoursesRoute
   LegalRoute: typeof LegalRouteWithChildren
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   LogRoute: typeof LogRoute
   MediaKitRoute: typeof MediaKitRoute
@@ -1028,6 +1041,13 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal'
       preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/llms.txt': {
@@ -1495,6 +1515,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactUsRoute: ContactUsRoute,
   CoursesRoute: CoursesRoute,
   LegalRoute: LegalRouteWithChildren,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   LogRoute: LogRoute,
   MediaKitRoute: MediaKitRoute,

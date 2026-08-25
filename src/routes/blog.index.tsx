@@ -6,23 +6,17 @@ import { getBlogIndexPage } from "@/lib/wp-blog.functions";
 
 export const Route = createFileRoute("/blog/")({
   loader: () => getBlogIndexPage({ data: { offset: 0, limit: PAGE_SIZE, search: "" } }),
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Blog — Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Essays, notes, tutorials and behind-the-scenes writing from Usman Jatoi on design, code, automation and building in public.",
-      },
-      { property: "og:title", content: "Blog — Usman Jatoi" },
-      {
-        property: "og:description",
-        content:
-          "Essays, notes, tutorials and behind-the-scenes writing from Usman Jatoi.",
-      },
+      { title: "Blog & Knowledge Hub — Usman Jatoi" },
+      { name: "description", content: "In-depth articles, tutorials, and frameworks on web development, SEO, and AI systems." },
+      { property: "og:title", content: "Blog & Knowledge Hub — Usman Jatoi" },
+      { property: "og:description", content: "In-depth articles, tutorials, and frameworks on web development, SEO, and AI systems." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/blog" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/blog" }],
   }),
   component: BlogPage,
 });

@@ -23,14 +23,14 @@ export const Route = createFileRoute("/skills-expertise/technical-skills")({
       {
         property: "og:url",
         content:
-          "https://usmanjatoi.lovable.app/skills-expertise/technical-skills",
+          "https://usmanjatoi.com/skills-expertise/technical-skills",
       },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
         rel: "canonical",
-        href: "https://usmanjatoi.lovable.app/skills-expertise/technical-skills",
+        href: "https://usmanjatoi.com/skills-expertise/technical-skills",
       },
     ],
   }),

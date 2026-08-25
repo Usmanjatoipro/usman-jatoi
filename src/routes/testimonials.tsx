@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "../components/PageShell";
 
 export const Route = createFileRoute("/testimonials")({
-  head: () => ({
+    head: () => ({
     meta: [
-      { title: "Testimonials - Usman Jatoi" },
-      {
-        name: "description",
-        content:
-          "Testimonials and feedback from clients, partners and collaborators who worked with Usman Jatoi.",
-      },
-      { property: "og:title", content: "Testimonials - Usman Jatoi" },
+      { title: "Testimonials & Reviews — Usman Jatoi" },
+      { name: "description", content: "What clients, founders, and partners say about working with Usman Jatoi." },
+      { property: "og:title", content: "Testimonials & Reviews — Usman Jatoi" },
+      { property: "og:description", content: "What clients, founders, and partners say about working with Usman Jatoi." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://usmanjatoi.com/testimonials" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://usmanjatoi.com/testimonials" }],
   }),
   component: TestimonialsPage,
 });
