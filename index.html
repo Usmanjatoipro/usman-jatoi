@@ -1,1 +1,403 @@
-<h1>Hello</h1>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usman Jatoi Digital &amp; AI Consulting — Next-Gen Web Architecture, AI Automation &amp; Scalable Cloud Platforms</title>
+  <meta name="description" content="Enterprise-grade digital transformation, high-throughput automated web publishing, and custom AI agent engineering for high-growth businesses.">
+  <meta property="og:title" content="Usman Jatoi Digital &amp; AI Consulting">
+  <meta property="og:description" content="Next-Gen Web Architecture, AI Automation &amp; Scalable Cloud Platforms">
+  <meta property="og:type" content="website">
+
+  <!-- Schema.org LocalBusiness Structured Data for Google SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Usman Jatoi Digital & AI Consulting",
+    "description": "Next-Gen Web Architecture, AI Automation & Scalable Cloud Platforms",
+    "telephone": "+44 7888 891234",
+    "email": "usmanjatoi100@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "100 Deansgate, Manchester M3 2QW, United Kingdom",
+      "addressLocality": "Manchester",
+      "addressCountry": "GB"
+    },
+    "openingHours": "Mon-Fri: 9:00 AM – 6:30 PM"
+  }
+  </script>
+
+  <!-- Tailwind CSS CDN for instant, zero-build rendering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: '#3858e9',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .glass { background: rgba(22, 27, 34, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(48, 54, 61, 0.8); }
+    .btn-brand { background-color: #3858e9; color: #ffffff; }
+    .btn-brand:hover { opacity: 0.92; }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+  <!-- Navigation Header -->
+  <header class="sticky top-0 z-40 glass border-b border-[#30363d]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-md text-lg" style="background-color: #3858e9;">
+          U
+        </div>
+        <div>
+          <div class="font-bold text-white text-base leading-tight">Usman Jatoi Digital &amp; AI Consulting</div>
+          <div class="text-[11px] text-gray-400">Manchester, GB</div>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-xs text-gray-300">
+        <a href="#services" class="hover:text-white transition">Services</a>
+        <a href="#features" class="hover:text-white transition">Why Choose Us</a>
+        <a href="#reels" class="hover:text-white transition">Reels & Social</a>
+        <a href="#faq" class="hover:text-white transition">FAQ</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="tel:+44 7888 891234" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#30363d] hover:border-gray-500 text-xs text-white transition">
+          <span>📞</span> <span>+44 7888 891234</span>
+        </a>
+        <a href="https://wa.me/447888891234" target="_blank" rel="noreferrer" class="px-4 py-2 rounded-lg text-xs font-semibold text-white transition shadow-sm btn-brand">
+          Book Appointment
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative py-20 sm:py-28 border-b border-[#21262d] bg-gradient-to-b from-[#161b22] to-[#0d1117] text-center px-4">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-5">
+        Next-Gen Web Architecture, AI Automation &amp; Scalable Cloud Platforms
+      </span>
+      <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight mb-6">
+        Scale Your Business With Automated AI Platforms &amp; High-Speed Web Infrastructure
+      </h1>
+      <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+        We architect, build, and deploy zero-downtime websites, custom AI workflow engines, and automated lead acquisition systems that generate measurable revenue.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="tel:+44 7888 891234" class="px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg transition btn-brand">
+          📞 Call Now: +44 7888 891234
+        </a>
+        <a href="mailto:usmanjatoi100@gmail.com" class="px-6 py-3 rounded-xl font-semibold text-sm text-white glass hover:bg-white/5 transition">
+          ✉️ Send Enquiry
+        </a>
+      </div>
+
+      <div class="mt-12 flex flex-wrap justify-center gap-8 text-xs text-gray-400 border-t border-[#21262d] pt-8 max-w-3xl mx-auto">
+        <div>📍 <strong>Address:</strong> 100 Deansgate, Manchester M3 2QW, United Kingdom</div>
+        <div>🕒 <strong>Hours:</strong> Mon-Fri: 9:00 AM – 6:30 PM</div>
+        <div>🛡️ <strong>Verified Local Business</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  
+  <section id="services" class="py-20 border-b border-[#21262d] px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-white mb-3">Our Core Capabilities</h2>
+        <p class="text-gray-400 text-sm max-w-xl mx-auto">Engineered for speed, durability, and conversion</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d] hover:border-gray-500 transition">
+          <div class="text-2xl mb-3">✨</div>
+          <h3 class="font-bold text-white text-lg mb-2">AI-Powered Web Systems</h3>
+          <p class="text-xs text-gray-400 leading-relaxed mb-4">Lightning-fast platforms built with TanStack Start, Vite, and Cloudflare Enterprise Edge with &lt;15ms global TTFB.</p>
+          <div class="text-xs font-semibold text-blue-400">Custom Scope</div>
+        </div>
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d] hover:border-gray-500 transition">
+          <div class="text-2xl mb-3">✨</div>
+          <h3 class="font-bold text-white text-lg mb-2">Automated Cold Outreach Engines</h3>
+          <p class="text-xs text-gray-400 leading-relaxed mb-4">End-to-end B2B lead generation, Overture place scraping, verified deliverability with SPF, DKIM, DMARC, and auto-warmup.</p>
+          <div class="text-xs font-semibold text-blue-400">Scale Monthly</div>
+        </div>
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d] hover:border-gray-500 transition">
+          <div class="text-2xl mb-3">✨</div>
+          <h3 class="font-bold text-white text-lg mb-2">Enterprise Architecture &amp; Cloud</h3>
+          <p class="text-xs text-gray-400 leading-relaxed mb-4">Multi-cloud zero-cost resilience combining Oracle Always Free compute, Cloudflare D1/KV edge, and automated GitHub CI/CD.</p>
+          <div class="text-xs font-semibold text-blue-400">Retainer / Fixed</div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- Features Section -->
+  
+  <section id="features" class="py-20 border-b border-[#21262d] bg-[#161b22]/40 px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-white mb-3">Engineered For Uncompromising Reliability</h2>
+        <p class="text-gray-400 text-sm max-w-xl mx-auto">Built to standard, tested for scale</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d]">
+          <h3 class="font-bold text-white text-base mb-2">⭐ 100% Always-On Architecture</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Never sleeps or pauses. Zero cold starts, backed by Oracle Cloud 24GB RAM compute and Cloudflare CDN.</p>
+        </div>
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d]">
+          <h3 class="font-bold text-white text-base mb-2">⭐ Instant Subdomain Deployment</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Automatic wildcard SSL provisioning (*.wbpsite.com) with 1-click domain binding.</p>
+        </div>
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d]">
+          <h3 class="font-bold text-white text-base mb-2">⭐ 1-Page Portable HTML Export</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Full standalone static export available instantly for $0 hosting on GitHub Pages or Cloudflare Pages.</p>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- Social Reels & Videos Section -->
+  
+  <section id="reels" class="py-20 border-b border-[#21262d] px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-pink-500/10 text-pink-400 border border-pink-500/20 mb-3 inline-block">
+          ● Live Social Feed
+        </span>
+        <h2 class="text-3xl font-bold text-white mb-3">Featured Tech &amp; Architecture Reels</h2>
+        <p class="text-gray-400 text-sm max-w-xl mx-auto">Watch real system demos, architecture breakdowns, and client results</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        
+        <div class="glass rounded-2xl overflow-hidden border border-[#30363d] relative aspect-[9/16] group cursor-pointer" onclick="openReel('Building a Zero-Downtime Multi-Cloud SaaS on $0 Infra', 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=80', 'How we leveraged Cloudflare Edge + Oracle Always Free to run high-throughput publishing at $0/month server bills.', 'youtube', '38.4k', '2,810')">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&amp;auto=format&amp;fit=crop&amp;q=80" alt="Building a Zero-Downtime Multi-Cloud SaaS on $0 Infra" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-3.5">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="px-2 py-0.5 rounded font-bold uppercase bg-pink-500/80 text-white">youtube</span>
+              <span class="font-mono text-white/90 bg-black/60 px-1.5 py-0.5 rounded">0:45</span>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs mb-1 line-clamp-2">Building a Zero-Downtime Multi-Cloud SaaS on $0 Infra</div>
+              <div class="text-[10px] text-gray-300 flex items-center justify-between">
+                <span>👁️ 38.4k</span>
+                <span>❤️ 2,810</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass rounded-2xl overflow-hidden border border-[#30363d] relative aspect-[9/16] group cursor-pointer" onclick="openReel('Cold Email Deliverability: 98% Inbox Placement Secrets', 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80', 'Why subdomains convert 4x higher than preview links and how automated 2048-bit DKIM stops spam filter rejections.', 'instagram', '29.1k', '1,940')">
+          <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&amp;auto=format&amp;fit=crop&amp;q=80" alt="Cold Email Deliverability: 98% Inbox Placement Secrets" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-3.5">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="px-2 py-0.5 rounded font-bold uppercase bg-pink-500/80 text-white">instagram</span>
+              <span class="font-mono text-white/90 bg-black/60 px-1.5 py-0.5 rounded">0:38</span>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs mb-1 line-clamp-2">Cold Email Deliverability: 98% Inbox Placement Secrets</div>
+              <div class="text-[10px] text-gray-300 flex items-center justify-between">
+                <span>👁️ 29.1k</span>
+                <span>❤️ 1,940</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass rounded-2xl overflow-hidden border border-[#30363d] relative aspect-[9/16] group cursor-pointer" onclick="openReel('Autonomous AI Agents in Action: From Prompt to Live Code', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80', 'Live editing websites through conversational AI and syncing instantly across worldwide edge nodes.', 'tiktok', '45.7k', '3,620')">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&amp;auto=format&amp;fit=crop&amp;q=80" alt="Autonomous AI Agents in Action: From Prompt to Live Code" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-3.5">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="px-2 py-0.5 rounded font-bold uppercase bg-pink-500/80 text-white">tiktok</span>
+              <span class="font-mono text-white/90 bg-black/60 px-1.5 py-0.5 rounded">0:52</span>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs mb-1 line-clamp-2">Autonomous AI Agents in Action: From Prompt to Live Code</div>
+              <div class="text-[10px] text-gray-300 flex items-center justify-between">
+                <span>👁️ 45.7k</span>
+                <span>❤️ 3,620</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass rounded-2xl overflow-hidden border border-[#30363d] relative aspect-[9/16] group cursor-pointer" onclick="openReel('Next-Gen Lead Gen: Scrape, Enrich, Build & Convert', 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80', 'The full lifecycle of WBP: from initial discovery to Freemius merchant of record checkout.', 'instagram', '22.3k', '1,450')">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&amp;auto=format&amp;fit=crop&amp;q=80" alt="Next-Gen Lead Gen: Scrape, Enrich, Build &amp; Convert" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-3.5">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="px-2 py-0.5 rounded font-bold uppercase bg-pink-500/80 text-white">instagram</span>
+              <span class="font-mono text-white/90 bg-black/60 px-1.5 py-0.5 rounded">0:31</span>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs mb-1 line-clamp-2">Next-Gen Lead Gen: Scrape, Enrich, Build &amp; Convert</div>
+              <div class="text-[10px] text-gray-300 flex items-center justify-between">
+                <span>👁️ 22.3k</span>
+                <span>❤️ 1,450</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- Testimonials Section -->
+  
+  <section class="py-20 border-b border-[#21262d] bg-[#161b22]/30 px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-white mb-3">Client Endorsements</h2>
+        <p class="text-gray-400 text-sm max-w-xl mx-auto">Real experiences from local clients</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d]">
+          <div class="text-amber-400 text-sm mb-3">★★★★★</div>
+          <p class="text-xs text-gray-300 italic mb-4 leading-relaxed">""</p>
+          <div class="font-bold text-white text-xs">— </div>
+        </div>
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d]">
+          <div class="text-amber-400 text-sm mb-3">★★★★★</div>
+          <p class="text-xs text-gray-300 italic mb-4 leading-relaxed">""</p>
+          <div class="font-bold text-white text-xs">— </div>
+        </div>
+        
+        <div class="glass p-6 rounded-2xl border border-[#30363d]">
+          <div class="text-amber-400 text-sm mb-3">★★★★★</div>
+          <p class="text-xs text-gray-300 italic mb-4 leading-relaxed">""</p>
+          <div class="font-bold text-white text-xs">— </div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- FAQ Section -->
+  
+  <section id="faq" class="py-20 border-b border-[#21262d] px-4">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-3">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="space-y-4">
+        
+        <details class="glass rounded-xl p-4 border border-[#30363d] cursor-pointer">
+          <summary class="font-semibold text-white text-sm focus:outline-none"></summary>
+          <p class="mt-3 text-xs text-gray-400 leading-relaxed"></p>
+        </details>
+        
+        <details class="glass rounded-xl p-4 border border-[#30363d] cursor-pointer">
+          <summary class="font-semibold text-white text-sm focus:outline-none"></summary>
+          <p class="mt-3 text-xs text-gray-400 leading-relaxed"></p>
+        </details>
+        
+        <details class="glass rounded-xl p-4 border border-[#30363d] cursor-pointer">
+          <summary class="font-semibold text-white text-sm focus:outline-none"></summary>
+          <p class="mt-3 text-xs text-gray-400 leading-relaxed"></p>
+        </details>
+        
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- Contact & Location CTA -->
+  <section class="py-20 px-4 bg-gradient-to-t from-[#161b22] to-[#0d1117] text-center">
+    <div class="max-w-3xl mx-auto glass p-8 sm:p-12 rounded-3xl border border-[#30363d]">
+      <h2 class="text-3xl font-bold text-white mb-4">Get in Touch with Usman Jatoi Digital &amp; AI Consulting</h2>
+      <p class="text-gray-300 text-sm mb-8 leading-relaxed">
+        We are proud to serve Manchester and surrounding areas. Contact us directly today.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="tel:+44 7888 891234" class="px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg btn-brand">
+          📞 Call +44 7888 891234
+        </a>
+        <a href="https://wa.me/447888891234" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl font-semibold text-sm text-white glass hover:bg-white/10">
+          💬 WhatsApp Message
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-auto py-8 border-t border-[#21262d] text-center text-xs text-gray-500">
+    <div class="max-w-6xl mx-auto px-4">
+      <p>© 2026 Usman Jatoi Digital &amp; AI Consulting. All rights reserved.</p>
+      <p class="mt-1 text-[11px] text-gray-600">
+        Hosted on Cloudflare Edge • Fast, Mobile-Optimized, and SSL-Secured.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Reel Playback Modal -->
+  <div id="reelModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" onclick="closeReel(event)">
+    <div class="glass rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl border border-[#30363d]" onclick="event.stopPropagation()">
+      <div class="p-3 border-b border-[#21262d] flex justify-between items-center bg-[#0d1117]">
+        <span id="modalPlatform" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-pink-500/20 text-pink-400">Reel</span>
+        <button onclick="document.getElementById('reelModal').classList.add('hidden')" class="text-gray-400 hover:text-white text-xs px-2 py-1">✕</button>
+      </div>
+      <div class="relative aspect-[9/16] bg-black">
+        <img id="modalImg" src="" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 text-center">
+          <div class="text-lg font-bold text-white mb-2" id="modalTitle"></div>
+          <p class="text-xs text-gray-300 mb-4" id="modalCaption"></p>
+          <div class="text-xs text-gray-400 flex justify-center gap-6">
+            <span id="modalViews"></span>
+            <span id="modalLikes"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openReel(title, img, caption, platform, views, likes) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalImg').src = img;
+      document.getElementById('modalCaption').innerText = caption;
+      document.getElementById('modalPlatform').innerText = platform;
+      document.getElementById('modalViews').innerText = '👁️ ' + views;
+      document.getElementById('modalLikes').innerText = '❤️ ' + likes;
+      const modal = document.getElementById('reelModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeReel(e) {
+      const modal = document.getElementById('reelModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  </script>
+</body>
+</html>
