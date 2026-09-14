@@ -54,6 +54,7 @@ import { Route as SkillsExpertiseSeoMarketingRouteImport } from './routes/skills
 import { Route as SkillsExpertiseCreativeSkillsRouteImport } from './routes/skills-expertise.creative-skills'
 import { Route as SkillsExpertiseAiResearchAndInnovationRouteImport } from './routes/skills-expertise.ai-research-and-innovation'
 import { Route as SitemapNameRouteImport } from './routes/sitemap.$name'
+import { Route as ShopNuvoxDigitalStudioRouteImport } from './routes/shop_.NuvoxDigitalStudio'
 import { Route as ServicesWebRouteImport } from './routes/services.web'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as PortfolioWebsitesRouteImport } from './routes/portfolio.websites'
@@ -313,6 +314,11 @@ const SitemapNameRoute = SitemapNameRouteImport.update({
   path: '/sitemap/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopNuvoxDigitalStudioRoute = ShopNuvoxDigitalStudioRouteImport.update({
+  id: '/shop_/NuvoxDigitalStudio',
+  path: '/shop/NuvoxDigitalStudio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesWebRoute = ServicesWebRouteImport.update({
   id: '/services/web',
   path: '/services/web',
@@ -531,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
+  '/shop/NuvoxDigitalStudio': typeof ShopNuvoxDigitalStudioRoute
   '/sitemap/$name': typeof SitemapNameRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
@@ -606,6 +613,7 @@ export interface FileRoutesByTo {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
+  '/shop/NuvoxDigitalStudio': typeof ShopNuvoxDigitalStudioRoute
   '/sitemap/$name': typeof SitemapNameRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
@@ -684,6 +692,7 @@ export interface FileRoutesById {
   '/portfolio/websites': typeof PortfolioWebsitesRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/web': typeof ServicesWebRoute
+  '/shop_/NuvoxDigitalStudio': typeof ShopNuvoxDigitalStudioRoute
   '/sitemap/$name': typeof SitemapNameRoute
   '/skills-expertise/ai-research-and-innovation': typeof SkillsExpertiseAiResearchAndInnovationRoute
   '/skills-expertise/creative-skills': typeof SkillsExpertiseCreativeSkillsRoute
@@ -762,6 +771,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
+    | '/shop/NuvoxDigitalStudio'
     | '/sitemap/$name'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
@@ -837,6 +847,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
+    | '/shop/NuvoxDigitalStudio'
     | '/sitemap/$name'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
@@ -914,6 +925,7 @@ export interface FileRouteTypes {
     | '/portfolio/websites'
     | '/services/$slug'
     | '/services/web'
+    | '/shop_/NuvoxDigitalStudio'
     | '/sitemap/$name'
     | '/skills-expertise/ai-research-and-innovation'
     | '/skills-expertise/creative-skills'
@@ -975,6 +987,7 @@ export interface RootRouteChildren {
   MyLifestyleHobbiesRoute: typeof MyLifestyleHobbiesRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesWebRoute: typeof ServicesWebRoute
+  ShopNuvoxDigitalStudioRoute: typeof ShopNuvoxDigitalStudioRoute
   SitemapNameRoute: typeof SitemapNameRoute
   SkillsExpertiseAiResearchAndInnovationRoute: typeof SkillsExpertiseAiResearchAndInnovationRoute
   SkillsExpertiseCreativeSkillsRoute: typeof SkillsExpertiseCreativeSkillsRoute
@@ -1305,6 +1318,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap/$name'
       fullPath: '/sitemap/$name'
       preLoaderRoute: typeof SitemapNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop_/NuvoxDigitalStudio': {
+      id: '/shop_/NuvoxDigitalStudio'
+      path: '/shop/NuvoxDigitalStudio'
+      fullPath: '/shop/NuvoxDigitalStudio'
+      preLoaderRoute: typeof ShopNuvoxDigitalStudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/web': {
@@ -1646,6 +1666,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLifestyleHobbiesRoute: MyLifestyleHobbiesRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   ServicesWebRoute: ServicesWebRoute,
+  ShopNuvoxDigitalStudioRoute: ShopNuvoxDigitalStudioRoute,
   SitemapNameRoute: SitemapNameRoute,
   SkillsExpertiseAiResearchAndInnovationRoute:
     SkillsExpertiseAiResearchAndInnovationRoute,
