@@ -442,7 +442,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="site-footer bg-neutral-950 text-neutral-300">
-      <div className="grid w-full gap-14 px-6 py-20 md:px-12 lg:grid-cols-[1.15fr_1fr_1fr_1fr] lg:gap-12">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-14 px-4 py-20 sm:px-5 md:px-10 lg:grid-cols-[1.15fr_1fr_1fr_1fr] lg:gap-12">
         {/* Column 1: brand + primary nav pills */}
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white">
@@ -520,12 +520,12 @@ export function SiteFooter() {
       </div>
 
       {/* Divider */}
-      <div className="w-full px-6 md:px-12">
+      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-5 md:px-10">
         <div className="h-px w-full bg-white/10" />
       </div>
 
       {/* Bottom bar */}
-      <div className="grid w-full grid-cols-1 items-center gap-6 px-6 py-8 md:grid-cols-3 md:px-12">
+      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center gap-6 px-4 py-8 sm:px-5 md:grid-cols-3 md:px-10">
         <p className="text-sm text-neutral-400 md:justify-self-start">
           © {new Date().getFullYear()} Usman Jatoi Pro&nbsp;|&nbsp;Designed by{" "}
           <a
