@@ -2,253 +2,205 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowRight,
-  BarChart3,
-  Calendar,
+  ArrowUpRight,
   CheckCircle2,
   ChevronDown,
-  Code2,
-  Layers,
-  Search,
+  CreditCard,
+  Download,
+  ExternalLink,
+  Globe,
+  HelpCircle,
+  Mail,
+  MapPin,
+  PackageCheck,
+  Palette,
+  RefreshCw,
   Send,
   ShieldCheck,
+  ShoppingBag,
   Sparkles,
-  Zap,
+  Truck,
 } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import { supabase } from "@/integrations/supabase/client";
 
 const PAGE_URL = "https://usmanjatoi.com/shop/NuvoxDigitalStudio";
-const OG_IMAGE = "https://usmanjatoi.com/site-assets/Screenshot-2025-05-09-165038-1536x636.jpg";
+const ETSY_SHOP_URL = "https://www.etsy.com/shop/NuvoxDigitalStudio";
+const ETSY_CONTACT_URL =
+  "https://www.etsy.com/messages/new?with_id=1249524161&referring_id=68019867&referring_type=shop&recipient_id=1249524161";
 
-const SHOWCASE_TABS = [
-  {
-    id: "desktop",
-    title: "Desktop Experience",
-    subtitle: "High-Converting Hero & Structure",
-    image: "/site-assets/Screenshot-2025-05-09-165038-1536x636.jpg",
-    alt: "Nuvox Digital Studio Desktop Layout",
-  },
-  {
-    id: "mobile",
-    title: "Mobile-First UX",
-    subtitle: "Fluid Navigation on All Devices",
-    image: "/site-assets/Phone-Mockup-1.jpg",
-    alt: "Nuvox Mobile View Mockup",
-  },
-  {
-    id: "performance",
-    title: "Search & Speed Engine",
-    subtitle: "Sub-Second Page Loads & Schemas",
-    image: "/site-assets/Tools-Redsglow.png",
-    alt: "Nuvox Speed and Performance Tools",
-  },
-  {
-    id: "architecture",
-    title: "Production Architecture",
-    subtitle: "Tailored React, Vite & Edge Deploy",
-    image: "/site-assets/2024-07-23-145529-desktop-1-10.png",
-    alt: "Nuvox Production Architecture",
-  },
-];
+const BANNER_IMAGE = "/site-assets/nuvox-banner.jpg";
+const AVATAR_IMAGE = "/site-assets/nuvox-avatar.jpg";
 
-const METRICS = [
-  { value: "2–4 Weeks", label: "Turnkey Sprint Delivery" },
-  { value: "100%", label: "Code & Asset Ownership" },
-  { value: "Zero", label: "Technical Debt & Bloat" },
-  { value: "End-to-End", label: "Design, Dev & SEO" },
-];
-
-const BENEFITS = [
+const PRODUCT_CATEGORIES = [
+  {
+    icon: Download,
+    title: "Digital Downloads & Resources",
+    description:
+      "Instant-access creative assets, vector illustrations, design toolkits, and curated files designed to elevate personal and commercial projects.",
+    badge: "Instant Delivery",
+  },
+  {
+    icon: Palette,
+    title: "Templates & Printable Designs",
+    description:
+      "Thoughtfully structured planners, business stationery, forms, and invitations. Crafted with meticulous typography and print-ready formatting.",
+    badge: "Editable & Print-Ready",
+  },
+  {
+    icon: Truck,
+    title: "Print-on-Demand Physical Products",
+    description:
+      "Original physical merchandise manufactured and shipped directly to your door through trusted production partners like Printify.",
+    badge: "Ships Worldwide",
+  },
   {
     icon: Sparkles,
-    title: "Engineered for Conversion",
+    title: "AI-Assisted Precision Art",
     description:
-      "Purpose-built visual hierarchy, psychological lead hooks, and friction-free inquiry flows that transform passive page visitors into high-intent enquiries.",
-  },
-  {
-    icon: Search,
-    title: "Programmatic & Technical SEO",
-    description:
-      "Built with valid Schema.org markup, semantic HTML5, automated XML sitemaps, and optimized crawl paths to earn and keep organic Google rankings.",
-  },
-  {
-    icon: Zap,
-    title: "Blazing Fast Edge Speed",
-    description:
-      "Sub-second page loads powered by modern edge delivery, zero bloated plugins, optimized modern image formats, and 95+ Core Web Vitals.",
-  },
-  {
-    icon: Code2,
-    title: "Modern Modular Stack",
-    description:
-      "Built with React, Vite, and Tailwind CSS. Clean, maintainable component code that scales effortlessly with your brand without vendor lock-in.",
-  },
-  {
-    icon: BarChart3,
-    title: "Integrated Lead & Event Tracking",
-    description:
-      "Database-backed form capture (Supabase), conversion event tracking, automated email alerts, and analytics wired and tested before launch.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Complete IP & Repo Handover",
-    description:
-      "You receive 100% ownership of design assets, repository code, DNS setup, and deployment access, along with thorough handover documentation.",
+      "Modern creative assets crafted through custom workflows combining cutting-edge AI technology with rigorous human direction and editing.",
+    badge: "Curated Workflows",
   },
 ];
 
-const INCLUSIONS_GROUPS = [
+const SHOP_POLICIES = [
   {
-    category: "Design & User Experience",
-    items: [
-      "Bespoke brand-aligned UI/UX tailored to your niche",
-      "Mobile-first responsive layouts across desktop, tablet, and mobile",
-      "Interactive component states, subtle motion, and clear typography",
-      "Social proof showcases, testimonials, and trust badges",
-    ],
+    icon: CreditCard,
+    title: "Accepted Payment Methods",
+    description:
+      "Accepts Etsy Gift Cards, Etsy Credits, Visa, MasterCard, American Express, Discover, PayPal, Apple Pay, and Google Pay through Etsy's secure checkout.",
   },
   {
-    category: "Engineering & Architecture",
-    items: [
-      "Custom React 19 + Vite frontend architecture with Tailwind styling",
-      "Lightning-fast routing and sub-second asset bundling",
-      "Cloudflare / Edge production hosting and SSL configuration",
-      "Zero vulnerable third-party plugins or page-builder bloat",
-    ],
+    icon: PackageCheck,
+    title: "Instant Digital Downloads",
+    description:
+      "Your digital files are made available for immediate download the moment your payment is confirmed. No waiting for shipping.",
   },
   {
-    category: "Search & Discoverability",
-    items: [
-      "Comprehensive on-page SEO: custom metadata, OpenGraph, and canonicals",
-      "Rich JSON-LD structured data (Organization, Service, FAQ, Breadcrumbs)",
-      "Automated XML sitemaps, robots.txt, and Search Console configuration",
-      "Semantic heading hierarchy and fast image lazy-loading",
-    ],
+    icon: Truck,
+    title: "Physical Order Fulfillment",
+    description:
+      "Physical goods are custom printed and fulfilled on demand by professional production partners including Printify, with full tracking provided.",
   },
   {
-    category: "Conversion & Measurement",
-    items: [
-      "Direct database lead-capture pipeline with email notifications",
-      "Anti-spam protection and form input validation",
-      "Analytics event tracking for buttons, links, and forms",
-      "Full video walkthrough and deployment handover documentation",
-    ],
-  },
-];
-
-const PACKAGES = [
-  {
-    name: "Studio Standard Sprint",
-    timeline: "2–3 Weeks Delivery",
-    tagline:
-      "Ideal for growing businesses, creators, and professionals needing a high-performance modern web presence.",
-    features: [
-      "Up to 8 custom core pages (Home, About, Services, Case Studies, Contact)",
-      "High-converting visual design with responsive mobile optimization",
-      "Technical SEO foundation + Schema markup for all pages",
-      "Contact form with direct database logging and notifications",
-      "Domain DNS connection, SSL setup, and production deployment",
-      "14 days of post-launch tuning and walkthrough guide",
-    ],
-    highlight: false,
-    cta: "Request Standard Scope",
-  },
-  {
-    name: "Studio Growth & Scale",
-    timeline: "3–4 Weeks Delivery",
-    tagline:
-      "Comprehensive end-to-end digital ecosystem for aggressive organic reach, multiple service pillars, and lead capture.",
-    features: [
-      "Everything in Studio Standard Sprint",
-      "Full dynamic CMS integration for blogs, services, or resource libraries",
-      "Programmatic SEO architecture & cluster hubs",
-      "Advanced lead capture funnel with tailored qualification fields",
-      "Custom micro-interactions and interactive widgets",
-      "Priority sprint timeline + 30 days of post-launch support",
-    ],
-    highlight: true,
-    cta: "Request Growth Scope",
+    icon: RefreshCw,
+    title: "Returns, Exchanges & Support",
+    description:
+      "Digital downloads are non-returnable once downloaded. If you identify any defect or genuine error in a file, message us for a prompt corrected version.",
   },
 ];
 
 const FAQS = [
   {
-    q: "What is Nuvox Digital Studio?",
-    a: "Nuvox Digital Studio is a packaged, done-for-you digital studio engagement by Usman Jatoi. It combines conversion-focused UI/UX design, modern full-stack web engineering, and search engine groundwork into a unified sprint that turns organic and referral traffic into paying clients.",
+    q: "Are your products created by you?",
+    a: "Yes. Our digital products are created by NuvoxDigitalStudio using our own specialized tools, workflows, creative processes, design systems, and AI-assisted technology.",
   },
   {
-    q: "How long does a typical build take?",
-    a: "Most Nuvox builds are completed in 2 to 4 weeks depending on the scope of pages and how readily available your brand assets and initial copy are. We work in disciplined weekly sprints with clear milestone reviews.",
+    q: "Do you use AI in your products?",
+    a: "Yes. AI may be used as part of our creative, research, design, writing, or production workflow. We combine AI with our own tools, instructions, creative direction, and editing to create the final product.",
   },
   {
-    q: "What tech stack powers Nuvox sites?",
-    a: "We build on modern, edge-ready tech stacks including React, Vite, Tailwind CSS, TanStack Router, and Supabase. This guarantees instant sub-second page loads, complete security, and zero dependencies on sluggish WordPress themes or fragile page-builder plugins.",
+    q: "Can AI-generated or AI-assisted content contain mistakes?",
+    a: "Yes. Like any creative or automated tool, AI can occasionally produce errors such as typos, unusual wording, small visual imperfections, incorrect details, or unexpected design elements. We review our products carefully, but minor errors may occasionally remain. If you notice an issue, please contact us so we can review it.",
   },
   {
-    q: "Do I get full ownership of the code and design?",
-    a: "Yes. You receive 100% intellectual property ownership. Upon project completion, full Git repository access, hosting environment credentials, and DNS records are completely transferred to you with zero ongoing agency retainers or lock-ins.",
+    q: "Do you guarantee that digital products are completely error-free?",
+    a: "We do our best to check every product before publishing, but we cannot guarantee that every file will be completely free from spelling errors, formatting issues, AI-related imperfections, software compatibility differences, or other minor mistakes.",
   },
   {
-    q: "Can you migrate an existing WordPress or legacy website?",
-    a: "Yes. We specialize in seamless migrations that preserve your existing URL rankings, transfer historic content and media, and configure permanent 301 redirects so you never lose search visibility or organic traffic.",
+    q: "Should customers review editable files before using them?",
+    a: "Yes. For editable templates, documents, planners, business materials, invitations, or similar products, we recommend reviewing all names, dates, wording, measurements, spelling, and other important information before printing, publishing, or using the final version.",
   },
   {
-    q: "How do we get started?",
-    a: "You can send a brief message through the direct inquiry form on this page, or schedule a free 30-minute discovery call. We review your goals, clarify scope and timeline, and provide a transparent, fixed-price proposal within 24 hours.",
+    q: "How are your physical products made?",
+    a: "Our physical product designs are created and managed by NuvoxDigitalStudio. Printing, manufacturing, packaging, and shipping may be handled by professional third-party production partners such as Printify and other fulfillment providers.",
+  },
+  {
+    q: "What if I find an error in a digital product?",
+    a: "Please send us a message through Etsy and explain the issue. If there is a genuine error in one of our files, we will review it and, where appropriate, provide an updated or corrected version.",
+  },
+];
+
+const ECOSYSTEM_LINKS = [
+  {
+    title: "NuvoxDigitalStudio on Etsy",
+    desc: "Official Etsy storefront for direct downloads and physical merchandise orders.",
+    url: ETSY_SHOP_URL,
+    isExternal: true,
+  },
+  {
+    title: "BuildOnVibe.site",
+    desc: "Vibe coding showcase, AI development experiments, and rapid micro-apps.",
+    url: "https://buildonvibe.site/",
+    isExternal: true,
+  },
+  {
+    title: "WpBulkPublishing.com",
+    desc: "Enterprise WordPress programmatic publishing and ecosystem automation engine.",
+    url: "https://wpbulkpublishing.com/",
+    isExternal: true,
+  },
+  {
+    title: "Usman Jatoi Home & Portfolio",
+    desc: "Personal hub for consulting, web engineering, articles, and full project archives.",
+    url: "/",
+    isExternal: false,
   },
 ];
 
 export const Route = createFileRoute("/shop_/NuvoxDigitalStudio")({
   head: () => ({
     meta: [
-      { title: "Nuvox Digital Studio — Usman Jatoi" },
+      { title: "Nuvox Digital Studio — Creative Digital & Physical Products | Usman Jatoi" },
       {
         name: "description",
         content:
-          "Nuvox Digital Studio: A done-for-you website, content architecture, and search engineering package built to convert visitors into qualified enquiries.",
+          "Welcome to NuvoxDigitalStudio: A creative shop offering premium digital downloads, templates, printable designs, and print-on-demand physical products.",
       },
-      { property: "og:title", content: "Nuvox Digital Studio — Usman Jatoi" },
+      {
+        property: "og:title",
+        content: "Nuvox Digital Studio — Creative Digital & Physical Products",
+      },
       {
         property: "og:description",
         content:
-          "A done-for-you website, content architecture, and search engineering package built to convert visitors into qualified enquiries.",
+          "Creative digital downloads, templates, printable designs, and print-on-demand physical products made to be useful, unique, and beautiful.",
       },
       { property: "og:type", content: "product" },
       { property: "og:url", content: PAGE_URL },
-      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image", content: "https://usmanjatoi.com" + BANNER_IMAGE },
       { property: "og:site_name", content: "Usman Jatoi" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Nuvox Digital Studio — Usman Jatoi" },
+      {
+        name: "twitter:title",
+        content: "Nuvox Digital Studio — Creative Digital & Physical Products",
+      },
       {
         name: "twitter:description",
         content:
-          "A done-for-you website, content architecture, and search engineering package built to convert visitors into qualified enquiries.",
+          "Creative digital downloads, templates, printable designs, and print-on-demand physical products made to be useful, unique, and beautiful.",
       },
-      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:image", content: "https://usmanjatoi.com" + BANNER_IMAGE },
     ],
     links: [{ rel: "canonical", href: PAGE_URL }],
   }),
-  component: NuvoxProductPage,
+  component: NuvoxEtsyProductPage,
 });
 
-function NuvoxProductPage() {
-  const [activeTab, setActiveTab] = useState(SHOWCASE_TABS[0].id);
+function NuvoxEtsyProductPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Form State
   const [form, setForm] = useState({
     name: "",
     email: "",
-    packageChoice: "Studio Standard Sprint",
+    topic: "Custom Design / Template Request",
     message: "",
-    website: "",
   });
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "success" | "error">(
     "idle",
   );
   const [statusMessage, setStatusMessage] = useState("");
-
-  const currentShowcase = SHOWCASE_TABS.find((t) => t.id === activeTab) || SHOWCASE_TABS[0];
 
   async function handleInquirySubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -261,8 +213,8 @@ function NuvoxProductPage() {
         name: form.name.trim(),
         email: form.email.trim(),
         phone: null,
-        looking_for: `Nuvox Digital Studio: ${form.packageChoice}`,
-        message: `Current website: ${form.website || "N/A"}\n\nProject details:\n${form.message.trim()}`,
+        looking_for: `NuvoxDigitalStudio: ${form.topic}`,
+        message: form.message.trim(),
         source_path: "/shop/NuvoxDigitalStudio",
         user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       });
@@ -273,51 +225,39 @@ function NuvoxProductPage() {
 
       setSubmitState("success");
       setStatusMessage(
-        "Thank you! Your inquiry has been received. Usman will reply within 24 hours.",
+        "Thank you! Your message has been received. We will get back to you shortly.",
       );
       setForm({
         name: "",
         email: "",
-        packageChoice: "Studio Standard Sprint",
+        topic: "Custom Design / Template Request",
         message: "",
-        website: "",
       });
     } catch {
-      // Graceful fallback to mailto
-      const mailtoSubject = encodeURIComponent(
-        `Inquiry: Nuvox Digital Studio (${form.packageChoice})`,
-      );
+      const mailtoSubject = encodeURIComponent(`Nuvox Digital Studio Inquiry: ${form.topic}`);
       const mailtoBody = encodeURIComponent(
-        `Name: ${form.name}\nEmail: ${form.email}\nPackage: ${form.packageChoice}\nWebsite: ${form.website || "N/A"}\n\nMessage:\n${form.message}`,
+        `Name: ${form.name}\nEmail: ${form.email}\nTopic: ${form.topic}\n\nMessage:\n${form.message}`,
       );
       window.location.href = `mailto:contact@usmanjatoi.com?subject=${mailtoSubject}&body=${mailtoBody}`;
       setSubmitState("success");
-      setStatusMessage(
-        "Your email client has been opened. Looking forward to discussing your project!",
-      );
+      setStatusMessage("Opening your email client to send your inquiry directly.");
     }
   }
 
-  const productSchema = {
+  const storeSchema = {
     "@context": "https://schema.org",
-    "@type": "Product",
-    name: "Nuvox Digital Studio",
+    "@type": "Store",
+    name: "NuvoxDigitalStudio",
     description:
-      "A done-for-you website, content architecture, and search engineering package built to convert visitors into qualified enquiries.",
-    image: OG_IMAGE,
-    brand: {
-      "@type": "Brand",
+      "A creative shop offering a mix of premium digital products and thoughtfully designed physical items.",
+    image: "https://usmanjatoi.com" + BANNER_IMAGE,
+    url: PAGE_URL,
+    sameAs: [ETSY_SHOP_URL, "https://buildonvibe.site/", "https://wpbulkpublishing.com/"],
+    areaServed: "United States, Worldwide",
+    founder: {
+      "@type": "Person",
       name: "Usman Jatoi",
-    },
-    offers: {
-      "@type": "AggregateOffer",
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      seller: {
-        "@type": "Person",
-        name: "Usman Jatoi",
-        url: "https://usmanjatoi.com",
-      },
+      url: "https://usmanjatoi.com",
     },
   };
 
@@ -338,7 +278,7 @@ function NuvoxProductPage() {
     <div className="min-h-screen bg-white text-neutral-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(storeSchema) }}
       />
       <script
         type="application/ld+json"
@@ -347,505 +287,306 @@ function NuvoxProductPage() {
 
       {/* Global Hero with Breadcrumbs */}
       <PageHero
-        eyebrow="Studio Package"
+        eyebrow="Etsy Creative Shop"
         title="Nuvox Digital Studio"
-        description="A full-stack, done-for-you website, content architecture, and search engineering sprint built to turn visits into qualified commercial enquiries."
+        description="Creative digital & physical products made to be useful, unique, and beautiful."
         crumbs={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/shop" },
           { label: "Nuvox Digital Studio" },
         ]}
-      >
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="#inquiry"
-            className="inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#FF6A00]/25 transition hover:bg-[#e55f00] hover:scale-[1.02]"
-          >
-            Request Project Scope
-            <ArrowRight className="h-4 w-4" />
-          </a>
-          <Link
-            to="/call"
-            className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-white hover:bg-white/15"
-          >
-            <Calendar className="h-4 w-4 text-[#FF6A00]" />
-            Book 30-Min Call
-          </Link>
-        </div>
-      </PageHero>
+      />
 
-      {/* Key Metrics Bar */}
-      <section className="border-b border-neutral-200 bg-neutral-950 py-8 text-white">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            {METRICS.map((m) => (
-              <div key={m.label} className="border-l-2 border-[#FF6A00] pl-4">
-                <div className="text-2xl font-bold tracking-tight text-white md:text-3xl">
-                  {m.value}
+      {/* Shop Profile & Banner Section */}
+      <section className="border-b border-neutral-200 bg-neutral-950 text-white">
+        {/* Banner Graphic */}
+        <div className="relative mx-auto max-w-6xl overflow-hidden border-x border-white/10">
+          <div className="aspect-[4/1] w-full overflow-hidden bg-neutral-900">
+            <img
+              src={BANNER_IMAGE}
+              alt="Nuvox Digital Studio Official Banner"
+              className="h-full w-full object-cover object-center"
+              loading="eager"
+            />
+          </div>
+
+          {/* Floating Shop Header Bar */}
+          <div className="relative border-t border-white/10 bg-neutral-950/95 px-6 py-6 backdrop-blur-md md:px-8">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              {/* Avatar + Shop Info */}
+              <div className="flex items-center gap-5">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-[#FF6A00] bg-neutral-900 shadow-xl">
+                  <img
+                    src={AVATAR_IMAGE}
+                    alt="NuvoxDigitalStudio Avatar"
+                    className="h-full w-full object-cover"
+                  />
+                  <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-neutral-950 bg-emerald-400" />
                 </div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-neutral-400">
-                  {m.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Product-Focused Image & Interactive Showcase */}
-      <section className="bg-neutral-900 py-16 text-white md:py-24">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="text-center">
-            <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
-              Product Showcase
-            </span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
-              Precision Engineering, Shipped as One Clean Build
-            </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400 md:text-base">
-              Explore how every layer of the Nuvox Digital Studio package is crafted — from
-              high-impact desktop layouts to sub-second edge performance and responsive touch
-              experiences.
-            </p>
-          </div>
-
-          {/* Interactive Switcher Tabs */}
-          <div className="mt-10 flex flex-wrap justify-center gap-2 md:gap-3">
-            {SHOWCASE_TABS.map((tab) => {
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`rounded-full px-4 py-2 text-xs font-medium transition md:px-5 md:py-2.5 md:text-sm ${
-                    active
-                      ? "bg-[#FF6A00] text-white shadow-md shadow-[#FF6A00]/20"
-                      : "border border-white/10 bg-neutral-800 text-neutral-300 hover:border-white/20 hover:text-white"
-                  }`}
-                >
-                  {tab.title}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Browser Mockup Device Container */}
-          <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-neutral-950 shadow-2xl shadow-black/80">
-            {/* Window Topbar */}
-            <div className="flex items-center justify-between border-b border-white/10 bg-neutral-900/90 px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-red-500/80" />
-                <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                <span className="h-3 w-3 rounded-full bg-green-500/80" />
-              </div>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-950 px-4 py-1 text-xs text-neutral-400">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="font-mono">usmanjatoi.com/shop/NuvoxDigitalStudio</span>
-              </div>
-              <div className="text-xs font-medium text-neutral-400">{currentShowcase.subtitle}</div>
-            </div>
-
-            {/* Showcase Image Area */}
-            <div className="relative aspect-[16/9] w-full overflow-hidden bg-neutral-950">
-              <img
-                src={currentShowcase.image}
-                alt={currentShowcase.alt}
-                className="h-full w-full object-cover object-top transition-opacity duration-300"
-                loading="eager"
-              />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent p-6 md:p-8">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-bold text-white md:text-xl">
-                      {currentShowcase.title}
-                    </h3>
-                    <p className="text-xs text-neutral-300 md:text-sm">
-                      {currentShowcase.subtitle}
-                    </p>
-                  </div>
-                  <span className="rounded-md border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#FF6A00] backdrop-blur-sm">
-                    Verified Local Asset
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Badges below mockup */}
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-neutral-950/60 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FF6A00]/10 text-[#FF6A00]">
-                <Zap className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-white">95+ Core Web Vitals</div>
-                <div className="text-xs text-neutral-400">Near-zero latency edge delivery</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-neutral-950/60 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FF6A00]/10 text-[#FF6A00]">
-                <Search className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-white">Search Console Ready</div>
-                <div className="text-xs text-neutral-400">Structured data & canonical hygiene</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-neutral-950/60 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FF6A00]/10 text-[#FF6A00]">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-white">Zero Vendor Lock-In</div>
-                <div className="text-xs text-neutral-400">Full source code & DNS ownership</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Benefits */}
-      <section className="bg-white py-16 text-neutral-950 md:py-24">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF6A00]">
-              Strategic Advantages
-            </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
-              Why Choose Nuvox Digital Studio?
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-600 md:text-base">
-              Most agency websites look pretty but load sluggishly and generate zero commercial
-              leads. Nuvox is engineered from day one as a lead generation asset.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {BENEFITS.map((b) => (
-              <div
-                key={b.title}
-                className="group rounded-2xl border border-neutral-200 bg-neutral-50 p-6 transition duration-200 hover:-translate-y-1 hover:border-black hover:bg-white hover:shadow-xl"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-950 text-white transition group-hover:bg-[#FF6A00]">
-                  <b.icon className="h-6 w-6" />
-                </div>
-                <h3 className="mt-5 text-lg font-bold text-neutral-950">{b.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-600">{b.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Inclusions & Deliverables */}
-      <section className="border-t border-neutral-200 bg-neutral-50 py-16 text-neutral-950 md:py-24">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="text-center">
-            <span className="inline-block rounded-full border border-neutral-300 bg-white px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-700">
-              Detailed Scope
-            </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
-              What&rsquo;s Included in Every Nuvox Build
-            </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
-              Nothing is left to chance. Every deliverable is structured to eliminate friction
-              between your business and high-ticket clients.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-2">
-            {INCLUSIONS_GROUPS.map((group) => (
-              <div
-                key={group.category}
-                className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#FF6A00]" />
-                  <h3 className="text-lg font-bold text-neutral-950">{group.category}</h3>
-                </div>
-                <ul className="mt-5 space-y-3.5">
-                  {group.items.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-3 text-sm leading-relaxed text-neutral-700"
-                    >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF6A00]" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Engagement Packages & Pricing */}
-      <section className="bg-neutral-950 py-16 text-white md:py-24">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="text-center">
-            <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
-              Engagement Options
-            </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              Transparent, Sprint-Based Studio Engagements
-            </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400 md:text-base">
-              Fixed scopes, clear deliverables, and predictable timelines. Choose the package that
-              matches your operational roadmap.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-2">
-            {PACKAGES.map((pkg) => (
-              <div
-                key={pkg.name}
-                className={`relative flex flex-col justify-between rounded-3xl p-8 transition md:p-10 ${
-                  pkg.highlight
-                    ? "border-2 border-[#FF6A00] bg-neutral-900 shadow-2xl shadow-[#FF6A00]/10"
-                    : "border border-white/15 bg-neutral-900/60"
-                }`}
-              >
-                {pkg.highlight && (
-                  <span className="absolute -top-3.5 right-8 rounded-full bg-[#FF6A00] px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                    Most Popular
-                  </span>
-                )}
 
                 <div>
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <h3 className="text-2xl font-bold text-white">{pkg.name}</h3>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#FF6A00]">
-                      {pkg.timeline}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+                      NuvoxDigitalStudio
+                    </h1>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-950/50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Verified Etsy Shop
                     </span>
                   </div>
-                  <p className="mt-3 text-sm leading-relaxed text-neutral-300">{pkg.tagline}</p>
 
-                  <div className="mt-6 border-t border-white/10 pt-6">
-                    <div className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
-                      Package Inclusions:
-                    </div>
-                    <ul className="mt-4 space-y-3">
-                      {pkg.features.map((feat) => (
-                        <li key={feat} className="flex items-start gap-3 text-sm text-neutral-200">
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF6A00]" />
-                          <span>{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="mt-1 flex flex-wrap items-center gap-4 text-xs text-neutral-400">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-[#FF6A00]" />
+                      United States
+                    </span>
+                    <span className="text-neutral-600">•</span>
+                    <span>On Etsy since 2026</span>
+                    <span className="text-neutral-600">•</span>
+                    <span className="text-neutral-300">Digital Downloads & Physical Goods</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="mt-8 pt-6">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={ETSY_SHOP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#FF6A00]/25 transition hover:bg-[#e55f00] hover:scale-[1.02]"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  Shop on Etsy
+                  <ExternalLink className="h-3.5 w-3.5 opacity-80" />
+                </a>
+
+                <a
+                  href={ETSY_CONTACT_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white hover:text-black"
+                >
+                  <Mail className="h-4 w-4 text-[#FF6A00]" />
+                  Contact on Etsy
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tagline & Core Mission Banner */}
+      <section className="border-b border-neutral-200 bg-neutral-50 py-10">
+        <div className="mx-auto max-w-5xl px-5 text-center md:px-8">
+          <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
+            Get Premium, Useful, and Creative Products
+          </span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-neutral-950 md:text-3xl">
+            Creative Digital & Physical Products Made to Be Useful, Unique, and Beautiful
+          </h2>
+          <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-neutral-600 md:text-base">
+            Welcome to NuvoxDigitalStudio, a creative shop offering a mix of premium digital
+            products and thoughtfully designed physical items. Our goal is simple: to create
+            products that are useful, visually appealing, and made to add value to your everyday
+            life, work, business, or special moments.
+          </p>
+        </div>
+      </section>
+
+      {/* About the Studio Section */}
+      <section className="bg-white py-16 text-neutral-950 md:py-24">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            {/* Story Text */}
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF6A00]">
+                Our Creative Journey
+              </span>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
+                About NuvoxDigitalStudio
+              </h2>
+
+              <div className="mt-6 space-y-4 text-sm leading-relaxed text-neutral-700 md:text-base">
+                <p>
+                  Our shop includes digital downloads, creative resources, templates, printable
+                  designs, and print-on-demand physical products. Each design is created with
+                  attention to detail, usability, quality, and modern style.
+                </p>
+                <p>
+                  For our physical products, we work with trusted production partners who help us
+                  professionally print, prepare, and ship our original designs directly to you.
+                </p>
+                <p>
+                  Whether you&rsquo;re downloading a digital product instantly or ordering something
+                  physical for yourself or as a gift, we want every purchase from NuvoxDigitalStudio
+                  to feel creative, useful, and worth having.
+                </p>
+                <p className="font-medium text-neutral-950">
+                  We are always exploring new ideas, improving our designs, and adding fresh
+                  products to the shop. Thank you for visiting NuvoxDigitalStudio and supporting our
+                  creative journey.
+                </p>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a
+                  href={ETSY_SHOP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-neutral-950 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#FF6A00]"
+                >
+                  Explore All Items on Etsy
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#inquiry"
+                  className="inline-flex items-center gap-2 rounded-full border border-neutral-300 px-6 py-3 text-sm font-semibold text-neutral-800 transition hover:border-black hover:text-black"
+                >
+                  Custom Design Request
+                </a>
+              </div>
+            </div>
+
+            {/* Visual Box with Local Assets */}
+            <div className="space-y-4">
+              <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 shadow-xl">
+                <div className="flex items-center justify-between border-b border-white/10 bg-neutral-900 px-4 py-2.5">
+                  <div className="flex items-center gap-2 text-xs text-neutral-400">
+                    <ShoppingBag className="h-3.5 w-3.5 text-[#FF6A00]" />
+                    <span className="font-medium text-white">Etsy Storefront</span>
+                  </div>
+                  <span className="text-[11px] text-neutral-400">
+                    etsy.com/shop/NuvoxDigitalStudio
+                  </span>
+                </div>
+                <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-900">
+                  <img
+                    src={BANNER_IMAGE}
+                    alt="Nuvox Banner artwork"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+                  <div className="text-xl font-bold text-neutral-950">Instant</div>
+                  <div className="text-xs text-neutral-500">Digital file access post-purchase</div>
+                </div>
+                <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+                  <div className="text-xl font-bold text-neutral-950">Printify</div>
+                  <div className="text-xs text-neutral-500">Professional fulfillment partner</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Product Categories Section */}
+      <section className="border-t border-neutral-200 bg-neutral-950 py-16 text-white md:py-24">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <div className="text-center">
+            <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
+              Shop Offerings
+            </span>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-white md:text-4xl">
+              What You&rsquo;ll Find at NuvoxDigitalStudio
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400 md:text-base">
+              A curated blend of instant digital design resources and premium print-on-demand goods
+              for creators, professionals, and design enthusiasts.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {PRODUCT_CATEGORIES.map((cat) => (
+              <div
+                key={cat.title}
+                className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-neutral-900/70 p-6 transition duration-200 hover:-translate-y-1 hover:border-[#FF6A00] hover:bg-neutral-900"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-800 text-[#FF6A00] transition group-hover:bg-[#FF6A00] group-hover:text-white">
+                      <cat.icon className="h-6 w-6" />
+                    </div>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] font-semibold text-neutral-300">
+                      {cat.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-5 text-base font-bold text-white">{cat.title}</h3>
+                  <p className="mt-2 text-xs leading-relaxed text-neutral-400">{cat.description}</p>
+                </div>
+
+                <div className="mt-6 border-t border-white/10 pt-4">
                   <a
-                    href="#inquiry"
-                    onClick={() => setForm((prev) => ({ ...prev, packageChoice: pkg.name }))}
-                    className={`flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-semibold transition ${
-                      pkg.highlight
-                        ? "bg-[#FF6A00] text-white shadow-lg shadow-[#FF6A00]/25 hover:bg-[#e55f00]"
-                        : "border border-white/20 bg-white/10 text-white hover:bg-white hover:text-black"
-                    }`}
+                    href={ETSY_SHOP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF6A00] transition hover:underline"
                   >
-                    {pkg.cta}
-                    <ArrowRight className="h-4 w-4" />
+                    Browse Items
+                    <ArrowUpRight className="h-3.5 w-3.5" />
                   </a>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10 text-center">
-            <p className="text-xs text-neutral-400">
-              Need a custom multi-brand or enterprise build?{" "}
-              <Link to="/contact-me" className="text-[#FF6A00] underline hover:text-[#ff8533]">
-                Contact Usman directly for bespoke scoping
-              </Link>
-              .
+      {/* Shop Policies & Ordering Guidelines */}
+      <section className="border-t border-neutral-200 bg-white py-16 text-neutral-950 md:py-24">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <div className="text-center">
+            <span className="inline-block rounded-full border border-neutral-300 bg-neutral-50 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-700">
+              Customer Confidence
+            </span>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
+              Shop Policies & Guarantees
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
+              Clear, transparent operating terms so you can purchase digital downloads and physical
+              merchandise with peace of mind.
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* Direct Inquiry Form Section */}
-      <section id="inquiry" className="border-t border-neutral-200 bg-white py-16 md:py-24">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr]">
-            <div>
-              <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
-                Direct Booking
-              </span>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
-                Start Your Nuvox Studio Sprint
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-neutral-600 md:text-base">
-                Tell us about your project, target audience, and launch timeline. We will review
-                your requirements and send back exact scope, milestone dates, and fixed pricing.
-              </p>
-
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-3 text-sm text-neutral-700">
-                  <CheckCircle2 className="h-5 w-5 text-[#FF6A00]" />
-                  <span>24-hour turnaround on scope & quote</span>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {SHOP_POLICIES.map((pol) => (
+              <div
+                key={pol.title}
+                className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-sm"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF6A00]/10 text-[#FF6A00]">
+                  <pol.icon className="h-5 w-5" />
                 </div>
-                <div className="flex items-center gap-3 text-sm text-neutral-700">
-                  <CheckCircle2 className="h-5 w-5 text-[#FF6A00]" />
-                  <span>No pushy sales calls — transparent technical feedback</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-neutral-700">
-                  <CheckCircle2 className="h-5 w-5 text-[#FF6A00]" />
-                  <span>NDA signed before reviewing sensitive assets if requested</span>
-                </div>
+                <h3 className="mt-4 text-sm font-bold text-neutral-950">{pol.title}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-neutral-600">{pol.description}</p>
               </div>
+            ))}
+          </div>
 
-              <div className="mt-10 rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-[#FF6A00]" />
-                  <h3 className="font-semibold text-neutral-950">Prefer a live conversation?</h3>
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-neutral-600">
-                  Book a free 30-minute discovery call directly on Usman&rsquo;s calendar to discuss
-                  your web architecture and business goals.
-                </p>
-                <Link
-                  to="/call"
-                  className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#FF6A00] hover:underline"
-                >
-                  Schedule call now
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Form */}
-            <div className="rounded-3xl border border-neutral-200 bg-neutral-950 p-8 text-white shadow-xl md:p-10">
-              <h3 className="text-xl font-bold text-white md:text-2xl">
-                Request Scope & Availability
-              </h3>
-              <p className="mt-1 text-xs text-neutral-400">
-                Fill in the details below and we will get back to you with timeline and next steps.
-              </p>
-
-              {submitState === "success" ? (
-                <div className="mt-8 rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-6 text-center text-emerald-200">
-                  <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400" />
-                  <h4 className="mt-3 text-lg font-semibold text-white">Inquiry Received</h4>
-                  <p className="mt-2 text-xs leading-relaxed text-emerald-300">{statusMessage}</p>
-                  <button
-                    onClick={() => setSubmitState("idle")}
-                    className="mt-6 rounded-full border border-emerald-400/40 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-400/20"
-                  >
-                    Send another inquiry
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleInquirySubmit} className="mt-6 space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                      Your Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      placeholder="e.g. Alex Morgan"
-                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-900 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                      Work Email *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      placeholder="alex@company.com"
-                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-900 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                      Selected Package
-                    </label>
-                    <select
-                      value={form.packageChoice}
-                      onChange={(e) => setForm({ ...form, packageChoice: e.target.value })}
-                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-900 px-4 py-3 text-sm text-white focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-                    >
-                      <option value="Studio Standard Sprint">
-                        Studio Standard Sprint (2–3 Weeks)
-                      </option>
-                      <option value="Studio Growth & Scale">
-                        Studio Growth & Scale (3–4 Weeks)
-                      </option>
-                      <option value="Custom Bespoke Scope">Custom Bespoke Scope</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                      Current Website / Domain (if any)
-                    </label>
-                    <input
-                      type="text"
-                      value={form.website}
-                      onChange={(e) => setForm({ ...form, website: e.target.value })}
-                      placeholder="https://example.com"
-                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-900 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
-                      Project Notes & Goals
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={form.message}
-                      onChange={(e) => setForm({ ...form, message: e.target.value })}
-                      placeholder="Tell us about what you want to build, target launch date, and key features..."
-                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-900 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submitState === "submitting"}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF6A00] py-4 text-sm font-semibold text-white shadow-lg shadow-[#FF6A00]/25 transition hover:bg-[#e55f00] disabled:opacity-50"
-                  >
-                    <Send className="h-4 w-4" />
-                    {submitState === "submitting" ? "Sending Details..." : "Submit Inquiry"}
-                  </button>
-
-                  <p className="text-center text-[11px] text-neutral-500">
-                    Your details are strictly confidential. We never share or sell contact data.
-                  </p>
-                </form>
-              )}
-            </div>
+          <div className="mt-8 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-center text-xs text-neutral-500">
+            Policies last updated on 14 Sept, 2026. Protected under standard Etsy buyer protection.
           </div>
         </div>
       </section>
 
-      {/* Frequently Asked Questions */}
+      {/* Frequently Asked Questions (Exact from Etsy) */}
       <section className="border-t border-neutral-200 bg-neutral-50 py-16 text-neutral-950 md:py-24">
         <div className="mx-auto max-w-4xl px-5 md:px-8">
           <div className="text-center">
-            <span className="inline-block rounded-full border border-neutral-300 bg-white px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-700">
-              Clear Answers
+            <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
+              Official FAQ
             </span>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
               Frequently Asked Questions
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-neutral-600">
-              Everything you need to know about our sprint timeline, tech stack, deliverables, and
-              code ownership.
+              Clear answers regarding our creative process, AI usage, file reviews, and physical
+              production standards.
             </p>
           </div>
 
@@ -861,7 +602,7 @@ function NuvoxProductPage() {
                     onClick={() => setOpenFaq(isOpen ? null : index)}
                     className="flex w-full items-center justify-between p-5 text-left font-semibold text-neutral-950 transition hover:bg-neutral-50 md:p-6"
                   >
-                    <span className="text-base md:text-lg">{faq.q}</span>
+                    <span className="text-sm md:text-base">{faq.q}</span>
                     <ChevronDown
                       className={`h-5 w-5 shrink-0 text-neutral-500 transition-transform duration-200 ${
                         isOpen ? "rotate-180 text-[#FF6A00]" : ""
@@ -869,7 +610,7 @@ function NuvoxProductPage() {
                     />
                   </button>
                   {isOpen && (
-                    <div className="border-t border-neutral-100 px-5 pb-6 pt-4 text-sm leading-relaxed text-neutral-600 md:px-6">
+                    <div className="border-t border-neutral-100 px-5 pb-6 pt-4 text-xs leading-relaxed text-neutral-700 md:text-sm">
                       {faq.a}
                     </div>
                   )}
@@ -880,33 +621,205 @@ function NuvoxProductPage() {
         </div>
       </section>
 
-      {/* Bottom Final CTA Strip */}
-      <section className="bg-neutral-950 px-5 py-12 text-white md:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-          <div>
+      {/* Connected Websites & Ecosystem Links */}
+      <section className="border-t border-neutral-200 bg-white py-16 text-neutral-950 md:py-20">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <div className="text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF6A00]">
-              Ready to Launch?
+              Network
             </span>
-            <h2 className="mt-1 text-2xl font-bold tracking-tight md:text-3xl">
-              Let&rsquo;s Build Your High-Performance Digital Studio Asset
+            <h2 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
+              The Nuvox & Usman Jatoi Ecosystem
             </h2>
-            <p className="mt-1 max-w-xl text-xs text-neutral-400 md:text-sm">
-              Sprints book out fast. Reach out now to secure your build window for the upcoming
-              month.
+            <p className="mx-auto mt-2 max-w-2xl text-xs text-neutral-600 md:text-sm">
+              Discover connected platforms, software automation tools, and creative project hubs.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {ECOSYSTEM_LINKS.map((eco) =>
+              eco.isExternal ? (
+                <a
+                  key={eco.title}
+                  href={eco.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group rounded-2xl border border-neutral-200 bg-neutral-50 p-5 transition hover:border-black hover:bg-white hover:shadow-md"
+                >
+                  <div className="flex items-center justify-between">
+                    <Globe className="h-5 w-5 text-[#FF6A00]" />
+                    <ExternalLink className="h-3.5 w-3.5 text-neutral-400 group-hover:text-black" />
+                  </div>
+                  <h3 className="mt-4 text-sm font-bold text-neutral-950">{eco.title}</h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">{eco.desc}</p>
+                </a>
+              ) : (
+                <Link
+                  key={eco.title}
+                  to={eco.url as never}
+                  className="group rounded-2xl border border-neutral-200 bg-neutral-50 p-5 transition hover:border-black hover:bg-white hover:shadow-md"
+                >
+                  <div className="flex items-center justify-between">
+                    <Globe className="h-5 w-5 text-[#FF6A00]" />
+                    <ArrowRight className="h-3.5 w-3.5 text-neutral-400 group-hover:text-black" />
+                  </div>
+                  <h3 className="mt-4 text-sm font-bold text-neutral-950">{eco.title}</h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">{eco.desc}</p>
+                </Link>
+              ),
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Custom Inquiry / Contact Form */}
+      <section
+        id="inquiry"
+        className="border-t border-neutral-200 bg-neutral-950 py-16 text-white md:py-24"
+      >
+        <div className="mx-auto max-w-4xl px-5 md:px-8">
+          <div className="rounded-3xl border border-white/10 bg-neutral-900 p-8 shadow-2xl md:p-12">
+            <div className="text-center">
+              <span className="inline-block rounded-full border border-[#FF6A00]/30 bg-[#FF6A00]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#FF6A00]">
+                Direct Contact
+              </span>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight text-white md:text-3xl">
+                Have a Question or Custom Request?
+              </h2>
+              <p className="mx-auto mt-2 max-w-xl text-xs leading-relaxed text-neutral-400 md:text-sm">
+                Need a tailored digital template, bulk printable bundle, or custom physical design?
+                Send us a message and we will respond within 24 hours.
+              </p>
+            </div>
+
+            {submitState === "success" ? (
+              <div className="mt-8 rounded-2xl border border-emerald-500/30 bg-emerald-950/40 p-6 text-center text-emerald-200">
+                <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400" />
+                <h4 className="mt-3 text-base font-semibold text-white">Message Sent</h4>
+                <p className="mt-2 text-xs leading-relaxed text-emerald-300">{statusMessage}</p>
+                <button
+                  onClick={() => setSubmitState("idle")}
+                  className="mt-6 rounded-full border border-emerald-400/40 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-400/20"
+                >
+                  Send another message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleInquirySubmit} className="mt-8 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      placeholder="Alex Morgan"
+                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="alex@example.com"
+                      className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
+                    Topic / Subject
+                  </label>
+                  <select
+                    value={form.topic}
+                    onChange={(e) => setForm({ ...form, topic: e.target.value })}
+                    className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-sm text-white focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+                  >
+                    <option value="Custom Design / Template Request">
+                      Custom Design / Template Request
+                    </option>
+                    <option value="Question about an Etsy Order">
+                      Question about an Etsy Order
+                    </option>
+                    <option value="Digital Download Error / Correction">
+                      Digital Download Error / Correction
+                    </option>
+                    <option value="Wholesale / Print-on-Demand Partnership">
+                      Wholesale / Print-on-Demand Partnership
+                    </option>
+                    <option value="General Question">General Question</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
+                    Message Details *
+                  </label>
+                  <textarea
+                    rows={4}
+                    required
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    placeholder="Tell us what you are looking for, file specifications, or details about your question..."
+                    className="mt-1.5 w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-[#FF6A00] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitState === "submitting"}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF6A00] py-4 text-sm font-semibold text-white shadow-lg shadow-[#FF6A00]/25 transition hover:bg-[#e55f00] disabled:opacity-50"
+                >
+                  <Send className="h-4 w-4" />
+                  {submitState === "submitting" ? "Sending Details..." : "Send Message"}
+                </button>
+
+                <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-neutral-400">
+                  <span>Prefer Etsy messaging?</span>
+                  <a
+                    href={ETSY_CONTACT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#FF6A00] underline hover:text-white"
+                  >
+                    Send message directly on Etsy
+                  </a>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom CTA Bar */}
+      <section className="border-t border-neutral-800 bg-black px-5 py-8 text-white md:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="flex items-center gap-3 text-xs text-neutral-400">
+            <span className="h-2 w-2 rounded-full bg-[#FF6A00]" />
+            <span>NuvoxDigitalStudio • On Etsy since 2026 • United States</span>
+          </div>
+          <div className="flex items-center gap-3">
             <a
-              href="#inquiry"
-              className="inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-6 py-3 text-sm font-semibold text-white shadow-md shadow-[#FF6A00]/30 transition hover:bg-[#e55f00]"
+              href={ETSY_SHOP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-[#FF6A00]"
             >
-              Get Started
-              <ArrowRight className="h-4 w-4" />
+              Visit Etsy Storefront
+              <ExternalLink className="h-3 w-3" />
             </a>
-            <Link
-              to="/shop"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-black"
-            >
+            <span className="text-neutral-700">|</span>
+            <Link to="/shop" className="text-xs text-neutral-400 hover:text-white">
               Back to Shop
             </Link>
           </div>

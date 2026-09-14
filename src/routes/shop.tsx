@@ -30,7 +30,7 @@ export const Route = createFileRoute("/shop")({
     >
       <div className="space-y-6">
         <h2 className="text-xl font-bold tracking-tight text-neutral-950">
-          Featured Studio Packages
+          Featured Creative Shop
         </h2>
 
         <div className="group overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 text-white shadow-lg transition hover:border-[#FF6A00]">
@@ -38,17 +38,17 @@ export const Route = createFileRoute("/shop")({
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF6A00]/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#FF6A00]">
                 <Sparkles className="h-3.5 w-3.5" />
-                Featured Package
+                Etsy Creative Shop
               </span>
-              <span className="text-xs text-neutral-400">2–4 Weeks Turnkey</span>
+              <span className="text-xs text-neutral-400">Digital & Physical Goods</span>
             </div>
 
             <h3 className="mt-4 text-2xl font-bold tracking-tight text-white md:text-3xl">
               Nuvox Digital Studio
             </h3>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-neutral-300">
-              A full-stack, done-for-you website, content architecture, and search engineering
-              sprint built to convert visitors into qualified commercial enquiries.
+              Creative digital & physical products made to be useful, unique, and beautiful. Premium
+              digital downloads, templates, printable designs, and print-on-demand goods.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -56,9 +56,17 @@ export const Route = createFileRoute("/shop")({
                 to="/shop/NuvoxDigitalStudio"
                 className="inline-flex items-center gap-2 rounded-full bg-[#FF6A00] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e55f00]"
               >
-                View Product Details
+                View Shop & Products
                 <ArrowRight className="h-4 w-4" />
               </Link>
+              <a
+                href="https://www.etsy.com/shop/NuvoxDigitalStudio"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white hover:text-black"
+              >
+                Visit on Etsy
+              </a>
             </div>
           </div>
         </div>
